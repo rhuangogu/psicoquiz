@@ -7,8 +7,6 @@
     <!-- Carregamento do Tailwind CSS para um design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Integração do SDK do Mercado Pago -->
-    <script src="https://sdk.mercadopago.com/js/v2"></script> 
     <style>
         /* Bloqueia a seleção de texto e o menu de contexto (clique direito) */
         body {
@@ -120,6 +118,11 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            position: fixed; /* Adicionado fixed para cobrir toda a tela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
         .loader {
             border: 5px solid #f3f3f3;
@@ -243,6 +246,9 @@
         <p class="mt-4 text-xl font-semibold text-gray-700">Aguardando Confirmação do Pagamento...</p>
         <p class="text-sm text-gray-500">Isso pode levar alguns instantes.</p>
     </div>
+
+    <!-- INTEGRAÇÃO DO SDK DO MERCADO PAGO (FIX: Colocado aqui para carregar antes do script principal) -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script> 
 
     <script>
         // Adiciona um evento para impedir o clique direito em todo o documento
