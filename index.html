@@ -445,50 +445,6 @@
                     return { title: "Tristeza Significativa (Alerta)", desc: "Os sinais indicam um estado de humor persistente e baixo. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de apoio urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
                 }
             },
-            humility: {
-                title: "Sou Uma Pessoa Humilde?",
-                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
-                card_id: "card-humility",
-                image_url: 'humilde.png',
-                questions: [
-                    "1. Admito meus erros facilmente e sem me justificar.",
-                    "2. Eu procuro ativamente e valorizo o feedback negativo.",
-                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)",
-                    "4. Me coloco no lugar dos outros para entender suas falhas.",
-                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
-                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.",
-                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
-                    "8. Reconheço e elogio publicamente as conquistas dos outros.",
-                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)",
-                    "10. Peço desculpas rapidamente quando sei que errei.",
-                    "11. Eu me sinto ofendido(a) quando minhas ideias são rejeitadas. (Invertida)",
-                    "12. Eu realmente ouço a perspectiva dos outros sem interromper.",
-                    "13. Sinto que a maioria das pessoas não entende minha genialidade. (Invertida)",
-                    "14. Eu dou crédito a quem merece sem me preocupar em ser o centro das atenções.",
-                    "15. Evito falar sobre minhas conquistas para não parecer arrogante.",
-                    "16. Aceito que posso estar errado(a) sobre assuntos que domino.",
-                    "17. Eu me comparo negativamente com os outros. (Invertida)",
-                    "18. Meus amigos diriam que sou uma pessoa de 'cabeça aberta'.",
-                    "19. Eu me irrito com pessoas que fazem perguntas 'óbvias'. (Invertida)",
-                    "20. Eu me sinto à vontade pedindo ajuda quando preciso.",
-                    "21. Acredito que a maioria das pessoas são bem-intencionadas.",
-                    "22. Tenho dificuldade em elogiar ou admirar o sucesso alheio. (Invertida)",
-                    "23. Fico chateado(a) se não sou convidado(a) para eventos importantes. (Invertida)",
-                    "24. Eu me preocupo mais em aprender do que em impressionar.",
-                    "25. Acredito que há muitas lições a serem aprendidas com o fracasso.",
-                    "26. Eu me sinto superior intelectualmente à maioria das pessoas. (Invertida)",
-                    "27. Consigo me alegrar sinceramente com o sucesso dos outros.",
-                    "28. Eu sou paciente ao ensinar algo a alguém que está aprendendo.",
-                    "29. Tenho o costume de corrigir os erros dos outros em público. (Invertida)",
-                    "30. Eu valorizo o esforço tanto quanto o resultado final."
-                ],
-                inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
-                get_result: (score) => {
-                    if (score <= 80) return { title: "Humildade em Construção", desc: "Sua pontuação sugere dificuldades em aceitar falhas e dar crédito aos outros, com traços de autoimportância. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
-                    if (score <= 120) return { title: "Humildade Moderada", desc: "Você demonstra equilíbrio, mas pode ter dificuldade em aceitar críticas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Humildade Alta", desc: "Você demonstra uma forte capacidade de autoconhecimento. Adquira o acesso para ver o plano de ação para potencializar seu perfil. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                }
-            },
             arrogance: {
                 title: "Sou Uma Pessoa Arrogante?",
                 subtitle: "Avaliação da sua autoimportância, necessidade de validação e desvalorização alheia.",
@@ -615,11 +571,62 @@
             window.open(MERCADO_PAGO_LINK, '_blank');
             
             // --- Lógica Pós-Pagamento ---
+            // IMPORTANTE: Aqui, após o redirecionamento (o pagamento), o modal fecha.
+            // O site PRECISA da URL de Retorno do Mercado Pago (com a chave de sucesso)
+            // para liberar o resultado. Como não podemos fazer isso, vamos simular a liberação no retorno.
+            
             purchaseModal.classList.add('hidden'); 
             
-            // Simula o acesso ao resultado COMPLETO (Se fosse um sistema real, essa parte seria liberada pelo servidor)
-            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+            // *** SIMULAÇÃO DE LIBERAÇÃO DE ACESSO ***
+            unlockAccess();
+            // ****************************************
         });
+
+        // Função que realiza a SIMULAÇÃO de LIBERAÇÃO do resultado
+        function unlockAccess() {
+             const quiz = quizzes[activeQuizId];
+             let totalScore = 0;
+            
+             // Recalcula o score (para garantir)
+             userAnswers.forEach((answer, index) => {
+                const questionNumber = index + 1;
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                    totalScore += (6 - answer);
+                } else {
+                    totalScore += answer;
+                }
+            });
+
+            const resultData = quiz.get_result(totalScore);
+
+             // MUDANÇA: Injetar o resultado COMPLETO (sem o CTA de compra)
+            quizResultArea.innerHTML = `
+                <h3 class="text-2xl font-bold text-center mb-4 text-gray-900">${quiz.title}</h3>
+                <h4 class="text-xl font-bold text-center mb-4">Seu Diagnóstico Detalhado (Acesso Liberado): ${resultData.title}</h4>
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+                    Pontuação Total: ${totalScore} de ${quiz.questions.length * 5}
+                </div>
+                
+                <!-- CONTEÚDO LIBERADO -->
+                <p class="text-base text-gray-700 mb-4">
+                    **PARABÉNS! SEU ACESSO FOI LIBERADO.**
+                    O seu resultado completo, com o plano de ação e as orientações para o seu resultado ("${resultData.title}"), está agora disponível.
+                </p>
+                <div class="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50">
+                    <p class="font-bold text-blue-800">PLANO DE AÇÃO RÁPIDO (EXCLUSIVO):</p>
+                    <ul class="list-disc list-inside ml-4 text-sm space-y-1 mt-2">
+                        <li>**Recomenda-se:** ${resultData.desc.split('.')[0]}.</li>
+                        <li>**Primeiro Passo:** Inicie um diário de emoções para rastrear os picos de pontuação.</li>
+                        <li>**Ação Imediata:** Desconecte-se de 3 fontes de stress/negatividade hoje.</li>
+                        <li>**Recurso Sugerido:** Procure por livros sobre ${quiz.title.split(' ')[2] || 'Saúde Mental'}.</li>
+                    </ul>
+                </div>
+                 <!-- FIM DO CONTEÚDO LIBERADO -->
+            `;
+
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
 
         // Fecha o Modal
         closeModalBtn.addEventListener('click', () => {
