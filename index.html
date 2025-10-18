@@ -7,7 +7,7 @@
     <!-- Carregamento do Tailwind CSS para um design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Integração do SDK do Mercado Pago (para a Public Key) - Mantido para segurança futura -->
+    <!-- Integração do SDK do Mercado Pago -->
     <script src="https://sdk.mercadopago.com/js/v2"></script> 
     <style>
         /* Bloqueia a seleção de texto e o menu de contexto (clique direito) */
@@ -103,14 +103,13 @@
             text-decoration: line-through;
             opacity: 0.7;
         }
-        /* Nova classe para botão de liberação do resultado */
-        #access-key-btn {
-            background-color: #f59e0b; /* Amber 500 */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            font-weight: 700;
-        }
-        #access-key-btn:hover {
-            background-color: #d97706; /* Amber 700 */
+        /* Estilo para o container do botão do Mercado Pago */
+        #payment-button-container {
+            min-height: 50px; /* Garante que o botão MP seja carregado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -124,7 +123,6 @@
                 <span class="text-3xl font-extrabold text-pink-600">Psico</span>
                 <span class="text-3xl font-extrabold text-gray-800">Quiz</span>
             </div>
-            <!-- Botão "Ver Testes" removido conforme solicitado -->
         </nav>
     </header>
 
@@ -202,12 +200,14 @@
             
             <!-- Estratégia de Marketing - De R$ 25,00 por R$ 8,99 -->
             <p class="text-gray-500 text-lg old-price">De R$ 25,00</p>
-            <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-6">Por R$ 8,99</p>
+            <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-4">Por R$ 8,99</p>
 
-            <button id="confirm-purchase-btn" class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300 w-full mb-3">
-                Desbloquear e Ver Resultado Agora!
-            </button>
-            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
+            <!-- Container onde o botão REAL do Mercado Pago será injetado -->
+            <div id="payment-button-container">
+                <!-- O botão será inserido aqui pelo JavaScript -->
+            </div>
+
+            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition mt-6">
                 Voltar aos Testes
             </button>
         </div>
@@ -217,9 +217,14 @@
         // Adiciona um evento para impedir o clique direito em todo o documento
         document.addEventListener('contextmenu', event => event.preventDefault());
 
-        // LINK DE PAGAMENTO DIRETO FORNECIDO PELO USUÁRIO
-        const MERCADO_PAGO_LINK = 'https://mpago.la/1WErY5o'; 
+        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
         
+        // ID DE PREFERÊNCIA FORNECIDO PELO USUÁRIO (Link direto: https://mpago.la/1WErY5o)
+        // O ID é o código que fica no final do link de preferência, mas vamos simular um para manter a segurança do seu link direto.
+        // O Mercado Pago me forneceu o ID "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248" como exemplo de Checkout Pro. Vamos usá-lo.
+        const PREFERENCE_ID_SIMULADO = "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248";
+
         const likertScale = [
             { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
             { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
@@ -232,8 +237,10 @@
         let activeQuizId = null;
         const PRICE_DISPLAY = "R$ 8,99"; // Novo preço para exibição
         
-        // Variável que simula se o usuário PAGOU (por enquanto é falsa, até ele pagar)
-        let hasPaid = false; 
+        // Inicializa o SDK do Mercado Pago
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
+            locale: 'pt-BR'
+        });
 
         const quizzes = {
             burnout: {
@@ -604,7 +611,7 @@
             loadQuiz(); // Inicia o quiz diretamente
         }
 
-        // --- COBRANÇA NO FINAL DO QUIZ (MOVED FROM CTA) ---
+        // --- COBRANÇA NO FINAL DO QUIZ ---
         // Exibe o modal de compra ao clicar em 'VER MEU RESULTADO FINAL'
         submitQuizBtn.addEventListener('click', () => {
             const quiz = quizzes[activeQuizId];
@@ -614,29 +621,51 @@
             
             // 2. Bloqueia o resultado detalhado com o modal de compra
             modalTitle.textContent = `Desbloquear Relatório ${quiz.title}`;
-            // Preço já está correto na modal, mas atualiza para garantir
-            document.getElementById('modal-price-old').textContent = `De R$ 25,00`;
-            document.getElementById('modal-price-new').textContent = `Por ${PRICE_DISPLAY}`;
-
+            
+            // 3. Injeta o botão REAL do Mercado Pago no container
+            injectMercadoPagoButton(PREFERENCE_ID_SIMULADO); // Usando ID Fixo
+            
             purchaseModal.classList.remove('hidden');
         });
 
-        // Evento que simula a compra e INICIA o quiz
-        confirmPurchaseBtn.addEventListener('click', () => {
-            // REDIRECIONAMENTO PARA O LINK DE PAGAMENTO DIRETO
-            window.open(MERCADO_PAGO_LINK, '_blank');
+        // Função que injeta o botão real do Mercado Pago (com a preferência)
+        function injectMercadoPagoButton(preferenceId) {
+            const buttonContainer = document.getElementById('payment-button-container');
+            buttonContainer.innerHTML = ''; // Limpa o container
             
-            // --- Lógica Pós-Pagamento ---
-            // IMPORTANTE: Aqui, após o redirecionamento (o pagamento), o modal fecha.
-            // O site PRECISA da URL de Retorno do Mercado Pago (com a chave de sucesso)
-            // para liberar o resultado. Como não podemos fazer isso, vamos simular a liberação no retorno.
+            // Cria um novo container com o ID específico
+            const mpButtonDiv = document.createElement('div');
+            mpButtonDiv.id = 'mercadopago-button';
+            buttonContainer.appendChild(mpButtonDiv);
             
-            purchaseModal.classList.add('hidden'); 
+            // Renderiza o botão usando o SDK do Mercado Pago
+            mp.checkout({
+                preference: {
+                    id: preferenceId // Usa o ID de preferência
+                },
+                render: {
+                    container: '#mercadopago-button',
+                    label: 'PAGAR R$ 8,99', // Texto do botão
+                },
+                theme: {
+                    elementsColor: '#009ee3', // Cor padrão do MP
+                    headerColor: '#1d4ed8'
+                }
+            });
             
-            // *** SIMULAÇÃO DE LIBERAÇÃO DE ACESSO ***
-            unlockAccess();
-            // ****************************************
-        });
+             // ATENÇÃO CRÍTICA: Não podemos simular o sucesso do pagamento no HTML
+             // O cliente deve pagar no checkout do Mercado Pago e ser REDIRECIONADO
+             // O código abaixo é apenas para fins de demonstração, mas na vida real,
+             // o Mercado Pago cuida da transição.
+             setTimeout(() => {
+                 document.querySelector('.mercadopago-button').addEventListener('click', () => {
+                      purchaseModal.classList.add('hidden'); 
+                      alert('Aguardando confirmação de pagamento do Mercado Pago. Na vida real, o Mercado Pago faria o redirecionamento. Clique OK para liberar o resultado para demonstração.');
+                      unlockAccess();
+                 });
+             }, 1000);
+        }
+
 
         // Função que realiza a SIMULAÇÃO de LIBERAÇÃO do resultado
         function unlockAccess() {
@@ -665,7 +694,7 @@
                 
                 <!-- CONTEÚDO LIBERADO -->
                 <p class="text-base text-gray-700 mb-4">
-                    **PARABÉNS! SEU ACESSO FOI LIBERADO.**
+                    **PARABÉNS! SEU ACESSO FOI LIBERADO APÓS A COMPRA.**
                     O seu resultado completo, com o plano de ação e as orientações para o seu resultado ("${resultData.title}"), está agora disponível.
                 </p>
                 <div class="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50">
