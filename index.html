@@ -333,7 +333,7 @@
                     "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
                     "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
                     "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
-                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simples.",
+                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
                     "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
                     "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
                     "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
@@ -759,11 +759,84 @@
         }
 
 
-        // --- RESTANTE DO CÓDIGO (MANUTENÇÃO DA LÓGICA) ---
-        
-        // ... (o restante do código permanece o mesmo)
-        
-        
+        // Fecha o Modal
+        closeModalBtn.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
+
+
+        // Função para calcular a pontuação e mostrar o resultado GRATUITO (visão geral)
+        function calculateAndShowFreeResult() {
+            const quiz = quizzes[activeQuizId];
+            let totalScore = 0;
+            
+            userAnswers.forEach((answer, index) => {
+                const questionNumber = index + 1;
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                    totalScore += (6 - answer);
+                } else {
+                    totalScore += answer;
+                }
+            });
+
+            // Obtém o resultado GRÁTIS
+            const resultData = quiz.get_result(totalScore);
+
+            // GERA O TEXTO DE ELABORAÇÃO (30 FRASES SIMULADAS)
+            const elaborateDescription = `
+                <div class="mt-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                    <h5 class="text-lg font-bold text-gray-900 mb-3">Visão Geral: Seu Nível de Consciência</h5>
+                    <p class="text-base text-gray-700 space-y-3">
+                        <span class="block">Parabéns por completar sua autoavaliação! Este teste é o primeiro passo crucial em sua jornada de autoconhecimento. A pontuação que você obteve reflete a intensidade de certos padrões emocionais e cognitivos em sua vida diária.</span>
+                        <span class="block">Neste momento, você identificou o seu **Status Inicial** (Sua pontuação é ${totalScore}). Para muitos, essa simples classificação já é um alívio, pois traz clareza sobre uma sensação que antes era apenas um incômodo.</span>
+                        <span class="block">No entanto, o número e a classificação ("${resultData.title}") são apenas a ponta do iceberg. A verdadeira mudança acontece quando você entende o **Porquê** e o **Como** por trás desse resultado.</span>
+                        <span class="block">Você deve estar se perguntando: "O que isso significa na prática?", "Quais perguntas específicas me levaram a esse resultado?", ou "O que eu faço agora para mudar essa situação?".</span>
+                        <span class="block font-bold text-red-600">A resposta detalhada a essas perguntas está no seu Relatório Completo e Personalizado.</span>
+                        <span class="block">**O que o Relatório Completo DESBLOQUEIA:**</span>
+                        <ul class="list-disc list-inside ml-4 text-sm space-y-1">
+                            <li><span class="font-semibold">ANÁLISE DE IMPACTO:</span> Descubra em qual das 5 dimensões (Ex: Físico, Emocional, Social) sua pontuação é mais alta.</li>
+                            <li><span class="font-semibold">PLANO DE AÇÃO RÁPIDO:</span> Receba 10 ideias práticas e imediatas para começar a gerenciar sua pontuação hoje mesmo (Ex: Exercícios de respiração, técnicas de organização).</li>
+                            <li><span class="font-semibold">MAPA DO PRÓXIMO NÍVEL:</span> Instruções detalhadas para potencializar seus pontos fortes e enfraquecer seus pontos de desafio.</li>
+                            <li><span class="font-semibold">ESCALA DE RISCO:</span> Visualização gráfica da sua posição exata na escala de autoconhecimento.</li>
+                            <li><span class="font-semibold">RECURSOS EXCLUSIVOS:</span> Indicação de livros e vídeos para aprofundar seu entendimento.</li>
+                        </ul>
+                        <span class="block mt-4">Não se contente com a superfície. O valor deste conhecimento excede em muito o investimento de ${PRICE_DISPLAY}. É o primeiro passo para retomar o controle da sua vida.</span>
+                        <span class="block">Clique no botão abaixo para desbloquear seu Relatório Completo. Seu futuro mental começa agora!</span>
+                    </p>
+                </div>
+            `;
+
+
+            // Injeta o resultado na tela
+            quizResultArea.classList.remove('hidden');
+            quizResultArea.innerHTML = `
+                <h3 class="text-2xl font-bold text-center mb-4 text-gray-900">${quiz.title}</h3>
+                <h4 class="text-xl font-bold text-center mb-4">Sua Pontuação de Fim de Quiz: ${totalScore}</h4>
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+                    Classificação GRÁTIS: ${resultData.title}
+                </div>
+                ${elaborateDescription}
+
+                <!-- CTA para Venda/Próximo Passo -->
+                <div class="text-center mt-6">
+                    <button id="final-purchase-btn" class="px-8 py-4 bg-red-600 text-white text-xl font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-300">
+                        DESBLOQUEAR RELATÓRIO COMPLETO POR ${PRICE_DISPLAY}
+                    </button>
+                </div>
+            `;
+            
+            // Adiciona o listener para o novo botão de compra
+            document.getElementById('final-purchase-btn').addEventListener('click', () => {
+                purchaseModal.classList.remove('hidden');
+                // Garante que o modal mostre o preço e o título correto antes de abrir
+                document.getElementById('modal-title').textContent = `Desbloquear Relatório ${quiz.title}`;
+            });
+
+            // Rola a tela para o resultado
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
         // Função que Carrega o quiz selecionado e inicia o questionário
         function loadQuiz() {
             if (!activeQuizId) return;
