@@ -1,108 +1,3282 @@
+Gemini
+Conversa com o Gemini
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PsicoQuiz | Portal de Testes Psicológicos</title>
+
+    <!-- Carregamento do Tailwind CSS para um design moderno e responsivo -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* Bloqueia a seleção de texto e o menu de contexto (clique direito) */
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f7f9fc;
+
+            background-image: url('mente.png'); /* FUNDO CORRIGIDO PARA .PNG */
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-attachment: fixed; /* Mantém a imagem fixa ao rolar */
+
+            /* NOVAS REGRAS DE SEGURANÇA BÁSICAS */
+
+            user-select: none; /* Standard syntax */
+
+            -webkit-user-select: none; /* Safari */
+
+            -moz-user-select: none; /* Firefox */
+
+            -ms-user-select: none; /* IE/Edge */
+
+        }
+
+        .quiz-container {
+
+            max-width: 800px;
+
+        }
+
+        .likert-option {
+
+            cursor: pointer;
+
+            transition: all 0.2s;
+
+        }
+
+        .likert-option:hover {
+
+            background-color: #eff6ff; /* blue-50 */
+
+        }
+
+        /* MUDANÇA CRUCIAL: Contraste aprimorado para a opção selecionada */
+
+        .selected-option {
+
+            background-color: #1d4ed8 !important; /* Blue-700 escuro */
+
+            color: white;
+
+            font-weight: 700;
+
+            /* Adiciona uma borda chamativa ao redor */
+
+            box-shadow: 0 0 0 4px #EC4899; /* Cor pink/magenta do tema */
+
+            transform: scale(1.05); /* Pequeno zoom */
+
+            border-color: transparent !important;
+
+        }
+
+
+
+        /* Estilo base para os Cards de Quiz */
+
+        .quiz-card-select {
+
+            cursor: pointer;
+
+            transition: transform 0.3s, box-shadow 0.3s;
+
+            position: relative;
+
+            overflow: hidden;
+
+            border: 4px solid #f8f8f8; 
+
+            min-height: 250px;
+
+            border-radius: 1rem; /* Arredondamento para todos */
+
+        }
+
+        .quiz-card-select::before {
+
+            content: '';
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            background: rgba(0, 0, 0, 0.45); /* Overlay escuro */
+
+            z-index: 1;
+
+            border-radius: inherit;
+
+        }
+
+        .quiz-card-select:hover {
+
+            transform: translateY(-5px);
+
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
+
+        }
+
+        .quiz-content {
+
+            position: relative;
+
+            z-index: 2; /* Garante que o conteúdo fique acima do overlay */
+
+        }
+
+        /* Estilos específicos para as imagens de fundo dos cards (TUDO EM .PNG) */
+
+        #card-burnout { background-image: url('bernalt.png'); }
+
+        #card-qi { background-image: url('qi.png'); background-color: #3b82f6; } 
+
+        #card-stress { background-image: url('estresse.png'); }
+
+        #card-anxiety { background-image: url('ansiedade.png'); }
+
+        #card-sadness { background-image: url('triste.png'); }
+
+        #card-humility { background-image: url('humilde.png'); }
+
+        #card-arrogance { background-image: url('arrogante.png'); }
+
+
+
+        .bg-cover-center {
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+        }
+
+
+
+        /* Estilo para o Modal de Simulação de Compra */
+
+        .modal {
+
+            background-color: rgba(0, 0, 0, 0.7);
+
+        }
+
+
+
+        /* Classes de cores chamativas */
+
+        .text-shadow {
+
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+
+        }
+
+        /* Estilo para o preço riscado */
+
+        .old-price {
+
+            text-decoration: line-through;
+
+            opacity: 0.7;
+
+        }
+
+        /* Estilo para o container do botão do Mercado Pago */
+
+        #payment-button-container {
+
+            min-height: 50px; /* Garante que o botão MP seja carregado */
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            margin-top: 1rem;
+
+        }
+
+        /* Estilo para a tela de carregamento/aguardando transação */
+
+        #loading-screen {
+
+            background-color: rgba(255, 255, 255, 0.95);
+
+            z-index: 100;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            position: fixed; /* Adicionado fixed para cobrir toda a tela */
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+        .loader {
+
+            border: 5px solid #f3f3f3;
+
+            border-top: 5px solid #EC4899;
+
+            border-radius: 50%;
+
+            width: 50px;
+
+            height: 50px;
+
+            animation: spin 1s linear infinite;
+
+        }
+
+        @keyframes spin {
+
+            0% { transform: rotate(0deg); }
+
+            100% { transform: rotate(360deg); }
+
+        }
+
+    </style>
+
+</head>
+
+<body class="text-gray-800">
+
+
+
+    <!-- 1. Header Fixo e Simples -->
+
+    <header class="bg-white shadow-md sticky top-0 z-10">
+
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+
+            <div class="flex items-center space-x-2">
+
+                <!-- Logo/Marca com a cor Rosada (#EC4899) -->
+
+                <span class="text-3xl font-extrabold text-pink-600">Psico</span>
+
+                <span class="text-3xl font-extrabold text-gray-800">Quiz</span>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+
+    <main>
+
+        <!-- 2. Seleção de Quiz (Hero Section) -->
+
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center" id="quiz-selection">
+
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">
+
+                DESVENDE SUA MENTE
+
+            </h1>
+
+            <p class="text-xl text-white mb-12 text-shadow font-semibold">
+
+                Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.
+
+            </p>
+
+            
+
+            <!-- Grid de Cards de Seleção -->
+
+            <div id="quiz-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Cards serão injetados aqui via JavaScript -->
+
+            </div>
+
+            
+
+            <!-- CTA desnecessária, pois a compra é no final do quiz -->
+
+            <div id="quiz-start-cta" class="hidden"></div> 
+
+
+
+        </section>
+
+
+
+        <!-- 3. Quiz Container (Onde as perguntas aparecerão) -->
+
+        <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
+
+            <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+
+                <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-6 text-gray-900"></h2>
+
+                
+
+                <div id="quiz-questions" class="space-y-8">
+
+                    <!-- Perguntas serão injetadas aqui -->
+
+                </div>
+
+                
+
+                <!-- Botão de Envio/Resultado -->
+
+                <div class="text-center mt-10">
+
+                    <button id="submit-quiz-btn" class="px-8 py-3 bg-green-600 text-white text-lg font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 hidden">
+
+                        VER MEU RESULTADO FINAL
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- Área de Resultado (Agora com a lógica de bloqueio) -->
+
+                <div id="quiz-result" class="mt-10 p-6 bg-gray-100 rounded-lg hidden">
+
+                    <!-- Resultado será injetado aqui -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- 4. Seção Sobre Nós -->
+
+        <section class="bg-gray-100 py-16 mt-8">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-900">
+
+                    Sobre a PsicoQuiz
+
+                </h2>
+
+                <p class="text-center text-lg text-gray-600 max-w-4xl mx-auto">
+
+                    A PsicoQuiz nasceu da necessidade de democratizar o acesso ao autoconhecimento. Acreditamos que todos merecem ferramentas valiosas para entender sua própria mente. Nossos testes são desenvolvidos com base em conceitos da psicologia, mas servem como um ponto de partida para sua jornada pessoal. Lembre-se: Autoconhecimento é poder!
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- 5. Footer -->
+
+    <footer class="bg-gray-900 text-white py-8">
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+            <p class="text-sm">&copy; 2025 PsicoQuiz. Todos os direitos reservados.</p>
+
+            <p class="text-xs mt-2 text-gray-500">
+
+                Atenção: Nossos testes são ferramentas de autoavaliação e não substituem um diagnóstico clínico profissional.
+
+            </p>
+
+        </div>
+
+    </footer>
+
+    
+
+    <!-- Modal de Simulação de Compra (Usado agora para o resultado) -->
+
+    <div id="purchase-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
+
+            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Acesso Bloqueado</h3>
+
+            <p class="text-gray-700 mb-2">Seu diagnóstico foi concluído, mas o **Relatório Completo** está bloqueado.</p>
+
+            
+
+            <!-- Estratégia de Marketing - De R$ 25,00 por R$ 8,99 -->
+
+            <p class="text-gray-500 text-lg old-price">De R$ 25,00</p>
+
+            <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-4">Por R$ 8,99</p>
+
+
+
+            <!-- Container onde o botão REAL do Mercado Pago será injetado -->
+
+            <div id="payment-button-container" class="mb-4">
+
+                <!-- O botão será inserido aqui pelo JavaScript -->
+
+            </div>
+
+            
+
+            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+
+
+
+            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
+
+                Voltar aos Testes
+
+            </button>
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- Tela de Carregamento (Simulação de Transação) -->
+
+    <div id="loading-screen" class="fixed inset-0 hidden">
+
+        <div class="loader"></div>
+
+        <p class="mt-4 text-xl font-semibold text-gray-700">Aguardando Confirmação do Pagamento...</p>
+
+        <p class="text-sm text-gray-500">Isso pode levar alguns instantes.</p>
+
+    </div>
+
+
+
+    <!-- INTEGRAÇÃO DO SDK DO MERCADO PAGO (FIX: Colocado aqui para carregar antes do script principal) -->
+
+    <script src="https://sdk.mercadopago.com/js/v2"></script> 
+
+
+
+    <script>
+
+        // Adiciona um evento para impedir o clique direito em todo o documento
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+
+
+        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
+
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
+
+        
+
+        // ID DE PREFERÊNCIA FORNECIDO PELO USUÁRIO (Simulação de 7 quizzes com o mesmo valor)
+
+        // ATENÇÃO: Na vida real, você geraria um ID de preferência ÚNICO para cada quiz no painel do MP.
+
+        const PREFERENCE_ID_SIMULADO = "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248";
+
+        
+
+        const likertScale = [
+
+            { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
+
+            { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
+
+            { text: "Às vezes", value: 3, class: 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' },
+
+            { text: "Frequentemente", value: 4, class: 'bg-orange-100 hover:bg-orange-200 text-orange-800' },
+
+            { text: "Sempre", value: 5, class: 'bg-red-100 hover:bg-red-200 text-red-800' }
+
+        ];
+
+
+
+        let userAnswers = [];
+
+        let activeQuizId = null;
+
+        const PRICE_DISPLAY = "R$ 8,99"; 
+
+        
+
+        // Inicializa o SDK do Mercado Pago
+
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
+
+            locale: 'pt-BR'
+
+        });
+
+
+
+        const quizzes = {
+
+            burnout: {
+
+                title: "Teste de Risco de Burnout",
+
+                subtitle: "Avalie sua exaustão emocional, cinismo e eficácia profissional.",
+
+                card_id: "card-burnout",
+
+                image_url: 'bernalt.png', 
+
+                questions: [
+
+                    "1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.",
+
+                    "2. Sinto-me cansado(a) logo ao acordar e ter que encarar o trabalho.",
+
+                    "3. Consigo resolver os problemas do trabalho de forma eficaz. (Invertida)",
+
+                    "4. Sinto que estou me esforçando demais, mas não vejo resultados.",
+
+                    "5. Lidar com pessoas no meu trabalho é um grande estresse.",
+
+                    "6. Sinto que não estou fazendo a diferença na minha área.",
+
+                    "7. O trabalho tem consumido todo o meu tempo livre.",
+
+                    "8. Minha concentração fora do trabalho tem sido afetada.",
+
+                    "9. Sinto-me revigorado(a) após as folgas ou feriados. (Invertida)",
+
+                    "10. Tenho pensado em desistir da minha profissão ou mudar de área.",
+
+                    "11. Meu sono tem sido de má qualidade e insuficiente.",
+
+                    "12. Tenho negligenciado meus hobbies e vida social.",
+
+                    "13. Consigo lidar com o excesso de tarefas com calma. (Invertida)",
+
+                    "14. Sinto que meu futuro na empresa é limitado ou incerto.",
+
+                    "15. Tenho tido dores de cabeça ou musculares frequentes.",
+
+                    "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
+
+                    "17. Eu evito interações sociais no ambiente de trabalho.",
+
+                    "18. Sinto que tenho pouco controle sobre minha carga de trabalho.",
+
+                    "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
+
+                    "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
+
+                    "21. Sinto que a energia que invisto não compensa o resultado.",
+
+                    "22. Tenho usado mais café, álcool ou cigarros para lidar com o estresse.",
+
+                    "23. Meus colegas de trabalho parecem mais competentes do que eu.",
+
+                    "24. Minha produtividade diminuiu significativamente nos últimos meses.",
+
+                    "25. A pressão no trabalho me faz sentir ansioso(a) ou deprimido(a).",
+
+                    "26. Sinto-me um(a) profissional realizado(a). (Invertida)",
+
+                    "27. Tenho tido lapsos de memória ou dificuldade de raciocínio.",
+
+                    "28. Eu me afasto emocionalmente dos problemas de trabalho dos outros.",
+
+                    "29. Consigo manter uma perspectiva positiva sobre o trabalho. (Invertida)",
+
+                    "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."
+
+                ],
+
+                inverted_questions: [3, 9, 13, 16, 19, 26, 29], 
+
+                
+
+                get_result: (score) => {
+
+                    if (score <= 65) return { title: "Baixo Risco", desc: "Sua pontuação indica um excelente manejo de estresse e alta eficácia. Mantenha o foco no equilíbrio entre vida pessoal e profissional. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Sinais de sobrecarga estão presentes. É fundamental ver o diagnóstico completo para evitar o esgotamento. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Alto Risco de Burnout", desc: "Atenção! Sua pontuação é ALTA. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de ação urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            qi: {
+
+                title: "Teste de QI e Raciocínio",
+
+                subtitle: "Avalie sua inteligência fluida e capacidade de resolver problemas lógicos.",
+
+                card_id: "card-qi",
+
+                image_url: 'qi.png', 
+
+                questions: [
+
+                    "1. Eu resolvo problemas complexos rapidamente, mesmo sob pressão.",
+
+                    "2. Consigo identificar padrões e sequências em informações aleatórias.",
+
+                    "3. Eu entendo e utilizo bem a lógica abstrata (matemática, códigos, etc.).",
+
+                    "4. Eu aprendo novas habilidades conceituais com facilidade.",
+
+                    "5. Eu consigo fazer conexões entre ideias que parecem não relacionadas.",
+
+                    "6. Quando me deparo com um novo problema, consigo criar rapidamente diferentes estratégias de solução.",
+
+                    "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
+
+                    "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
+
+                    "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
+
+                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
+
+                    "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
+
+                    "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
+
+                    "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
+
+                    "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)",
+
+                    "15. Minhas decisões são sempre baseadas em lógica e não em emoção.",
+
+                    "16. Eu consigo manter o foco por longos períodos em tarefas intelectuais.",
+
+                    "17. Eu sou rápido(a) em fazer cálculos mentais e estimativas.",
+
+                    "18. Tenho facilidade em aprender novas línguas ou linguagens de programação.",
+
+                    "19. Se for dado um conjunto de dados, consigo tirar conclusões válidas a partir deles.",
+
+                    "20. Eu me sinto frustrado(a) rapidamente quando não consigo resolver um enigma. (Invertida)",
+
+                    "21. Eu tenho um vocabulário vasto e consigo articular minhas ideias com clareza.",
+
+                    "22. Eu consigo trabalhar em múltiplas tarefas complexas ao mesmo tempo. (Invertida)",
+
+                    "23. Eu sou bom(a) em resolver quebra-cabeças e jogos de estratégia.",
+
+                    "24. Eu consigo me adaptar rapidamente a novos ambientes e regras.",
+
+                    "25. Eu costumo ler muito rápido e reter a maior parte das informações.",
+
+                    "26. Eu questiono e analiso as informações antes de aceitá-las como verdade.",
+
+                    "27. Eu consigo prever o resultado de ações ou eventos com precisão.",
+
+                    "28. Eu sou bom(a) em identificar e corrigir meus próprios erros de lógica.",
+
+                    "29. Eu tenho dificuldade em organizar meus pensamentos em uma discussão. (Invertida)",
+
+                    "30. Eu sinto que minha mente trabalha em alta velocidade."
+
+                ],
+
+                inverted_questions: [13, 14, 20, 22, 29], // 5 perguntas invertidas
+
+                get_result: (score) => {
+
+                    if (score <= 85) return { title: "Raciocínio Básico", desc: "Sua pontuação indica um raciocínio lógico funcional, mas que se beneficia de exercícios diários. Adquira o acesso para ver o plano de melhoria.", color: 'bg-yellow-500' };
+
+                    if (score <= 130) return { title: "Raciocínio Acima da Média", desc: "Sua capacidade lógica e fluida é forte. Adquira o acesso para ver o score exato e áreas de excelência.", color: 'bg-green-500' };
+
+                    return { title: "Raciocínio Excepcional (QI Alto)", desc: "Sua pontuação é extremamente alta! Adquira o acesso para ver o score exato e o relatório completo.", color: 'bg-blue-600' };
+
+                }
+
+            },
+
+            stress: {
+
+                title: "Quão Estressado Eu Sou?",
+
+                subtitle: "Descubra seu nível de tensão, sobrecarga e capacidade de relaxamento.",
+
+                card_id: "card-stress",
+
+                image_url: 'estresse.png', 
+
+                questions: [
+
+                    "1. Tenho dificuldade em pegar no sono devido a preocupações.",
+
+                    "2. Sinto meus músculos tensos com frequência (ombros, pescoço).",
+
+                    "3. Minha mente corre sem parar, mesmo quando tento relaxar.",
+
+                    "4. Tenho me sentido irritado(a) ou impaciente facilmente.",
+
+                    "5. Sinto que tenho pouco controle sobre os acontecimentos da minha vida.",
+
+                    "6. Consigo relaxar e descontrair completamente após o trabalho. (Invertida)",
+
+                    "7. Sinto que há mais demandas do que minha capacidade de lidar.",
+
+                    "8. Tenho tido dores de cabeça frequentes ou problemas estomacais.",
+
+                    "9. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
+
+                    "10. Eu me preocupo em excesso com coisas que não posso mudar.",
+
+                    "11. Tenho me alimentado de forma irregular ou comi demais por causa da tensão.",
+
+                    "12. Fico facilmente agitado(a) ou com a sensação de 'motor ligado'.",
+
+                    "13. Consigo manter a calma em situações de incerteza. (Invertida)",
+
+                    "14. Sinto que estou sempre correndo contra o tempo.",
+
+                    "15. Tenho dificuldade em dizer 'não' para novas responsabilidades.",
+
+                    "16. Sinto que tenho apoio social adequado (amigos, família). (Invertida)",
+
+                    "17. Tenho tido ataques de raiva ou explosões emocionais.",
+
+                    "18. Minhas obrigações parecem esmagadoras na maioria das vezes.",
+
+                    "19. Eu tenho um tempo diário dedicado a meditação ou relaxamento. (Invertida)",
+
+                    "20. Tenho roído unhas, batido os pés ou outros tiques nervosos.",
+
+                    "21. Sinto-me frequentemente sobrecarregado(a) pelas responsabilidades.",
+
+                    "22. Tenho dificuldade em focar em uma tarefa por vez.",
+
+                    "23. Consigo me organizar de forma eficiente para evitar correria. (Invertida)",
+
+                    "24. A falta de tempo me impede de cuidar da minha saúde.",
+
+                    "25. Sinto-me culpado(a) quando estou descansando ou me divertindo.",
+
+                    "26. Meu nível de energia é consistentemente alto. (Invertida)",
+
+                    "27. O stress tem afetado negativamente minhas relações.",
+
+                    "28. Eu priorizo minhas necessidades em relação às dos outros. (Invertida)",
+
+                    "29. Sinto que estou sempre 'apagando incêndios' em vez de planejar.",
+
+                    "30. Tenho tido mais gripes ou problemas de saúde por imunidade baixa."
+
+                ],
+
+                inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
+
+                get_result: (score) => {
+
+                    if (score <= 60) return { title: "Stress Baixo e Saudável", desc: "Você demonstra ótima resiliência e controle. Adquira o relatório completo para manter esse equilíbrio. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 100) return { title: "Stress Moderado (Cuidado)", desc: "Sinais de sobrecarga estão presentes. É crucial ver o diagnóstico completo para adotar técnicas de relaxamento eficazes. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Stress Alto (Intervenção Urgente)", desc: "Você está sob intensa pressão! Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução imediata do stress. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            anxiety: {
+
+                title: "Qual o Meu Nível de Ansiedade?",
+
+                subtitle: "Avaliação do seu estado de apreensão, medo, e preocupação excessiva.",
+
+                card_id: "card-anxiety",
+
+                image_url: 'ansiedade.png',
+
+                questions: [
+
+                    "1. Sinto palpitações, tonturas ou respiração ofegante sem razão aparente.",
+
+                    "2. Tenho evitado situações sociais ou desafios por medo.",
+
+                    "3. Sinto que algo ruim pode acontecer a qualquer momento.",
+
+                    "4. Tenho dificuldade em controlar a preocupação diária, ela me domina.",
+
+                    "5. Consigo manter a calma em situações de incerteza. (Invertida)",
+
+                    "6. Minha mente fica constantemente revirada, pensando em 'e se...'.",
+
+                    "7. Tenho tido tremores, formigamento ou sensação de desequilíbrio.",
+
+                    "8. Costumo ensaiar mentalmente conversas ou eventos futuros exaustivamente.",
+
+                    "9. Me sinto seguro(a) e tranquilo(a) na maioria das vezes. (Invertida)",
+
+                    "10. Fico inquieto(a), agitado(a) ou incapaz de relaxar o corpo.",
+
+                    "11. Tenho problemas gastrointestinais (dor de barriga, náuseas) quando estou nervoso(a).",
+
+                    "12. Eu me irrito facilmente com pequenos aborrecimentos diários.",
+
+                    "13. Tenho receio de ser julgado(a) ou criticado(a) pelos outros.",
+
+                    "14. Fico obcecado(a) por detalhes ou buscando a perfeição.",
+
+                    "15. Consigo desfrutar do presente sem pensar no futuro. (Invertida)",
+
+                    "16. Tenho um medo irracional de algo (ex: altura, espaços fechados, insetos).",
+
+                    "17. Evito tomar decisões com medo de cometer o erro errado.",
+
+                    "18. Consigo me concentrar em tarefas que exigem muita atenção. (Invertida)",
+
+                    "19. Sinto que não sou capaz de lidar com os problemas que surgem.",
+
+                    "20. Tenho tido pesadelos ou desperto no meio da noite com preocupações.",
+
+                    "21. Eu busco tranquilidade na maior parte do tempo. (Invertida)",
+
+                    "22. Minhas preocupações duram por longos períodos, sem alívio.",
+
+                    "23. Tenho dificuldade em expressar minhas emoções de forma calma. (Invertida)",
+
+                    "24. Sinto que preciso estar sempre alerta ou em guarda.",
+
+                    "25. Eu costumo me isolar quando me sinto muito ansioso(a).",
+
+                    "26. Minha ansiedade interfere nas minhas obrigações diárias.",
+
+                    "27. Consigo rir e me divertir com facilidade. (Invertida)",
+
+                    "28. Sinto que perdi o controle sobre minhas reações emocionais.",
+
+                    "29. Tenho tido pensamentos repetitivos e difíceis de ignorar.",
+
+                    "30. Minha qualidade de vida é boa e satisfatória. (Invertida)"
+
+                ],
+
+                inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
+
+                get_result: (score) => {
+
+                    if (score <= 65) return { title: "Ansiedade Baixa", desc: "Você lida bem com a maioria das incertezas e demonstra boa capacidade de manter a calma. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 105) return { title: "Ansiedade Moderada", desc: "Sua pontuação indica sinais de apreensão. É crucial ver o diagnóstico completo para adotar técnicas de controle. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Ansiedade Elevada", desc: "O seu nível de apreensão e medo é alto. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            sadness: {
+
+                title: "Quão Triste Estou?",
+
+                subtitle: "Mapeamento do seu humor, energia, motivação e satisfação geral com a vida.",
+
+                card_id: "card-sadness",
+
+                image_url: 'triste.png',
+
+                questions: [
+
+                    "1. Tenho perdido o interesse em atividades que antes gostava.",
+
+                    "2. Sinto uma tristeza constante na maior parte do dia.",
+
+                    "3. Sinto-me sem energia ou com muita fadiga, mesmo após descansar.",
+
+                    "4. Meu apetite e/ou meu sono mudaram drasticamente (mais ou menos).",
+
+                    "5. Tenho dificuldade em me concentrar ou tomar decisões simples.",
+
+                    "6. Sinto que a vida vale a pena e sou grato(a) por ela. (Invertida)",
+
+                    "7. Tenho tido sentimentos de culpa ou inutilidade.",
+
+                    "8. Sinto que o futuro é sombrio, sem esperança ou perspectivas.",
+
+                    "9. Minha energia física e mental está alta. (Invertida)",
+
+                    "10. Tenho chorado com mais frequência que o normal.",
+
+                    "11. Tenho me isolado de amigos e familiares.",
+
+                    "12. Eu me sinto mal com o meu próprio corpo ou aparência.",
+
+                    "13. Consigo rir e me divertir quando estou com outras pessoas. (Invertida)",
+
+                    "14. Sinto que sou um fardo para as pessoas ao meu redor.",
+
+                    "15. Tenho pensado em me machucar ou em não querer mais viver.",
+
+                    "16. Tenho um sono reparador na maioria das noites. (Invertida)",
+
+                    "17. Sinto-me constantemente irritado(a) ou impaciente.",
+
+                    "18. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
+
+                    "19. Tenho tido lapsos de memória ou confusão mental.",
+
+                    "20. Consigo ver o lado positivo das situações. (Invertida)",
+
+                    "21. Minha autoestima está consistentemente baixa.",
+
+                    "22. Tenho evitado sair de casa ou ir ao trabalho/estudo.",
+
+                    "23. Eu acredito que as coisas vão melhorar para mim. (Invertida)",
+
+                    "24. Tenho perdido peso ou ganhado peso de forma inesperada.",
+
+                    "25. As pessoas notam que meu humor está consistentemente para baixo.",
+
+                    "26. Eu me sinto muito sozinho(a) e incompreendido(a).",
+
+                    "27. Minha motivação para realizar tarefas diárias é alta. (Invertida)",
+
+                    "28. Eu me sinto apático(a) ou indiferente a tudo.",
+
+                    "29. Consigo manter uma rotina saudável. (Invertida)",
+
+                    "30. Eu me sinto confortável com quem eu sou. (Invertida)"
+
+                ],
+
+                inverted_questions: [6, 9, 13, 16, 18, 20, 23, 27, 29, 30],
+
+                get_result: (score) => {
+
+                    if (score <= 60) return { title: "Humor Estável (Saudável)", desc: "Seu estado emocional é equilibrado. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 100) return { title: "Tristeza Moderada (Atenção)", desc: "Sinais de desânimo estão presentes. É crucial ver o diagnóstico completo para recuperar sua energia. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Tristeza Significativa (Alerta)", desc: "Os sinais indicam um estado de humor persistente e baixo. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de apoio urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            arrogance: {
+
+                title: "Sou Uma Pessoa Arrogante?",
+
+                subtitle: "Avaliação da sua autoimportância, necessidade de validação e desvalorização alheia.",
+
+                card_id: "card-arrogance",
+
+                image_url: 'arrogante.png',
+
+                questions: [
+
+                    "1. Sinto que sou superior à maioria das pessoas ao meu redor.",
+
+                    "2. Fico incomodado(a) se não sou o centro das atenções.",
+
+                    "3. Eu facilmente desvalorizo as conquistas de pessoas que não gosto.",
+
+                    "4. Consigo aceitar que há pessoas mais talentosas do que eu. (Invertida)",
+
+                    "5. Interrompo os outros com frequência para expressar minha opinião.",
+
+                    "6. Eu acredito que as regras se aplicam mais aos outros do que a mim.",
+
+                    "7. Recebo elogios com gratidão e simplicidade. (Invertida)",
+
+                    "8. Sinto a necessidade de 'corrigir' as pessoas em público.",
+
+                    "9. Peço desculpas e reconheço erros de forma sincera. (Invertida)",
+
+                    "10. Eu me considero uma pessoa especial e única.",
+
+                    "11. Fico com inveja do sucesso alheio.",
+
+                    "12. Eu realmente escuto as críticas, mesmo que doa. (Invertida)",
+
+                    "13. Eu costumo me gabar das minhas conquistas e bens materiais.",
+
+                    "14. Consigo rir de mim mesmo(a). (Invertida)",
+
+                    "15. Acredito que as minhas soluções são as únicas eficazes para os problemas.",
+
+                    "16. Meu valor como pessoa está ligado ao que eu conquisto. (Invertida)",
+
+                    "17. Eu tenho facilidade em admitir minha ignorância sobre um assunto. (Invertida)",
+
+                    "18. Eu evito pedir ajuda, pois isso me faria parecer fraco(a).",
+
+                    "19. Eu me sinto muito superior a colegas de trabalho/estudo.",
+
+                    "20. Costumo ignorar conselhos, pois sei o que é melhor. (Invertida)",
+
+                    "21. Eu me preocupo em manter as aparências de sucesso.",
+
+                    "22. Eu me sinto bem quando sou o centro das atenções. (Invertida)",
+
+                    "23. Eu trato todas as pessoas com o mesmo nível de respeito. (Invertida)",
+
+                    "24. Eu sinto que mereço tratamento especial ou privilégios.",
+
+                    "25. Eu raramente admito que alguém é mais inteligente que eu.",
+
+                    "26. Eu reconheço a importância do trabalho em equipe. (Invertida)",
+
+                    "27. Eu dou valor igual às contribuições de todos.",
+
+                    "28. Eu sou uma pessoa modesta. (Invertida)",
+
+                    "29. Tenho dificuldade em interagir com pessoas de status social mais baixo.",
+
+                    "30. Eu desconfio facilmente das intenções dos outros."
+
+                ],
+
+                inverted_questions: [4, 7, 9, 12, 14, 16, 17, 20, 22, 23, 26, 28],
+
+                get_result: (score) => {
+
+                    if (score <= 80) return { title: "Arrogância Baixa (Modestia)", desc: "Sua pontuação é baixa. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 120) return { title: "Arrogância Moderada", desc: "Há traços de autoimportância ou insegurança em situações específicas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Arrogância Alta (Cuidado)", desc: "Os sinais de autoimportância são altos. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de melhoria urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            humility: {
+
+                title: "Sou Uma Pessoa Humilde?",
+
+                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
+
+                card_id: "card-humility",
+
+                image_url: 'humilde.png',
+
+                questions: [
+
+                    "1. Admito meus erros facilmente e sem me justificar.",
+
+                    "2. Eu procuro ativamente e valorizo o feedback negativo.",
+
+                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)",
+
+                    "4. Me coloco no lugar dos outros para entender suas falhas.",
+
+                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
+
+                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.",
+
+                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
+
+                    "8. Reconheço e elogio publicamente as conquistas dos outros.",
+
+                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)",
+
+                    "10. Peço desculpas rapidamente quando sei que errei.",
+
+                    "11. Eu me sinto ofendido(a) quando minhas ideias são rejeitadas. (Invertida)",
+
+                    "12. Eu realmente ouço a perspectiva dos outros sem interromper.",
+
+                    "13. Sinto que a maioria das pessoas não entende minha genialidade. (Invertida)",
+
+                    "14. Eu dou crédito a quem merece sem me preocupar em ser o centro das atenções.",
+
+                    "15. Evito falar sobre minhas conquistas para não parecer arrogante.",
+
+                    "16. Aceito que posso estar errado(a) sobre assuntos que domino.",
+
+                    "17. Eu me comparo negativamente com os outros. (Invertida)",
+
+                    "18. Meus amigos diriam que sou uma pessoa de 'cabeça aberta'.",
+
+                    "19. Eu me irrito com pessoas que fazem perguntas 'óbvias'. (Invertida)",
+
+                    "20. Eu me sinto à vontade pedindo ajuda quando preciso.",
+
+                    "21. Acredito que a maioria das pessoas são bem-intencionadas.",
+
+                    "22. Tenho dificuldade em elogiar ou admirar o sucesso alheio. (Invertida)",
+
+                    "23. Fico chateado(a) se não sou convidado(a) para eventos importantes. (Invertida)",
+
+                    "24. Eu me preocupo mais em aprender do que em impressionar.",
+
+                    "25. Acredito que há muitas lições a serem aprendidas com o fracasso.",
+
+                    "26. Eu me sinto superior intelectualmente à maioria das pessoas. (Invertida)",
+
+                    "27. Consigo me alegrar sinceramente com o sucesso dos outros.",
+
+                    "28. Eu sou paciente ao ensinar algo a alguém que está aprendendo.",
+
+                    "29. Tenho o costume de corrigir os erros dos outros em público. (Invertida)",
+
+                    "30. Eu valorizo o esforço tanto quanto o resultado final."
+
+                ],
+
+                inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
+
+                get_result: (score) => {
+
+                    if (score <= 80) return { title: "Humildade em Construção", desc: "Sua pontuação sugere dificuldades em aceitar falhas e dar crédito aos outros, com traços de autoimportância. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                    if (score <= 120) return { title: "Humildade Moderada", desc: "Você demonstra equilíbrio, mas pode ter dificuldade em aceitar críticas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Humildade Alta", desc: "Você demonstra uma forte capacidade de autoconhecimento. Adquira o acesso para ver o plano de ação para potencializar seu perfil. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                }
+
+            }
+
+        };
+
+
+
+        const quizCardsGrid = document.getElementById('quiz-cards-grid');
+
+        const quizSelection = document.getElementById('quiz-selection');
+
+        const quizStartCta = document.getElementById('quiz-start-cta');
+
+        const quizCtaTitle = document.getElementById('quiz-cta-title');
+
+        const quizCtaSubtitle = document.getElementById('quiz-cta-subtitle');
+
+        const buyQuizBtn = document.getElementById('buy-quiz-btn'); 
+
+        const quizSection = document.getElementById('quiz-section');
+
+        const activeQuizTitle = document.getElementById('active-quiz-title');
+
+        const quizQuestionsContainer = document.getElementById('quiz-questions');
+
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+
+        const quizResultArea = document.getElementById('quiz-result');
+
+        const purchaseModal = document.getElementById('purchase-modal');
+
+        const modalTitle = document.getElementById('modal-title');
+
+        const modalPrice = document.getElementById('modal-price');
+
+        const confirmPurchaseBtn = document.getElementById('confirm-purchase-btn');
+
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        const loadingScreen = document.getElementById('loading-screen');
+
+        const paymentButtonContainer = document.getElementById('payment-button-container');
+
+
+
+
+
+        // Renderiza os cards de seleção na Home
+
+        function renderQuizCards() {
+
+            // ORDEM CORRIGIDA FINAL: Burnout, QI, Stress, Ansiedade, Tristeza, Arrogância, Humildade
+
+            const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
+
+            
+
+            quizCardsGrid.innerHTML = orderedKeys.map(key => {
+
+                const quiz = quizzes[key];
+
+                if (!quiz) return ''; 
+
+                
+
+                return `
+
+                    <div id="${quiz.card_id}" 
+
+                         class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white" 
+
+                         data-quiz-id="${key}"
+
+                         style="background-image: url('${quiz.image_url}');">
+
+                        <div class="quiz-content">
+
+                            <h3 class="text-2xl font-bold mb-1 text-red-500 text-shadow">${quiz.title}</h3>
+
+                            <p class="text-sm opacity-90 text-white text-shadow">${quiz.subtitle}</p>
+
+                            <span class="inline-block mt-3 px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full hover:bg-blue-700 transition">
+
+                                CLIQUE PARA INICIAR TESTE GRATUITO
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join('');
+
+
+
+            document.querySelectorAll('.quiz-card-select').forEach(card => {
+
+                card.addEventListener('click', handleQuizSelection);
+
+            });
+
+        }
+
+        
+
+        // Manipula a seleção do Quiz (Ação ao clicar no card)
+
+        function handleQuizSelection(event) {
+
+            const card = event.currentTarget;
+
+            const quizId = card.getAttribute('data-quiz-id');
+
+            
+
+            activeQuizId = quizId;
+
+            loadQuiz(); // Inicia o quiz diretamente
+
+        }
+
+
+
+        // --- COBRANÇA NO FINAL DO QUIZ ---
+
+        // Exibe o modal de compra ao clicar em 'VER MEU RESULTADO FINAL'
+
+        submitQuizBtn.addEventListener('click', () => {
+
+            const quiz = quizzes[activeQuizId];
+
+            
+
+            // 1. Calcula a pontuação e mostra o feedback GRÁTIS
+
+            calculateAndShowFreeResult(); 
+
+            
+
+            // 2. Bloqueia o resultado detalhado com o modal de compra
+
+            modalTitle.textContent = `Desbloquear Relatório ${quiz.title}`;
+
+            
+
+            // 3. Injeta o botão REAL do Mercado Pago no container (Usando o ID Fixo)
+
+            injectMercadoPagoButton(PREFERENCE_ID_SIMULADO); 
+
+            
+
+            purchaseModal.classList.remove('hidden');
+
+        });
+
+
+
+        // Função que injeta o botão real do Mercado Pago (usando o script que você enviou)
+
+        function injectMercadoPagoButton(preferenceId) {
+
+            paymentButtonContainer.innerHTML = ''; // Limpa o container
+
+            
+
+            // Cria o botão com a preferência (usando o script que o Mercado Pago gerou para você)
+
+            const mpButtonScript = document.createElement('script');
+
+            mpButtonScript.src = "https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js";
+
+            mpButtonScript.setAttribute('data-preference-id', preferenceId);
+
+            mpButtonScript.setAttribute('data-source', 'button');
+
+            mpButtonScript.setAttribute('data-label', `PAGAR R$ ${PRICE_DISPLAY.replace('R$ ', '').replace(',', '.')}`);
+
+            
+
+            paymentButtonContainer.appendChild(mpButtonScript);
+
+            
+
+            // Adiciona um listener para simular a transação assim que o botão for clicado 
+
+            mpButtonScript.onload = () => {
+
+                const mpButton = document.querySelector('.mercadopago-button');
+
+                if (mpButton) {
+
+                    mpButton.onclick = (e) => {
+
+                        // O checkout do MP se abrirá, mas iniciamos a simulação local para a liberação
+
+                        
+
+                        // 1. Fecha o modal
+
+                        purchaseModal.classList.add('hidden');
+
+                        
+
+                        // 2. Mostra a tela de carregamento (Simulação de Transação)
+
+                        loadingScreen.classList.remove('hidden');
+
+
+
+                        // 3. Simula o tempo de transação (5 segundos)
+
+                        setTimeout(() => {
+
+                            loadingScreen.classList.add('hidden');
+
+                            
+
+                            // 4. Libera o resultado completo (PAGAMENTO APROVADO SIMULADO)
+
+                            unlockAccess();
+
+                        }, 5000); // 5 segundos de espera (Tempo de Transação Simulado)
+
+                    };
+
+                }
+
+            };
+
+        }
+
+
+
+
+
+        // Função que realiza a SIMULAÇÃO de LIBERAÇÃO do resultado COMPLETO
+
+        function unlockAccess() {
+
+             const quiz = quizzes[activeQuizId];
+
+             let totalScore = 0;
+
+            
+
+             // Recalcula o score
+
+             userAnswers.forEach((answer, index) => {
+
+                const questionNumber = index + 1;
+
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+
+                    totalScore += (6 - answer);
+
+                } else {
+
+                    totalScore += answer;
+
+                }
+
+            });
+
+
+
+            const resultData = quiz.get_result(totalScore);
+
+
+
+             // CONTEÚDO LIBERADO FINAL (Elaborado e completo)
+
+            quizResultArea.innerHTML = `
+
+                <h3 class="text-3xl font-extrabold text-center mb-4 text-gray-900">✅ ACESSO LIBERADO: SEU RELATÓRIO COMPLETO</h3>
+
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+
+                    Diagnóstico Final: ${resultData.title}
+
+                </div>
+
+                
+
+                <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação Total: ${totalScore} de ${quiz.questions.length * 5}</h4>
+
+
+
+                <div class="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
+
+                    <p class="text-base text-gray-700">
+
+                        <span class="font-bold text-lg text-blue-800">VISÃO GERAL:</span> Parabéns! Seu pagamento foi processado com sucesso e o Relatório Detalhado foi desbloqueado. Sua pontuação revela uma jornada de autoconhecimento que exige ${resultData.title.includes('Baixo') ? 'foco na manutenção do equilíbrio' : 'ação e atenção imediata'}.
+
+                    </p>
+
+                    <p class="text-base text-gray-700">
+
+                        <span class="font-bold text-blue-800">ANÁLISE PROFUNDA:</span> O seu resultado exato, ${resultData.desc.split('.')[0]}, sugere que você precisa desenvolver ${resultData.title.includes('Alto') ? 'técnicas de resiliência e controle emocional' : 'novos desafios para o seu potencial'}.
+
+                    </p>
+
+                    <p class="text-base text-gray-700">
+
+                        <span class="font-bold text-blue-800">PLANO DE AÇÃO IMEDIATA (30 FRASES):</span>
+
+                        <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
+
+                            <li>🎯 **Foco no Próximo Nível:** Transforme a dor ${resultData.title.split(' ')[0]} em disciplina ativa.</li>
+
+                            <li>🧠 **Reconhecimento:** Entenda quais perguntas invertidas ${quiz.inverted_questions.length > 0 ? 'mais impactaram' : 'menos afetaram'} sua pontuação final.</li>
+
+                            <li>⚖️ **Ajuste de Rota:** Dedique 15 minutos diários à prática de *Mindfulness* ou à resolução de novos desafios lógicos.</li>
+
+                            <li>🌱 **Desenvolvimento Pessoal:** Procure grupos de apoio ou mentores que dominem a área do seu teste.</li>
+
+                            <li>⏱️ **Gestão de Energia:** Crie blocos de foco total e blocos de descanso obrigatório (o oposto do Burnout!).</li>
+
+                            <li>💧 **Rotina Antiestresse:** Inicie o dia com alongamentos leves e defina 3 prioridades claras.</li>
+
+                            <li>🛠️ **Ferramentas:** Use a pontuação total (${totalScore}) como sua métrica de progresso semanal.</li>
+
+                            <li>🤝 **Conexão Social:** Fortaleça os laços com quem te apoia, reduzindo interações tóxicas.</li>
+
+                            <li>💡 **Curiosidade Ativa:** Mantenha sua mente engajada com aprendizados fora da sua zona de conforto.</li>
+
+                            <li>🛡️ **Blindagem Emocional:** Aprenda a dizer "não" para tarefas que não contribuem para seus objetivos principais.</li>
+
+                            <li>✅ **Validação:** Lembre-se: O teste é um guia, mas sua capacidade de mudar é ilimitada.</li>
+
+                        </ul>
+
+                        <p class="mt-4 text-lg font-semibold text-blue-800">
+
+                            **Recursos Adicionais e Acompanhamento:** Sua pontuação libera acesso a um e-book gratuito sobre "${quiz.title.split(' ')[2] || 'Inteligência Emocional'}", enviado para seu e-mail de compra! Continue seu desenvolvimento.
+
+                        </p>
+
+                    </p>
+
+                </div>
+
+                 <!-- FIM DO CONTEÚDO LIBERADO -->
+
+            `;
+
+
+
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+
+        }
+
+
+
+
+
+        // Fecha o Modal
+
+        closeModalBtn.addEventListener('click', () => {
+
+            purchaseModal.classList.add('hidden');
+
+        });
+
+
+
+
+
+        // Função para calcular a pontuação e mostrar o resultado GRATUITO (visão geral)
+
+        function calculateAndShowFreeResult() {
+
+            const quiz = quizzes[activeQuizId];
+
+            let totalScore = 0;
+
+            
+
+            userAnswers.forEach((answer, index) => {
+
+                const questionNumber = index + 1;
+
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+
+                    totalScore += (6 - answer);
+
+                } else {
+
+                    totalScore += answer;
+
+                }
+
+            });
+
+
+
+            // Obtém o resultado GRÁTIS
+
+            const resultData = quiz.get_result(totalScore);
+
+
+
+            // GERA O TEXTO DE ELABORAÇÃO (30 FRASES SIMULADAS)
+
+            const elaborateDescription = `
+
+                <div class="mt-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+
+                    <h5 class="text-lg font-bold text-gray-900 mb-3">Visão Geral: Seu Nível de Consciência</h5>
+
+                    <p class="text-base text-gray-700 space-y-3">
+
+                        <span class="block">Parabéns por completar sua autoavaliação! Este teste é o primeiro passo crucial em sua jornada de autoconhecimento. A pontuação que você obteve reflete a intensidade de certos padrões emocionais e cognitivos em sua vida diária.</span>
+
+                        <span class="block">Neste momento, você identificou o seu **Status Inicial** (Sua pontuação é ${totalScore}). Para muitos, essa simples classificação já é um alívio, pois traz clareza sobre uma sensação que antes era apenas um incômodo.</span>
+
+                        <span class="block">No entanto, o número e a classificação ("${resultData.title}") são apenas a ponta do iceberg. A verdadeira mudança acontece quando você entende o **Porquê** e o **Como** por trás desse resultado.</span>
+
+                        <span class="block">Você deve estar se perguntando: "O que isso significa na prática?", "Quais perguntas específicas me levaram a esse resultado?", ou "O que eu faço agora para mudar essa situação?".</span>
+
+                        <span class="block font-bold text-red-600">A resposta detalhada a essas perguntas está no seu Relatório Completo e Personalizado.</span>
+
+                        <span class="block">**O que o Relatório Completo DESBLOQUEIA:**</span>
+
+                        <ul class="list-disc list-inside ml-4 text-sm space-y-1">
+
+                            <li><span class="font-semibold">ANÁLISE DE IMPACTO:</span> Descubra em qual das 5 dimensões (Ex: Físico, Emocional, Social) sua pontuação é mais alta.</li>
+
+                            <li><span class="font-semibold">PLANO DE AÇÃO RÁPIDO:</span> Receba 10 ideias práticas e imediatas para começar a gerenciar sua pontuação hoje mesmo (Ex: Exercícios de respiração, técnicas de organização).</li>
+
+                            <li><span class="font-semibold">MAPA DO PRÓXIMO NÍVEL:</span> Instruções detalhadas para potencializar seus pontos fortes e enfraquecer seus pontos de desafio.</li>
+
+                            <li><span class="font-semibold">ESCALA DE RISCO:</span> Visualização gráfica da sua posição exata na escala de autoconhecimento.</li>
+
+                            <li><span class="font-semibold">RECURSOS EXCLUSIVOS:</span> Indicação de livros e vídeos para aprofundar seu entendimento.</li>
+
+                        </ul>
+
+                        <span class="block mt-4">Não se contente com a superfície. O valor deste conhecimento excede em muito o investimento de ${PRICE_DISPLAY}. É o primeiro passo para retomar o controle da sua vida.</span>
+
+                        <span class="block">Clique no botão abaixo para desbloquear seu Relatório Completo. Seu futuro mental começa agora!</span>
+
+                    </p>
+
+                </div>
+
+            `;
+
+
+
+
+
+            // Injeta o resultado na tela
+
+            quizResultArea.classList.remove('hidden');
+
+            quizResultArea.innerHTML = `
+
+                <h3 class="text-2xl font-bold text-center mb-4 text-gray-900">${quiz.title}</h3>
+
+                <h4 class="text-xl font-bold text-center mb-4">Sua Pontuação de Fim de Quiz: ${totalScore}</h4>
+
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+
+                    Classificação GRÁTIS: ${resultData.title}
+
+                </div>
+
+                ${elaborateDescription}
+
+
+
+                <!-- CTA para Venda/Próximo Passo -->
+
+                <div class="text-center mt-6">
+
+                    <button id="final-purchase-btn" class="px-8 py-4 bg-red-600 text-white text-xl font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-300">
+
+                        DESBLOQUEAR RELATÓRIO COMPLETO POR ${PRICE_DISPLAY}
+
+                    </button>
+
+                </div>
+
+            `;
+
+            
+
+            // Adiciona o listener para o novo botão de compra
+
+            document.getElementById('final-purchase-btn').addEventListener('click', () => {
+
+                purchaseModal.classList.remove('hidden');
+
+                // Garante que o modal mostre o preço e o título correto antes de abrir
+
+                document.getElementById('modal-title').textContent = `Desbloquear Relatório ${quiz.title}`;
+
+            });
+
+
+
+            // Rola a tela para o resultado
+
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+
+        }
+
+
+
+
+
+        // Função que Carrega o quiz selecionado e inicia o questionário
+
+        function loadQuiz() {
+
+            if (!activeQuizId) return;
+
+            
+
+            const quiz = quizzes[activeQuizId];
+
+            
+
+            // Reseta variáveis
+
+            userAnswers = new Array(quiz.questions.length).fill(0);
+
+            quizQuestionsContainer.innerHTML = '';
+
+            quizResultArea.classList.add('hidden');
+
+            submitQuizBtn.classList.add('hidden');
+
+
+
+            // 1. Configura o Título da Seção
+
+            activeQuizTitle.textContent = quiz.title;
+
+
+
+            // 2. Renderiza as perguntas
+
+            quiz.questions.forEach((questionText, index) => {
+
+                const questionElement = document.createElement('div');
+
+                questionElement.className = 'p-4 border border-gray-200 rounded-lg shadow-sm';
+
+                questionElement.innerHTML = `
+
+                    <p class="font-semibold mb-3 text-lg">${questionText}</p>
+
+                    <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mt-3" id="options-${index}">
+
+                        ${likertScale.map(option => `
+
+                            <div 
+
+                                class="likert-option ${option.class} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center"
+
+                                data-question-index="${index}"
+
+                                data-value="${option.value}"
+
+                            >
+
+                                ${option.text}
+
+                            </div>
+
+                        `).join('')}
+
+                    </div>
+
+                `;
+
+                quizQuestionsContainer.appendChild(questionElement);
+
+            });
+
+
+
+            // 3. Adiciona listener de clique para as opções no novo DOM
+
+            document.querySelectorAll('.likert-option').forEach(option => {
+
+                option.addEventListener('click', handleOptionClick);
+
+            });
+
+            
+
+            // 4. Exibe a seção do quiz
+
+            quizSection.classList.remove('hidden');
+
+            quizCardsGrid.classList.add('hidden'); // Esconde cards ao iniciar
+
+            quizSection.scrollIntoView({ behavior: 'smooth' });
+
+        }
+
+
+
+
+
+        // Função para capturar a resposta
+
+        function handleOptionClick(event) {
+
+            const element = event.currentTarget;
+
+            const questionIndex = parseInt(element.getAttribute('data-question-index'));
+
+            const value = parseInt(element.getAttribute('data-value'));
+
+
+
+            // Remove a seleção antiga
+
+            const optionsContainer = document.getElementById(`options-${questionIndex}`);
+
+            optionsContainer.querySelectorAll('.likert-option').forEach(opt => {
+
+                opt.classList.remove('selected-option', 'text-white', 'font-semibold');
+
+                // Garante que as classes de cor originais voltem
+
+                const originalClasses = likertScale.find(scale => scale.value === parseInt(opt.getAttribute('data-value'))).class;
+
+                opt.className = `likert-option ${originalClasses} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center`;
+
+            });
+
+
+
+            // Adiciona a nova seleção e a classe de estilo forte
+
+            element.classList.add('selected-option');
+
+            
+
+            // Armazena a resposta
+
+            userAnswers[questionIndex] = value;
+
+
+
+            // Verifica se todas as perguntas foram respondidas para exibir o botão de submissão
+
+            checkCompletion();
+
+        }
+
+
+
+        // Verifica se todas as respostas estão preenchidas
+
+        function checkCompletion() {
+
+            const allAnswered = userAnswers.every(answer => answer !== 0);
+
+
+
+            if (allAnswered) {
+
+                submitQuizBtn.classList.remove('hidden');
+
+            } else {
+
+                submitQuizBtn.classList.add('hidden');
+
+            }
+
+        }
+
+
+
+        
+
+        // Inicialização
+
+        document.addEventListener('DOMContentLoaded', renderQuizCards);
+
+
+
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+Substitua todo o seu bloco <script> (da tag <script src="https://sdk.mercadopago.com/js/v2"></script> até o final </script>) por este novo código:
+
+
+
+
+
 <script>
-        // Adiciona um evento para impedir o clique direito em todo o documento
-        document.addEventListener('contextmenu', event => event.preventDefault());
 
-        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
-        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
-        
-        // ID DE PREFERÊNCIA FORNECIDO PELO USUÁRIO (Simulação de 7 quizzes com o mesmo valor)
-        // ATENÇÃO: Na vida real, você geraria um ID de preferência ÚNICO para cada quiz no painel do MP.
-        const PREFERENCE_ID_SIMULADO = "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248";
-        
-        const likertScale = [
-            { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
-            { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
-            { text: "Às vezes", value: 3, class: 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' },
-            { text: "Frequentemente", value: 4, class: 'bg-orange-100 hover:bg-orange-200 text-orange-800' },
-            { text: "Sempre", value: 5, class: 'bg-red-100 hover:bg-red-200 text-red-800' }
-        ];
+        // Adiciona um evento para impedir o clique direito em todo o documento
 
-        let userAnswers = [];
-        let activeQuizId = null;
-        const PRICE_DISPLAY = "R$ 8,99"; 
-        
-        // Inicializa o SDK do Mercado Pago
-        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
-            locale: 'pt-BR'
-        });
+        document.addEventListener('contextmenu', event => event.preventDefault());
 
-        const quizzes = {
-            burnout: {
-                title: "Teste de Risco de Burnout",
-                subtitle: "Avalie sua exaustão emocional, cinismo e eficácia profissional.",
-                card_id: "card-burnout",
-                image_url: 'bernalt.png', 
-                questions: [
-                    "1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.",
-                    "2. Sinto-me cansado(a) logo ao acordar e ter que encarar o trabalho.",
-                    "3. Consigo resolver os problemas do trabalho de forma eficaz. (Invertida)",
-                    "4. Sinto que estou me esforçando demais, mas não vejo resultados.",
-                    "5. Lidar com pessoas no meu trabalho é um grande estresse.",
-                    "6. Sinto que não estou fazendo a diferença na minha área.",
-                    "7. O trabalho tem consumido todo o meu tempo livre.",
-                    "8. Minha concentração fora do trabalho tem sido afetada.",
-                    "9. Sinto-me revigorado(a) após as folgas ou feriados. (Invertida)",
-                    "10. Tenho pensado em desistir da minha profissão ou mudar de área.",
-                    "11. Meu sono tem sido de má qualidade e insuficiente.",
-                    "12. Tenho negligenciado meus hobbies e vida social.",
-                    "13. Consigo lidar com o excesso de tarefas com calma. (Invertida)",
-                    "14. Sinto que meu futuro na empresa é limitado ou incerto.",
-                    "15. Tenho tido dores de cabeça ou musculares frequentes.",
-                    "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
-                    "17. Eu evito interações sociais no ambiente de trabalho.",
-                    "18. Sinto que tenho pouco controle sobre minha carga de trabalho.",
-                    "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
-                    "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
-                    "21. Sinto que a energia que invisto não compensa o resultado.",
-                    "22. Tenho usado mais café, álcool ou cigarros para lidar com o estresse.",
-                    "23. Meus colegas de trabalho parecem mais competentes do que eu.",
-                    "24. Minha produtividade diminuiu significativamente nos últimos meses.",
-                    "25. A pressão no trabalho me faz sentir ansioso(a) ou deprimido(a).",
-                    "26. Sinto-me um(a) profissional realizado(a). (Invertida)",
-                    "27. Tenho tido lapsos de memória ou dificuldade de raciocínio.",
-                    "28. Eu me afasto emocionalmente dos problemas de trabalho dos outros.",
-                    "29. Consigo manter uma perspectiva positiva sobre o trabalho. (Invertida)",
-                    "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."
-                ],
-                inverted_questions: [3, 9, 13, 16, 19, 26, 29], 
-                
-                get_result: (score) => {
-                    if (score <= 65) return { title: "Baixo Risco", desc: "Sua pontuação indica um excelente manejo de estresse e alta eficácia. Mantenha o foco no equilíbrio entre vida pessoal e profissional. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Sinais de sobrecarga estão presentes. É fundamental ver o diagnóstico completo para evitar o esgotamento. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Alto Risco de Burnout", desc: "Atenção! Sua pontuação é ALTA. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de ação urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
-                }
-            },
-            qi: {
-                title: "Teste de QI e Raciocínio",
-                subtitle: "Avalie sua inteligência fluida e capacidade de resolver problemas lógicos.",
-                card_id: "card-qi",
-                image_url: 'qi.png', 
-                questions: [
-                    "1. Eu resolvo problemas complexos rapidamente, mesmo sob pressão.",
-                    "2. Consigo identificar padrões e sequências em informações aleatórias.",
-                    "3. Eu entendo e utilizo bem a lógica abstrata (matemática, códigos, etc.).",
-                    "4. Eu aprendo novas habilidades conceituais com facilidade.",
-                    "5. Eu consigo fazer conexões entre ideias que parecem não relacionadas.",
-                    "6. Quando me deparo com um novo problema, consigo criar rapidamente diferentes estratégias de solução.",
-                    "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
-                    "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
-                    "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
-                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
-                    "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
-                    "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
-                    "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
-                    "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)",
-          _1_ "1. Tenho dificuldade em pegar no sono devido a preocupações.",
-                    "2. Sinto meus músculos tensos com frequência (ombros, pescoço).",
-                    "3. Minha mente corre sem parar, mesmo quando tento relaxar.",
-                    "4. Tenho me sentido irritado(a) ou impaciente facilmente.",
-                    "5. Sinto que tenho pouco controle sobre os acontecimentos da minha vida.",
-                    "6. Consigo relaxar e descontrair completamente após o trabalho. (Invertida)",
-                    "7. Sinto que há mais demandas do que minha capacidade de lidar.",
-                    "8. Tenho tido dores de cabeça frequentes ou problemas estomacais.",
-                    "9. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
-                    "10. Eu me preocupo em excesso com coisas que não posso mudar.",
-                    "11. Tenho me alimentado de forma irregular ou comi demais por causa da tensão.",
-                    "12. Fico facilmente agitado(a) ou com a sensação de 'motor ligado'.",
-                    "13. Consigo manter a calma em situações de incerteza. (Invertida)",
-                    "14. Sinto que estou sempre correndo contra o tempo.",
+
+
+        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
+
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
+
+        
+
+        // ID DE PREFERÊNCIA FORNECIDO PELO USUÁRIO (Simulação de 7 quizzes com o mesmo valor)
+
+        // ATENÇÃO: Na vida real, você geraria um ID de preferência ÚNICO para cada quiz no painel do MP.
+
+        const PREFERENCE_ID_SIMULADO = "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248";
+
+        
+
+        const likertScale = [
+
+            { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
+
+            { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
+
+            { text: "Às vezes", value: 3, class: 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' },
+
+            { text: "Frequentemente", value: 4, class: 'bg-orange-100 hover:bg-orange-200 text-orange-800' },
+
+            { text: "Sempre", value: 5, class: 'bg-red-100 hover:bg-red-200 text-red-800' }
+
+        ];
+
+
+
+        let userAnswers = [];
+
+        let activeQuizId = null;
+
+        const PRICE_DISPLAY = "R$ 8,99"; 
+
+        
+
+        // Inicializa o SDK do Mercado Pago
+
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
+
+            locale: 'pt-BR'
+
+        });
+
+
+
+        const quizzes = {
+
+            burnout: {
+
+                title: "Teste de Risco de Burnout",
+
+                subtitle: "Avalie sua exaustão emocional, cinismo e eficácia profissional.",
+
+                card_id: "card-burnout",
+
+                image_url: 'bernalt.png', 
+
+                questions: [
+
+                    "1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.",
+
+                    "2. Sinto-me cansado(a) logo ao acordar e ter que encarar o trabalho.",
+
+                    "3. Consigo resolver os problemas do trabalho de forma eficaz. (Invertida)",
+
+                    "4. Sinto que estou me esforçando demais, mas não vejo resultados.",
+
+                    "5. Lidar com pessoas no meu trabalho é um grande estresse.",
+
+                    "6. Sinto que não estou fazendo a diferença na minha área.",
+
+                    "7. O trabalho tem consumido todo o meu tempo livre.",
+
+                    "8. Minha concentração fora do trabalho tem sido afetada.",
+
+                    "9. Sinto-me revigorado(a) após as folgas ou feriados. (Invertida)",
+
+                    "10. Tenho pensado em desistir da minha profissão ou mudar de área.",
+
+                    "11. Meu sono tem sido de má qualidade e insuficiente.",
+
+                    "12. Tenho negligenciado meus hobbies e vida social.",
+
+                    "13. Consigo lidar com o excesso de tarefas com calma. (Invertida)",
+
+                    "14. Sinto que meu futuro na empresa é limitado ou incerto.",
+
+                    "15. Tenho tido dores de cabeça ou musculares frequentes.",
+
+                    "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
+
+                    "17. Eu evito interações sociais no ambiente de trabalho.",
+
+                    "18. Sinto que tenho pouco controle sobre minha carga de trabalho.",
+
+                    "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
+
+                    "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
+
+                    "21. Sinto que a energia que invisto não compensa o resultado.",
+
+                    "22. Tenho usado mais café, álcool ou cigarros para lidar com o estresse.",
+
+                    "23. Meus colegas de trabalho parecem mais competentes do que eu.",
+
+                    "24. Minha produtividade diminuiu significativamente nos últimos meses.",
+
+                    "25. A pressão no trabalho me faz sentir ansioso(a) ou deprimido(a).",
+
+                    "26. Sinto-me um(a) profissional realizado(a). (Invertida)",
+
+                    "27. Tenho tido lapsos de memória ou dificuldade de raciocínio.",
+
+                    "28. Eu me afasto emocionalmente dos problemas de trabalho dos outros.",
+
+                    "29. Consigo manter uma perspectiva positiva sobre o trabalho. (Invertida)",
+
+                    "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."
+
+                ],
+
+                inverted_questions: [3, 9, 13, 16, 19, 26, 29], 
+
+                
+
+                get_result: (score) => {
+
+                    if (score <= 65) return { title: "Baixo Risco", desc: "Sua pontuação indica um excelente manejo de estresse e alta eficácia. Mantenha o foco no equilíbrio entre vida pessoal e profissional. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Sinais de sobrecarga estão presentes. É fundamental ver o diagnóstico completo para evitar o esgotamento. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Alto Risco de Burnout", desc: "Atenção! Sua pontuação é ALTA. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de ação urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            qi: {
+
+                title: "Teste de QI e Raciocínio",
+
+                subtitle: "Avalie sua inteligência fluida e capacidade de resolver problemas lógicos.",
+
+                card_id: "card-qi",
+
+                image_url: 'qi.png', 
+
+                questions: [
+
+                    "1. Eu resolvo problemas complexos rapidamente, mesmo sob pressão.",
+
+                    "2. Consigo identificar padrões e sequências em informações aleatórias.",
+
+                    "3. Eu entendo e utilizo bem a lógica abstrata (matemática, códigos, etc.).",
+
+                    "4. Eu aprendo novas habilidades conceituais com facilidade.",
+
+                    "5. Eu consigo fazer conexões entre ideias que parecem não relacionadas.",
+
+                    "6. Quando me deparo com um novo problema, consigo criar rapidamente diferentes estratégias de solução.",
+
+                    "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
+
+                    "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
+
+                    "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
+
+                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
+
+                    "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
+
+                    "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
+
+                    "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
+
+                    "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)",
+
+          _1_ "1. Tenho dificuldade em pegar no sono devido a preocupações.",
+
+                    "2. Sinto meus músculos tensos com frequência (ombros, pescoço).",
+
+                    "3. Minha mente corre sem parar, mesmo quando tento relaxar.",
+
+                    "4. Tenho me sentido irritado(a) ou impaciente facilmente.",
+
+                    "5. Sinto que tenho pouco controle sobre os acontecimentos da minha vida.",
+
+                    "6. Consigo relaxar e descontrair completamente após o trabalho. (Invertida)",
+
+                    "7. Sinto que há mais demandas do que minha capacidade de lidar.",
+
+                    "8. Tenho tido dores de cabeça frequentes ou problemas estomacais.",
+
+                    "9. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
+
+                    "10. Eu me preocupo em excesso com coisas que não posso mudar.",
+
+                    "11. Tenho me alimentado de forma irregular ou comi demais por causa da tensão.",
+
+                    "12. Fico facilmente agitado(a) ou com a sensação de 'motor ligado'.",
+
+                    "13. Consigo manter a calma em situações de incerteza. (Invertida)",
+
+                    "14. Sinto que estou sempre correndo contra o tempo.",
+
+                    "15. Tenho dificuldade em dizer 'não' para novas responsabilidades.",
+
+                    "16. Sinto que tenho apoio social adequado (amigos, família). (Invertida)",
+
+                    "17. Tenho tido ataques de raiva ou explosões emocionais.",
+
+                    "18. Minhas obrigações parecem esmagadoras na maioria das vezes.",
+
+                    "19. Eu tenho um tempo diário dedicado a meditação ou relaxamento. (Invertida)",
+
+                    "20. Tenho roído unhas, batido os pés ou outros tiques nervosos.",
+
+                    "21. Sinto-me frequentemente sobrecarregado(a) pelas responsabilidades.",
+
+                    "22. Tenho dificuldade em focar em uma tarefa por vez.",
+
+                    "23. Consigo me organizar de forma eficiente para evitar correria. (Invertida)",
+
+                    "24. A falta de tempo me impede de cuidar da minha saúde.",
+
+                    "25. Sinto-me culpado(a) quando estou descansando ou me divertindo.",
+
+                    "26. Meu nível de energia é consistentemente alto. (Invertida)",
+
+                    "27. O stress tem afetado negativamente minhas relações.",
+
+                    "28. Eu priorizo minhas necessidades em relação às dos outros. (Invertida)",
+
+                    "29. Sinto que estou sempre 'apagando incêndios' em vez de planejar.",
+
+                    "30. Tenho tido mais gripes ou problemas de saúde por imunidade baixa."
+
+                ],
+
+                inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
+
+                get_result: (score) => {
+
+                    if (score <= 60) return { title: "Stress Baixo e Saudável", desc: "Você demonstra ótima resiliência e controle. Adquira o relatório completo para manter esse equilíbrio. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 100) return { title: "Stress Moderado (Cuidado)", desc: "Sinais de sobrecarga estão presentes. É crucial ver o diagnóstico completo para adotar técnicas de relaxamento eficazes. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Stress Alto (Intervenção Urgente)", desc: "Você está sob intensa pressão! Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução imediata do stress. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            anxiety: {
+
+                title: "Qual o Meu Nível de Ansiedade?",
+
+                subtitle: "Avaliação do seu estado de apreensão, medo, e preocupação excessiva.",
+
+                card_id: "card-anxiety",
+
+                image_url: 'ansiedade.png',
+
+                questions: [
+
+                    "1. Sinto palpitações, tonturas ou respiração ofegante sem razão aparente.",
+
+                    "2. Tenho evitado situações sociais ou desafios por medo.",
+
+                    "3. Sinto que algo ruim pode acontecer a qualquer momento.",
+
+                    "4. Tenho dificuldade em controlar a preocupação diária, ela me domina.",
+
+                    "5. Consigo manter a calma em situações de incerteza. (Invertida)",
+
+                    "6. Minha mente fica constantemente revirada, pensando em 'e se...'.",
+
+                    "7. Tenho tido tremores, formigamento ou sensação de desequilíbrio.",
+
+                    "8. Costumo ensaiar mentalmente conversas ou eventos futuros exaustivamente.",
+
+                    "9. Me sinto seguro(a) e tranquilo(a) na maioria das vezes. (Invertida)",
+
+                    "10. Fico inquieto(a), agitado(a) ou incapaz de relaxar o corpo.",
+
+                    "11. Tenho problemas gastrointestinais (dor de barriga, náuseas) quando estou nervoso(a).",
+
+                    "12. Eu me irrito facilmente com pequenos aborrecimentos diários.",
+
+                    "13. Tenho receio de ser julgado(a) ou criticado(a) pelos outros.",
+
+                    "14. Fico obcecado(a) por detalhes ou buscando a perfeição.",
+
+                    "15. Consigo desfrutar do presente sem pensar no futuro. (Invertida)",
+
+                    "16. Tenho um medo irracional de algo (ex: altura, espaços fechados, insetos).",
+
+                    "17. Evito tomar decisões com medo de cometer o erro errado.",
+
+                    "18. Consigo me concentrar em tarefas que exigem muita atenção. (Invertida)",
+
+                    "19. Sinto que não sou capaz de lidar com os problemas que surgem.",
+
+                    "20. Tenho tido pesadelos ou desperto no meio da noite com preocupações.",
+
+                    "21. Eu busco tranquilidade na maior parte do tempo. (Invertida)",
+
+                    "22. Minhas preocupações duram por longos períodos, sem alívio.",
+
+                    "23. Tenho dificuldade em expressar minhas emoções de forma calma. (Invertida)",
+
+                    "24. Sinto que preciso estar sempre alerta ou em guarda.",
+
+                    "25. Eu costumo me isolar quando me sinto muito ansioso(a).",
+
+                    "26. Minha ansiedade interfere nas minhas obrigações diárias.",
+
+                    "27. Consigo rir e me divertir com facilidade. (Invertida)",
+
+                    "28. Sinto que perdi o controle sobre minhas reações emocionais.",
+
+                    "29. Tenho tido pensamentos repetitivos e difíceis de ignorar.",
+
+                    "30. Minha qualidade de vida é boa e satisfatória. (Invertida)"
+
+                ],
+
+                inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
+
+                get_result: (score) => {
+
+                    if (score <= 65) return { title: "Ansiedade Baixa", desc: "Você lida bem com a maioria das incertezas e demonstra boa capacidade de manter a calma. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+
+                    if (score <= 105) return { title: "Ansiedade Moderada", desc: "Sua pontuação indica sinais de apreensão. É crucial ver o diagnóstico completo para adotar técnicas de controle. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+
+                    return { title: "Ansiedade Elevada", desc: "O seu nível de apreensão e medo é alto. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+
+                }
+
+            },
+
+            sadness: {
+
+                title: "Quão Triste Estou?",
+
+                subtitle: "Mapeamento do seu humor, energia, motivação e satisfação geral com a vida.",
+
+                card_id: "card-sadness",
+
+                image_url: 'triste.png',
+
+                questions: [
+
+                    "1. Tenho perdido o interesse em atividades que antes gostava.",
+
+                    "2. Sinto uma tristeza constante na maior parte do dia.",
+
+                    "3. Sinto-me sem energia ou com muita fadiga, mesmo após descansar.",
+
+                    "4. Meu apetite e/ou meu sono mudaram drasticamente (mais ou menos).",
+
+                    "5. Tenho dificuldade em me concentrar ou tomar decisões simples.",
+
+                    "6. Sinto que a vida vale a pena e sou grato(a) por ela. (Invertida)",
+
+                    "7. Tenho tido sentimentos de culpa ou inutilidade.",
+
+                    "8. Sinto que o futuro é sombrio, sem esperança ou perspectivas.",
+
+Cotação de venda: R$ 5,1900
+
+Cotação de compra: R$ 5,1906
+
+
+
+Considerando uma *taxa de câmbio (spread)* de 1% sobre a cotação de venda para a sua operação:
+
+
+
+1.  **Cálculo da taxa de câmbio aplicada:**
+
+    R$ 5,1900 * (1 + 0,01) = R$ 5,1900 * 1,01 = **R$ 5,2419**
+
+
+
+2.  **Cálculo do valor em Reais (BRL):**
+
+    US$ 1.500,00 * R$ 5,2419 = **R$ 7.862,85**
+
+
+
+Você receberia **R$ 7.862,85** pela venda de US$ 1.500,00 com um spread de 1% sobre a cotação de venda.e 15% (taxa padrão para muitas corretoras):
+
+`US$ 1.500,00 * 0,15 = US$ 225,00`
+
+
+
+Valor líquido em Dólar:
+
+`US$ 1.500,00 - US$ 225,00 = US$ 1.275,00`
+
+
+
+2.  **Converter o valor líquido para Reais (BRL):**
+
+Usando a cotação de **compra** de R$ 5,1906 (pois a corretora "compra" seus dólares para "vender" reais):
+
+`US$ 1.275,00 * 5,1906 = R$ 6.618,015`
+
+
+
+Você receberia aproximadamente **R$ 6.618,02**.
+
+
+
+---
+
+
+
+### Cenário 2: Se você quer comprar US$ 1.500 (enviar dinheiro)
+
+
+
+Neste caso, você está "comprando" dólares do banco/corretora, então usamos a cotação de **venda** (o preço que eles vendem para você).
+
+
+
+1.  **Converter o valor desejado para Reais (BRL):**
+
+Usando a cotação de **venda** de R$ 5,1900:
+
+`US$ 1.500,00 * 5,1900 = R$ 7.785,00`
+
+
+
+2.  **Adicionar o IOF (Imposto sobre Operações Financeiras):**
+
+O IOF para compra de moeda estrangeira para *conta de mesma titularidade* é de 1,1%.
+
+`R$ 7.785,00 * 0,011 = R$ 85,635`
+
+
+
+3.  **Adicionar a taxa/spread da corretora (simulação de 1% sobre o valor):**
+
+`R$ 7.785,00 * 0,01 = R$ 77,85`
+
+
+
+4.  **Custo Total em Reais (BRL):**
+
+`R$ 7.785,00 (Valor) + R$ 85,64 (IOF) + R$ 77,85 (Taxa) = R$ 7.948,49`
+
+
+
+Você precisaria de **R$ 7.948,49** para comprar US$ 1.500,00.
+
+Essa é uma solicitação interessante! Você forneceu o código HTML e o JavaScript completo de uma aplicação de "PsicoQuiz" que simula um processo de funil de vendas (quiz gratuito → resultado com bloqueio → compra do relatório completo via Mercado Pago).
+
+O seu pedido é para substituir o bloco de código JavaScript original por um novo bloco de código JavaScript que você forneceu.
+
+Analisando os dois blocos, o novo código JavaScript que você forneceu é idêntico ao código JavaScript original dentro da tag <script> do HTML. O único objetivo da substituição é validar a alteração.
+
+Portanto, a resposta é a substituição do bloco de código, mas, como o código é o mesmo, a funcionalidade da aplicação permanecerá inalterada.
+
+Abaixo está o código HTML completo com o seu novo bloco <script> no lugar do antigo (que, reitero, são idênticos).
+
+HTML
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsicoQuiz | Portal de Testes Psicológicos</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Bloqueia a seleção de texto e o menu de contexto (clique direito) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+            background-image: url('mente.png'); /* FUNDO CORRIGIDO PARA .PNG */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Mantém a imagem fixa ao rolar */
+            /* NOVAS REGRAS DE SEGURANÇA BÁSICAS */
+            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
+        }
+        .quiz-container {
+            max-width: 800px;
+        }
+        .likert-option {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .likert-option:hover {
+            background-color: #eff6ff; /* blue-50 */
+        }
+        /* MUDANÇA CRUCIAL: Contraste aprimorado para a opção selecionada */
+        .selected-option {
+            background-color: #1d4ed8 !important; /* Blue-700 escuro */
+            color: white;
+            font-weight: 700;
+            /* Adiciona uma borda chamativa ao redor */
+            box-shadow: 0 0 0 4px #EC4899; /* Cor pink/magenta do tema */
+            transform: scale(1.05); /* Pequeno zoom */
+            border-color: transparent !important;
+        }
+
+        /* Estilo base para os Cards de Quiz */
+        .quiz-card-select {
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #f8f8f8; 
+            min-height: 250px;
+            border-radius: 1rem; /* Arredondamento para todos */
+        }
+        .quiz-card-select::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45); /* Overlay escuro */
+            z-index: 1;
+            border-radius: inherit;
+        }
+        .quiz-card-select:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .quiz-content {
+            position: relative;
+            z-index: 2; /* Garante que o conteúdo fique acima do overlay */
+        }
+        /* Estilos específicos para as imagens de fundo dos cards (TUDO EM .PNG) */
+        #card-burnout { background-image: url('bernalt.png'); }
+        #card-qi { background-image: url('qi.png'); background-color: #3b82f6; } 
+        #card-stress { background-image: url('estresse.png'); }
+        #card-anxiety { background-image: url('ansiedade.png'); }
+        #card-sadness { background-image: url('triste.png'); }
+        #card-humility { background-image: url('humilde.png'); }
+        #card-arrogance { background-image: url('arrogante.png'); }
+
+        .bg-cover-center {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Estilo para o Modal de Simulação de Compra */
+        .modal {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Classes de cores chamativas */
+        .text-shadow {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        /* Estilo para o preço riscado */
+        .old-price {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        /* Estilo para o container do botão do Mercado Pago */
+        #payment-button-container {
+            min-height: 50px; /* Garante que o botão MP seja carregado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        /* Estilo para a tela de carregamento/aguardando transação */
+        #loading-screen {
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: fixed; /* Adicionado fixed para cobrir toda a tela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #EC4899;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+        <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                                <span class="text-3xl font-extrabold text-pink-600">Psico</span>
+                <span class="text-3xl font-extrabold text-gray-800">Quiz</span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+                <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center" id="quiz-selection">
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">
+                DESVENDE SUA MENTE
+            </h1>
+            <p class="text-xl text-white mb-12 text-shadow font-semibold">
+                Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.
+            </p>
+            
+                        <div id="quiz-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            </div>
+            
+                        <div id="quiz-start-cta" class="hidden"></div> 
+
+        </section>
+
+                <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
+            <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+                <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-6 text-gray-900"></h2>
+                
+                <div id="quiz-questions" class="space-y-8">
+                                    </div>
+                
+                                <div class="text-center mt-10">
+                    <button id="submit-quiz-btn" class="px-8 py-3 bg-green-600 text-white text-lg font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 hidden">
+                        VER MEU RESULTADO FINAL
+                    </button>
+                </div>
+
+                                <div id="quiz-result" class="mt-10 p-6 bg-gray-100 rounded-lg hidden">
+                                    </div>
+            </div>
+        </section>
+
+                <section class="bg-gray-100 py-16 mt-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-900">
+                    Sobre a PsicoQuiz
+                </h2>
+                <p class="text-center text-lg text-gray-600 max-w-4xl mx-auto">
+                    A PsicoQuiz nasceu da necessidade de democratizar o acesso ao autoconhecimento. Acreditamos que todos merecem ferramentas valiosas para entender sua própria mente. Nossos testes são desenvolvidos com base em conceitos da psicologia, mas servem como um ponto de partida para sua jornada pessoal. Lembre-se: Autoconhecimento é poder!
+                </p>
+            </div>
+        </section>
+    </main>
+
+        <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm">&copy; 2025 PsicoQuiz. Todos os direitos reservados.</p>
+            <p class="text-xs mt-2 text-gray-500">
+                Atenção: Nossos testes são ferramentas de autoavaliação e não substituem um diagnóstico clínico profissional.
+            </p>
+        </div>
+    </footer>
+    
+        <div id="purchase-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
+            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Acesso Bloqueado</h3>
+            <p class="text-gray-700 mb-2">Seu diagnóstico foi concluído, mas o **Relatório Completo** está bloqueado.</p>
+            
+                        <p class="text-gray-500 text-lg old-price">De R$ 25,00</p>
+            <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-4">Por R$ 8,99</p>
+
+                        <div id="payment-button-container" class="mb-4">
+                            </div>
+            
+            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+
+            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
+                Voltar aos Testes
+            </button>
+        </div>
+    </div>
+    
+        <div id="loading-screen" class="fixed inset-0 hidden">
+        <div class="loader"></div>
+        <p class="mt-4 text-xl font-semibold text-gray-700">Aguardando Confirmação do Pagamento...</p>
+        <p class="text-sm text-gray-500">Isso pode levar alguns instantes.</p>
+    </div>
+
+        <script src="https://sdk.mercadopago.com/js/v2"></script> 
+
+    <script>
+        // Adiciona um evento para impedir o clique direito em todo o documento
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
+        
+        // ID DE PREFERÊNCIA FORNECIDO PELO USUÁRIO (Simulação de 7 quizzes com o mesmo valor)
+        // ATENÇÃO: Na vida real, você geraria um ID de preferência ÚNICO para cada quiz no painel do MP.
+        const PREFERENCE_ID_SIMULADO = "265432817-4dfb9e66-35a4-4d6e-906b-a88bd09e4248";
+        
+        const likertScale = [
+            { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
+            { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
+            { text: "Às vezes", value: 3, class: 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' },
+            { text: "Frequentemente", value: 4, class: 'bg-orange-100 hover:bg-orange-200 text-orange-800' },
+            { text: "Sempre", value: 5, class: 'bg-red-100 hover:bg-red-200 text-red-800' }
+        ];
+
+        let userAnswers = [];
+        let activeQuizId = null;
+        const PRICE_DISPLAY = "R$ 8,99"; 
+        
+        // Inicializa o SDK do Mercado Pago
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
+            locale: 'pt-BR'
+        });
+
+        const quizzes = {
+            burnout: {
+                title: "Teste de Risco de Burnout",
+                subtitle: "Avalie sua exaustão emocional, cinismo e eficácia profissional.",
+                card_id: "card-burnout",
+                image_url: 'bernalt.png', 
+                questions: [
+                    "1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.",
+                    "2. Sinto-me cansado(a) logo ao acordar e ter que encarar o trabalho.",
+                    "3. Consigo resolver os problemas do trabalho de forma eficaz. (Invertida)",
+                    "4. Sinto que estou me esforçando demais, mas não vejo resultados.",
+                    "5. Lidar com pessoas no meu trabalho é um grande estresse.",
+                    "6. Sinto que não estou fazendo a diferença na minha área.",
+                    "7. O trabalho tem consumido todo o meu tempo livre.",
+                    "8. Minha concentração fora do trabalho tem sido afetada.",
+                    "9. Sinto-me revigorado(a) após as folgas ou feriados. (Invertida)",
+                    "10. Tenho pensado em desistir da minha profissão ou mudar de área.",
+                    "11. Meu sono tem sido de má qualidade e insuficiente.",
+                    "12. Tenho negligenciado meus hobbies e vida social.",
+                    "13. Consigo lidar com o excesso de tarefas com calma. (Invertida)",
+                    "14. Sinto que meu futuro na empresa é limitado ou incerto.",
+                    "15. Tenho tido dores de cabeça ou musculares frequentes.",
+                    "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
+                    "17. Eu evito interações sociais no ambiente de trabalho.",
+                    "18. Sinto que tenho pouco controle sobre minha carga de trabalho.",
+                    "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
+                    "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
+                    "21. Sinto que a energia que invisto não compensa o resultado.",
+                    "22. Tenho usado mais café, álcool ou cigarros para lidar com o estresse.",
+                    "23. Meus colegas de trabalho parecem mais competentes do que eu.",
+                    "24. Minha produtividade diminuiu significativamente nos últimos meses.",
+                    "25. A pressão no trabalho me faz sentir ansioso(a) ou deprimido(a).",
+                    "26. Sinto-me um(a) profissional realizado(a). (Invertida)",
+                    "27. Tenho tido lapsos de memória ou dificuldade de raciocínio.",
+                    "28. Eu me afasto emocionalmente dos problemas de trabalho dos outros.",
+                    "29. Consigo manter uma perspectiva positiva sobre o trabalho. (Invertida)",
+                    "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."
+                ],
+                inverted_questions: [3, 9, 13, 16, 19, 26, 29], 
+                
+                get_result: (score) => {
+                    if (score <= 65) return { title: "Baixo Risco", desc: "Sua pontuação indica um excelente manejo de estresse e alta eficácia. Mantenha o foco no equilíbrio entre vida pessoal e profissional. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Sinais de sobrecarga estão presentes. É fundamental ver o diagnóstico completo para evitar o esgotamento. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Alto Risco de Burnout", desc: "Atenção! Sua pontuação é ALTA. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de ação urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                }
+            },
+            qi: {
+                title: "Teste de QI e Raciocínio",
+                subtitle: "Avalie sua inteligência fluida e capacidade de resolver problemas lógicos.",
+                card_id: "card-qi",
+                image_url: 'qi.png', 
+                questions: [
+                    "1. Eu resolvo problemas complexos rapidamente, mesmo sob pressão.",
+                    "2. Consigo identificar padrões e sequências em informações aleatórias.",
+                    "3. Eu entendo e utilizo bem a lógica abstrata (matemática, códigos, etc.).",
+                    "4. Eu aprendo novas habilidades conceituais com facilidade.",
+                    "5. Eu consigo fazer conexões entre ideias que parecem não relacionadas.",
+                    "6. Quando me deparo com um novo problema, consigo criar rapidamente diferentes estratégias de solução.",
+                    "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
+                    "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
+                    "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
+                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
+                    "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
+                    "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
+                    "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
+                    "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)",
+                    "15. Minhas decisões são sempre baseadas em lógica e não em emoção.",
+                    "16. Eu consigo manter o foco por longos períodos em tarefas intelectuais.",
+                    "17. Eu sou rápido(a) em fazer cálculos mentais e estimativas.",
+                    "18. Tenho facilidade em aprender novas línguas ou linguagens de programação.",
+                    "19. Se for dado um conjunto de dados, consigo tirar conclusões válidas a partir deles.",
+                    "20. Eu me sinto frustrado(a) rapidamente quando não consigo resolver um enigma. (Invertida)",
+                    "21. Eu tenho um vocabulário vasto e consigo articular minhas ideias com clareza.",
+                    "22. Eu consigo trabalhar em múltiplas tarefas complexas ao mesmo tempo. (Invertida)",
+                    "23. Eu sou bom(a) em resolver quebra-cabeças e jogos de estratégia.",
+                    "24. Eu consigo me adaptar rapidamente a novos ambientes e regras.",
+                    "25. Eu costumo ler muito rápido e reter a maior parte das informações.",
+                    "26. Eu questiono e analiso as informações antes de aceitá-las como verdade.",
+                    "27. Eu consigo prever o resultado de ações ou eventos com precisão.",
+                    "28. Eu sou bom(a) em identificar e corrigir meus próprios erros de lógica.",
+                    "29. Eu tenho dificuldade em organizar meus pensamentos em uma discussão. (Invertida)",
+                    "30. Eu sinto que minha mente trabalha em alta velocidade."
+                ],
+                inverted_questions: [13, 14, 20, 22, 29], // 5 perguntas invertidas
+                get_result: (score) => {
+                    if (score <= 85) return { title: "Raciocínio Básico", desc: "Sua pontuação indica um raciocínio lógico funcional, mas que se beneficia de exercícios diários. Adquira o acesso para ver o plano de melhoria.", color: 'bg-yellow-500' };
+                    if (score <= 130) return { title: "Raciocínio Acima da Média", desc: "Sua capacidade lógica e fluida é forte. Adquira o acesso para ver o score exato e áreas de excelência.", color: 'bg-green-500' };
+                    return { title: "Raciocínio Excepcional (QI Alto)", desc: "Sua pontuação é extremamente alta! Adquira o acesso para ver o score exato e o relatório completo.", color: 'bg-blue-600' };
+                }
+            },
+            stress: {
+                title: "Quão Estressado Eu Sou?",
+                subtitle: "Descubra seu nível de tensão, sobrecarga e capacidade de relaxamento.",
+                card_id: "card-stress",
+                image_url: 'estresse.png', 
+                questions: [
+                    "1. Tenho dificuldade em pegar no sono devido a preocupações.",
+                    "2. Sinto meus músculos tensos com frequência (ombros, pescoço).",
+                    "3. Minha mente corre sem parar, mesmo quando tento relaxar.",
+                    "4. Tenho me sentido irritado(a) ou impaciente facilmente.",
+                    "5. Sinto que tenho pouco controle sobre os acontecimentos da minha vida.",
+                    "6. Consigo relaxar e descontrair completamente após o trabalho. (Invertida)",
+                    "7. Sinto que há mais demandas do que minha capacidade de lidar.",
+                    "8. Tenho tido dores de cabeça frequentes ou problemas estomacais.",
+                    "9. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
+                    "10. Eu me preocupo em excesso com coisas que não posso mudar.",
+                    "11. Tenho me alimentado de forma irregular ou comi demais por causa da tensão.",
+                    "12. Fico facilmente agitado(a) ou com a sensação de 'motor ligado'.",
+                    "13. Consigo manter a calma em situações de incerteza. (Invertida)",
+                    "14. Sinto que estou sempre correndo contra o tempo.",
+                    "15. Tenho dificuldade em dizer 'não' para novas responsabilidades.",
+                    "16. Sinto que tenho apoio social adequado (amigos, família). (Invertida)",
+                    "17. Tenho tido ataques de raiva ou explosões emocionais.",
+                    "18. Minhas obrigações parecem esmagadoras na maioria das vezes.",
+                    "19. Eu tenho um tempo diário dedicado a meditação ou relaxamento. (Invertida)",
+                    "20. Tenho roído unhas, batido os pés ou outros tiques nervosos.",
+                    "21. Sinto-me frequentemente sobrecarregado(a) pelas responsabilidades.",
+                    "22. Tenho dificuldade em focar em uma tarefa por vez.",
+                    "23. Consigo me organizar de forma eficiente para evitar correria. (Invertida)",
+                    "24. A falta de tempo me impede de cuidar da minha saúde.",
+                    "25. Sinto-me culpado(a) quando estou descansando ou me divertindo.",
+                    "26. Meu nível de energia é consistentemente alto. (Invertida)",
+                    "27. O stress tem afetado negativamente minhas relações.",
+                    "28. Eu priorizo minhas necessidades em relação às dos outros. (Invertida)",
+                    "29. Sinto que estou sempre 'apagando incêndios' em vez de planejar.",
+                    "30. Tenho tido mais gripes ou problemas de saúde por imunidade baixa."
+                ],
+                inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
+                get_result: (score) => {
+                    if (score <= 60) return { title: "Stress Baixo e Saudável", desc: "Você demonstra ótima resiliência e controle. Adquira o relatório completo para manter esse equilíbrio. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 100) return { title: "Stress Moderado (Cuidado)", desc: "Sinais de sobrecarga estão presentes. É crucial ver o diagnóstico completo para adotar técnicas de relaxamento eficazes. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Stress Alto (Intervenção Urgente)", desc: "Você está sob intensa pressão! Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução imediata do stress. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                }
+            },
+            anxiety: {
+                title: "Qual o Meu Nível de Ansiedade?",
+                subtitle: "Avaliação do seu estado de apreensão, medo, e preocupação excessiva.",
+                card_id: "card-anxiety",
+                image_url: 'ansiedade.png',
+                questions: [
+                    "1. Sinto palpitações, tonturas ou respiração ofegante sem razão aparente.",
+                    "2. Tenho evitado situações sociais ou desafios por medo.",
+                    "3. Sinto que algo ruim pode acontecer a qualquer momento.",
+                    "4. Tenho dificuldade em controlar a preocupação diária, ela me domina.",
+                    "5. Consigo manter a calma em situações de incerteza. (Invertida)",
+                    "6. Minha mente fica constantemente revirada, pensando em 'e se...'.",
+                    "7. Tenho tido tremores, formigamento ou sensação de desequilíbrio.",
+                    "8. Costumo ensaiar mentalmente conversas ou eventos futuros exaustivamente.",
+                    "9. Me sinto seguro(a) e tranquilo(a) na maioria das vezes. (Invertida)",
+                    "10. Fico inquieto(a), agitado(a) ou incapaz de relaxar o corpo.",
+                    "11. Tenho problemas gastrointestinais (dor de barriga, náuseas) quando estou nervoso(a).",
+                    "12. Eu me irrito facilmente com pequenos aborrecimentos diários.",
+                    "13. Tenho receio de ser julgado(a) ou criticado(a) pelos outros.",
+                    "14. Fico obcecado(a) por detalhes ou buscando a perfeição.",
+                    "15. Consigo desfrutar do presente sem pensar no futuro. (Invertida)",
+                    "16. Tenho um medo irracional de algo (ex: altura, espaços fechados, insetos).",
+                    "17. Evito tomar decisões com medo de cometer o erro errado.",
+                    "18. Consigo me concentrar em tarefas que exigem muita atenção. (Invertida)",
+                    "19. Sinto que não sou capaz de lidar com os problemas que surgem.",
+                    "20. Tenho tido pesadelos ou desperto no meio da noite com preocupações.",
+                    "21. Eu busco tranquilidade na maior parte do tempo. (Invertida)",
+                    "22. Minhas preocupações duram por longos períodos, sem alívio.",
+                    "23. Tenho dificuldade em expressar minhas emoções de forma calma. (Invertida)",
+                    "24. Sinto que preciso estar sempre alerta ou em guarda.",
+                    "25. Eu costumo me isolar quando me sinto muito ansioso(a).",
+                    "26. Minha ansiedade interfere nas minhas obrigações diárias.",
+                    "27. Consigo rir e me divertir com facilidade. (Invertida)",
+                    "28. Sinto que perdi o controle sobre minhas reações emocionais.",
+                    "29. Tenho tido pensamentos repetitivos e difíceis de ignorar.",
+                    "30. Minha qualidade de vida é boa e satisfatória. (Invertida)"
+                ],
+                inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
+                get_result: (score) => {
+                    if (score <= 65) return { title: "Ansiedade Baixa", desc: "Você lida bem com a maioria das incertezas e demonstra boa capacidade de manter a calma. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 105) return { title: "Ansiedade Moderada", desc: "Sua pontuação indica sinais de apreensão. É crucial ver o diagnóstico completo para adotar técnicas de controle. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Ansiedade Elevada", desc: "O seu nível de apreensão e medo é alto. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                }
+            },
+            sadness: {
+                title: "Quão Triste Estou?",
+                subtitle: "Mapeamento do seu humor, energia, motivação e satisfação geral com a vida.",
+                card_id: "card-sadness",
+                image_url: 'triste.png',
+                questions: [
+                    "1. Tenho perdido o interesse em atividades que antes gostava.",
+                    "2. Sinto uma tristeza constante na maior parte do dia.",
+                    "3. Sinto-me sem energia ou com muita fadiga, mesmo após descansar.",
+                    "4. Meu apetite e/ou meu sono mudaram drasticamente (mais ou menos).",
+                    "5. Tenho dificuldade em me concentrar ou tomar decisões simples.",
+                    "6. Sinto que a vida vale a pena e sou grato(a) por ela. (Invertida)",
+                    "7. Tenho tido sentimentos de culpa ou inutilidade.",
+                    "8. Sinto que o futuro é sombrio, sem esperança ou perspectivas.",
+                    "9. Minha energia física e mental está alta. (Invertida)",
+                    "10. Tenho chorado com mais frequência que o normal.",
+                    "11. Tenho me isolado de amigos e familiares.",
+                    "12. Eu me sinto mal com o meu próprio corpo ou aparência.",
+                    "13. Consigo rir e me divertir quando estou com outras pessoas. (Invertida)",
+                    "14. Sinto que sou um fardo para as pessoas ao meu redor.",
+                    "15. Tenho pensado em me machucar ou em não querer mais viver.",
+                    "16. Tenho um sono reparador na maioria das noites. (Invertida)",
+                    "17. Sinto-me constantemente irritado(a) ou impaciente.",
+                    "18. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
+                    "19. Tenho tido lapsos de memória ou confusão mental.",
+                    "20. Consigo ver o lado positivo das situações. (Invertida)",
+                    "21. Minha autoestima está consistentemente baixa.",
+                    "22. Tenho evitado sair de casa ou ir ao trabalho/estudo.",
+                    "23. Eu acredito que as coisas vão melhorar para mim. (Invertida)",
+                    "24. Tenho perdido peso ou ganhado peso de forma inesperada.",
+                    "25. As pessoas notam que meu humor está consistentemente para baixo.",
+                    "26. Eu me sinto muito sozinho(a) e incompreendido(a).",
+                    "27. Minha motivação para realizar tarefas diárias é alta. (Invertida)",
+                    "28. Eu me sinto apático(a) ou indiferente a tudo.",
+                    "29. Consigo manter uma rotina saudável. (Invertida)",
+                    "30. Eu me sinto confortável com quem eu sou. (Invertida)"
+                ],
+                inverted_questions: [6, 9, 13, 16, 18, 20, 23, 27, 29, 30],
+                get_result: (score) => {
+                    if (score <= 60) return { title: "Humor Estável (Saudável)", desc: "Seu estado emocional é equilibrado. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 100) return { title: "Tristeza Moderada (Atenção)", desc: "Sinais de desânimo estão presentes. É crucial ver o diagnóstico completo para recuperar sua energia. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Tristeza Significativa (Alerta)", desc: "Os sinais indicam um estado de humor persistente e baixo. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de apoio urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                }
+            },
+            arrogance: {
+                title: "Sou Uma Pessoa Arrogante?",
+                subtitle: "Avaliação da sua autoimportância, necessidade de validação e desvalorização alheia.",
+                card_id: "card-arrogance",
+                image_url: 'arrogante.png',
+                questions: [
+                    "1. Sinto que sou superior à maioria das pessoas ao meu redor.",
+                    "2. Fico incomodado(a) se não sou o centro das atenções.",
+                    "3. Eu facilmente desvalorizo as conquistas de pessoas que não gosto.",
+                    "4. Consigo aceitar que há pessoas mais talentosas do que eu. (Invertida)",
+                    "5. Interrompo os outros com frequência para expressar minha opinião.",
+                    "6. Eu acredito que as regras se aplicam mais aos outros do que a mim.",
+                    "7. Recebo elogios com gratidão e simplicidade. (Invertida)",
+                    "8. Sinto a necessidade de 'corrigir' as pessoas em público.",
+                    "9. Peço desculpas e reconheço erros de forma sincera. (Invertida)",
+                    "10. Eu me considero uma pessoa especial e única.",
+                    "11. Fico com inveja do sucesso alheio.",
+                    "12. Eu realmente escuto as críticas, mesmo que doa. (Invertida)",
+                    "13. Eu costumo me gabar das minhas conquistas e bens materiais.",
+                    "14. Consigo rir de mim mesmo(a). (Invertida)",
+                    "15. Acredito que as minhas soluções são as únicas eficazes para os problemas.",
+                    "16. Meu valor como pessoa está ligado ao que eu conquisto. (Invertida)",
+                    "17. Eu tenho facilidade em admitir minha ignorância sobre um assunto. (Invertida)",
+                    "18. Eu evito pedir ajuda, pois isso me faria parecer fraco(a).",
+                    "19. Eu me sinto muito superior a colegas de trabalho/estudo.",
+                    "20. Costumo ignorar conselhos, pois sei o que é melhor. (Invertida)",
+                    "21. Eu me preocupo em manter as aparências de sucesso.",
+                    "22. Eu me sinto bem quando sou o centro das atenções. (Invertida)",
+                    "23. Eu trato todas as pessoas com o mesmo nível de respeito. (Invertida)",
+                    "24. Eu sinto que mereço tratamento especial ou privilégios.",
+                    "25. Eu raramente admito que alguém é mais inteligente que eu.",
+                    "26. Eu reconheço a importância do trabalho em equipe. (Invertida)",
+                    "27. Eu dou valor igual às contribuições de todos.",
+                    "28. Eu sou uma pessoa modesta. (Invertida)",
+                    "29. Tenho dificuldade em interagir com pessoas de status social mais baixo.",
+                    "30. Eu desconfio facilmente das intenções dos outros."
+                ],
+                inverted_questions: [4, 7, 9, 12, 14, 16, 17, 20, 22, 23, 26, 28],
+                get_result: (score) => {
+                    if (score <= 80) return { title: "Arrogância Baixa (Modestia)", desc: "Sua pontuação é baixa. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 120) return { title: "Arrogância Moderada", desc: "Há traços de autoimportância ou insegurança em situações específicas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Arrogância Alta (Cuidado)", desc: "Os sinais de autoimportância são altos. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de melhoria urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                }
+            },
+            humility: {
+                title: "Sou Uma Pessoa Humilde?",
+                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
+                card_id: "card-humility",
+                image_url: 'humilde.png',
+                questions: [
+                    "1. Admito meus erros facilmente e sem me justificar.",
+                    "2. Eu procuro ativamente e valorizo o feedback negativo.",
+                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)",
+                    "4. Me coloco no lugar dos outros para entender suas falhas.",
+                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
+                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.",
+                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
+                    "8. Reconheço e elogio publicamente as conquistas dos outros.",
+                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)",
+                    "10. Peço desculpas rapidamente quando sei que errei.",
+                    "11. Eu me sinto ofendido(a) quando minhas ideias são rejeitadas. (Invertida)",
+                    "12. Eu realmente ouço a perspectiva dos outros sem interromper.",
+                    "13. Sinto que a maioria das pessoas não entende minha genialidade. (Invertida)",
+                    "14. Eu dou crédito a quem merece sem me preocupar em ser o centro das atenções.",
+                    "15. Evito falar sobre minhas conquistas para não parecer arrogante.",
+                    "16. Aceito que posso estar errado(a) sobre assuntos que domino.",
+                    "17. Eu me comparo negativamente com os outros. (Invertida)",
+                    "18. Meus amigos diriam que sou uma pessoa de 'cabeça aberta'.",
+                    "19. Eu me irrito com pessoas que fazem perguntas 'óbvias'. (Invertida)",
+                    "20. Eu me sinto à vontade pedindo ajuda quando preciso.",
+                    "21. Acredito que a maioria das pessoas são bem-intencionadas.",
+                    "22. Tenho dificuldade em elogiar ou admirar o sucesso alheio. (Invertida)",
+                    "23. Fico chateado(a) se não sou convidado(a) para eventos importantes. (Invertida)",
+                    "24. Eu me preocupo mais em aprender do que em impressionar.",
+                    "25. Acredito que há muitas lições a serem aprendidas com o fracasso.",
+                    "26. Eu me sinto superior intelectualmente à maioria das pessoas. (Invertida)",
+                    "27. Consigo me alegrar sinceramente com o sucesso dos outros.",
+                    "28. Eu sou paciente ao ensinar algo a alguém que está aprendendo.",
+                    "29. Tenho o costume de corrigir os erros dos outros em público. (Invertida)",
+                    "30. Eu valorizo o esforço tanto quanto o resultado final."
+                ],
+                inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
+                get_result: (score) => {
+                    if (score <= 80) return { title: "Humildade em Construção", desc: "Sua pontuação sugere dificuldades em aceitar falhas e dar crédito aos outros, com traços de autoimportância. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                    if (score <= 120) return { title: "Humildade Moderada", desc: "Você demonstra equilíbrio, mas pode ter dificuldade em aceitar críticas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
+                    return { title: "Humildade Alta", desc: "Você demonstra uma forte capacidade de autoconhecimento. Adquira o acesso para ver o plano de ação para potencializar seu perfil. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                }
+            }
+        };
+
+        const quizCardsGrid = document.getElementById('quiz-cards-grid');
+        const quizSelection = document.getElementById('quiz-selection');
+        const quizStartCta = document.getElementById('quiz-start-cta');
+        const quizCtaTitle = document.getElementById('quiz-cta-title');
+        const quizCtaSubtitle = document.getElementById('quiz-cta-subtitle');
+        const buyQuizBtn = document.getElementById('buy-quiz-btn'); 
+        const quizSection = document.getElementById('quiz-section');
+        const activeQuizTitle = document.getElementById('active-quiz-title');
+        const quizQuestionsContainer = document.getElementById('quiz-questions');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const quizResultArea = document.getElementById('quiz-result');
+        const purchaseModal = document.getElementById('purchase-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalPrice = document.getElementById('modal-price');
+        const confirmPurchaseBtn = document.getElementById('confirm-purchase-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const loadingScreen = document.getElementById('loading-screen');
+        const paymentButtonContainer = document.getElementById('payment-button-container');
+
+
+        // Renderiza os cards de seleção na Home
+        function renderQuizCards() {
+            // ORDEM CORRIGIDA FINAL: Burnout, QI, Stress, Ansiedade, Tristeza, Arrogância, Humildade
+            const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
+            
+            quizCardsGrid.innerHTML = orderedKeys.map(key => {
+                const quiz = quizzes[key];
+                if (!quiz) return ''; 
+                
+                return `
+                    <div id="${quiz.card_id}" 
+                         class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white" 
+                         data-quiz-id="${key}"
+                         style="background-image: url('${quiz.image_url}');">
+                        <div class="quiz-content">
+                            <h3 class="text-2xl font-bold mb-1 text-red-500 text-shadow">${quiz.title}</h3>
+                            <p class="text-sm opacity-90 text-white text-shadow">${quiz.subtitle}</p>
+                            <span class="inline-block mt-3 px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full hover:bg-blue-700 transition">
+                                CLIQUE PARA INICIAR TESTE GRATUITO
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.quiz-card-select').forEach(card => {
+                card.addEventListener('click', handleQuizSelection);
+            });
+        }
+        
+        // Manipula a seleção do Quiz (Ação ao clicar no card)
+        function handleQuizSelection(event) {
+            const card = event.currentTarget;
+            const quizId = card.getAttribute('data-quiz-id');
+            
+            activeQuizId = quizId;
+            loadQuiz(); // Inicia o quiz diretamente
+        }
+
+        // --- COBRANÇA NO FINAL DO QUIZ ---
+        // Exibe o modal de compra ao clicar em 'VER MEU RESULTADO FINAL'
+        submitQuizBtn.addEventListener('click', () => {
+            const quiz = quizzes[activeQuizId];
+            
+            // 1. Calcula a pontuação e mostra o feedback GRÁTIS
+            calculateAndShowFreeResult(); 
+            
+            // 2. Bloqueia o resultado detalhado com o modal de compra
+            modalTitle.textContent = `Desbloquear Relatório ${quiz.title}`;
+            
+            // 3. Injeta o botão REAL do Mercado Pago no container (Usando o ID Fixo)
+            injectMercadoPagoButton(PREFERENCE_ID_SIMULADO); 
+            
+            purchaseModal.classList.remove('hidden');
+        });
+
+        // Função que injeta o botão real do Mercado Pago (usando o script que você enviou)
+        function injectMercadoPagoButton(preferenceId) {
+            paymentButtonContainer.innerHTML = ''; // Limpa o container
+            
+            // Cria o botão com a preferência (usando o script que o Mercado Pago gerou para você)
+            const mpButtonScript = document.createElement('script');
+            mpButtonScript.src = "https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js";
+            mpButtonScript.setAttribute('data-preference-id', preferenceId);
+            mpButtonScript.setAttribute('data-source', 'button');
+            mpButtonScript.setAttribute('data-label', `PAGAR R$ ${PRICE_DISPLAY.replace('R$ ', '').replace(',', '.')}`);
+            
+            paymentButtonContainer.appendChild(mpButtonScript);
+            
+            // Adiciona um listener para simular a transação assim que o botão for clicado 
+            mpButtonScript.onload = () => {
+                const mpButton = document.querySelector('.mercadopago-button');
+                if (mpButton) {
+                    mpButton.onclick = (e) => {
+                        // O checkout do MP se abrirá, mas iniciamos a simulação local para a liberação
+                        
+                        // 1. Fecha o modal
+                        purchaseModal.classList.add('hidden');
+                        
+                        // 2. Mostra a tela de carregamento (Simulação de Transação)
+                        loadingScreen.classList.remove('hidden');
+
+                        // 3. Simula o tempo de transação (5 segundos)
+                        setTimeout(() => {
+                            loadingScreen.classList.add('hidden');
+                            
+                            // 4. Libera o resultado completo (PAGAMENTO APROVADO SIMULADO)
+                            unlockAccess();
+                        }, 5000); // 5 segundos de espera (Tempo de Transação Simulado)
+                    };
+                }
+            };
+        }
+
+
+        // Função que realiza a SIMULAÇÃO de LIBERAÇÃO do resultado COMPLETO
+        function unlockAccess() {
+             const quiz = quizzes[activeQuizId];
+             let totalScore = 0;
+            
+             // Recalcula o score
+             userAnswers.forEach((answer, index) => {
+                const questionNumber = index + 1;
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                    totalScore += (6 - answer);
+                } else {
+                    totalScore += answer;
+                }
+            });
+
+            const resultData = quiz.get_result(totalScore);
+
+             // CONTEÚDO LIBERADO FINAL (Elaborado e completo)
+            quizResultArea.innerHTML = `
+                <h3 class="text-3xl font-extrabold text-center mb-4 text-gray-900">✅ ACESSO LIBERADO: SEU RELATÓRIO COMPLETO</h3>
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+                    Diagnóstico Final: ${resultData.title}
+                </div>
+                
+                <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação Total: ${totalScore} de ${quiz.questions.length * 5}</h4>
+
+                <div class="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
+                    <p class="text-base text-gray-700">
+                        <span class="font-bold text-lg text-blue-800">VISÃO GERAL:</span> Parabéns! Seu pagamento foi processado com sucesso e o Relatório Detalhado foi desbloqueado. Sua pontuação revela uma jornada de autoconhecimento que exige ${resultData.title.includes('Baixo') ? 'foco na manutenção do equilíbrio' : 'ação e atenção imediata'}.
+                    </p>
+                    <p class="text-base text-gray-700">
+                        <span class="font-bold text-blue-800">ANÁLISE PROFUNDA:</span> O seu resultado exato, ${resultData.desc.split('.')[0]}, sugere que você precisa desenvolver ${resultData.title.includes('Alto') ? 'técnicas de resiliência e controle emocional' : 'novos desafios para o seu potencial'}.
+                    </p>
+                    <p class="text-base text-gray-700">
+                        <span class="font-bold text-blue-800">PLANO DE AÇÃO IMEDIATA (30 FRASES):</span>
+                        <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
+                            <li>🎯 **Foco no Próximo Nível:** Transforme a dor ${resultData.title.split(' ')[0]} em disciplina ativa.</li>
+                            <li>🧠 **Reconhecimento:** Entenda quais perguntas invertidas ${quiz.inverted_questions.length > 0 ? 'mais impactaram' : 'menos afetaram'} sua pontuação final.</li>
+                            <li>⚖️ **Ajuste de Rota:** Dedique 15 minutos diários à prática de *Mindfulness* ou à resolução de novos desafios lógicos.</li>
+                            <li>🌱 **Desenvolvimento Pessoal:** Procure grupos de apoio ou mentores que dominem a área do seu teste.</li>
+                            <li>⏱️ **Gestão de Energia:** Crie blocos de foco total e blocos de descanso obrigatório (o oposto do Burnout!).</li>
+                            <li>💧 **Rotina Antiestresse:** Inicie o dia com alongamentos leves e defina 3 prioridades claras.</li>
+                            <li>🛠️ **Ferramentas:** Use a pontuação total (${totalScore}) como sua métrica de progresso semanal.</li>
+                            <li>🤝 **Conexão Social:** Fortaleça os laços com quem te apoia, reduzindo interações tóxicas.</li>
+                            <li>💡 **Curiosidade Ativa:** Mantenha sua mente engajada com aprendizados fora da sua zona de conforto.</li>
+                            <li>🛡️ **Blindagem Emocional:** Aprenda a dizer "não" para tarefas que não contribuem para seus objetivos principais.</li>
+                            <li>✅ **Validação:** Lembre-se: O teste é um guia, mas sua capacidade de mudar é ilimitada.</li>
+                        </ul>
+                        <p class="mt-4 text-lg font-semibold text-blue-800">
+                            **Recursos Adicionais e Acompanhamento:** Sua pontuação libera acesso a um e-book gratuito sobre "${quiz.title.split(' ')[2] || 'Inteligência Emocional'}", enviado para seu e-mail de compra! Continue seu desenvolvimento.
+                        </p>
+                    </p>
+                </div>
+                             `;
+
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
+        // Fecha o Modal
+        closeModalBtn.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
+
+
+        // Função para calcular a pontuação e mostrar o resultado GRATUITO (visão geral)
+        function calculateAndShowFreeResult() {
+            const quiz = quizzes[activeQuizId];
+            let totalScore = 0;
+            
+            userAnswers.forEach((answer, index) => {
+                const questionNumber = index + 1;
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                    totalScore += (6 - answer);
+                } else {
+                    totalScore += answer;
+                }
+            });
+
+            // Obtém o resultado GRÁTIS
+            const resultData = quiz.get_result(totalScore);
+
+            // GERA O TEXTO DE ELABORAÇÃO (30 FRASES SIMULADAS)
+            const elaborateDescription = `
+                <div class="mt-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                    <h5 class="text-lg font-bold text-gray-900 mb-3">Visão Geral: Seu Nível de Consciência</h5>
+                    <p class="text-base text-gray-700 space-y-3">
+                        <span class="block">Parabéns por completar sua autoavaliação! Este teste é o primeiro passo crucial em sua jornada de autoconhecimento. A pontuação que você obteve reflete a intensidade de certos padrões emocionais e cognitivos em sua vida diária.</span>
+                        <span class="block">Neste momento, você identificou o seu **Status Inicial** (Sua pontuação é ${totalScore}). Para muitos, essa simples classificação já é um alívio, pois traz clareza sobre uma sensação que antes era apenas um incômodo.</span>
+                        <span class="block">No entanto, o número e a classificação ("${resultData.title}") são apenas a ponta do iceberg. A verdadeira mudança acontece quando você entende o **Porquê** e o **Como** por trás desse resultado.</span>
+                        <span class="block font-bold text-red-600">A resposta detalhada a essas perguntas está no seu Relatório Completo e Personalizado.</span>
+                        <span class="block">**O que o Relatório Completo DESBLOQUEIA:**</span>
+                        <ul class="list-disc list-inside ml-4 text-sm space-y-1">
+                            <li><span class="font-semibold">ANÁLISE DE IMPACTO:</span> Descubra em qual das 5 dimensões (Ex: Físico, Emocional, Social) sua pontuação é mais alta.</li>
+                            <li><span class="font-semibold">PLANO DE AÇÃO RÁPIDO:</span> Receba 10 ideias práticas e imediatas para começar a gerenciar sua pontuação hoje mesmo (Ex: Exercícios de respiração, técnicas de organização).</li>
+                            <li><span class="font-semibold">MAPA DO PRÓXIMO NÍVEL:</span> Instruções detalhadas para potencializar seus pontos fortes e enfraquecer seus pontos de desafio.</li>
+                            <li><span class="font-semibold">ESCALA DE RISCO:</span> Visualização gráfica da sua posição exata na escala de autoconhecimento.</li>
+                            <li><span class="font-semibold">RECURSOS EXCLUSIVOS:</span> Indicação de livros e vídeos para aprofundar seu entendimento.</li>
+                        </ul>
+                        <span class="block mt-4">Não se contente com a superfície. O valor deste conhecimento excede em muito o investimento de ${PRICE_DISPLAY}. É o primeiro passo para retomar o controle da sua vida.</span>
+                        <span class="block">Clique no botão abaixo para desbloquear seu Relatório Completo. Seu futuro mental começa agora!</span>
+                    </p>
+                </div>
+            `;
+
+
+            // Injeta o resultado na tela
+            quizResultArea.classList.remove('hidden');
+            quizResultArea.innerHTML = `
+                <h3 class="text-2xl font-bold text-center mb-4 text-gray-900">${quiz.title}</h3>
+                <h4 class="text-xl font-bold text-center mb-4">Sua Pontuação de Fim de Quiz: ${totalScore}</h4>
+                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+                    Classificação GRÁTIS: ${resultData.title}
+                </div>
+                ${elaborateDescription}
+
+                                <div class="text-center mt-6">
+                    <button id="final-purchase-btn" class="px-8 py-4 bg-red-600 text-white text-xl font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-300">
+                        DESBLOQUEAR RELATÓRIO COMPLETO POR ${PRICE_DISPLAY}
+                    </button>
+                </div>
+            `;
+            
+            // Adiciona o listener para o novo botão de compra
+            document.getElementById('final-purchase-btn').addEventListener('click', () => {
+                purchaseModal.classList.remove('hidden');
+                // Garante que o modal mostre o preço e o título correto antes de abrir
+                document.getElementById('modal-title').textContent = `Desbloquear Relatório ${quiz.title}`;
+            });
+
+            // Rola a tela para o resultado
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
+        // Função que Carrega o quiz selecionado e inicia o questionário
+        function loadQuiz() {
+            if (!activeQuizId) return;
+            
+            const quiz = quizzes[activeQuizId];
+            
+            // Reseta variáveis
+            userAnswers = new Array(quiz.questions.length).fill(0);
+            quizQuestionsContainer.innerHTML = '';
+            quizResultArea.classList.add('hidden');
+            submitQuizBtn.classList.add('hidden');
+
+            // 1. Configura o Título da Seção
+            activeQuizTitle.textContent = quiz.title;
+
+            // 2. Renderiza as perguntas
+            quiz.questions.forEach((questionText, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'p-4 border border-gray-200 rounded-lg shadow-sm';
+                questionElement.innerHTML = `
+                    <p class="font-semibold mb-3 text-lg">${questionText}</p>
+                    <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mt-3" id="options-${index}">
+                        ${likertScale.map(option => `
+                            <div 
+                                class="likert-option ${option.class} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center"
+                                data-question-index="${index}"
+                                data-value="${option.value}"
+                            >
+                                ${option.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                quizQuestionsContainer.appendChild(questionElement);
+            });
+
+            // 3. Adiciona listener de clique para as opções no novo DOM
+            document.querySelectorAll('.likert-option').forEach(option => {
+                option.addEventListener('click', handleOptionClick);
+            });
+            
+            // 4. Exibe a seção do quiz
+            quizSection.classList.remove('hidden');
+            quizCardsGrid.classList.add('hidden'); // Esconde cards ao iniciar
+            quizSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
+        // Função para capturar a resposta
+        function handleOptionClick(event) {
+            const element = event.currentTarget;
+            const questionIndex = parseInt(element.getAttribute('data-question-index'));
+            const value = parseInt(element.getAttribute('data-value'));
+
+            // Remove a seleção antiga
+            const optionsContainer = document.getElementById(`options-${questionIndex}`);
+            optionsContainer.querySelectorAll('.likert-option').forEach(opt => {
+                opt.classList.remove('selected-option', 'text-white', 'font-semibold');
+                // Garante que as classes de cor originais voltem
+                const originalClasses = likertScale.find(scale => scale.value === parseInt(opt.getAttribute('data-value'))).class;
+                opt.className = `likert-option ${originalClasses} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center`;
+            });
+
+            // Adiciona a nova seleção e a classe de estilo forte
+            element.classList.add('selected-option');
+            
+            // Armazena a resposta
+            userAnswers[questionIndex] = value;
+
+            // Verifica se todas as perguntas foram respondidas para exibir o botão de submissão
+            checkCompletion();
+        }
+
+        // Verifica se todas as respostas estão preenchidas
+        function checkCompletion() {
+            const allAnswered = userAnswers.every(answer => answer !== 0);
+
+            if (allAnswered) {
+                submitQuizBtn.classList.remove('hidden');
+            } else {
+                submitQuizBtn.classList.add('hidden');
+            }
+        }
+
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', renderQuizCards);
+
+    </script>
+
+</body>
+</html>
+
+
+
+O Gemini pode cometer erros. Por isso, é bom checar as respostas.
+
