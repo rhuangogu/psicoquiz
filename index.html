@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PsicoQuiz | Portal de Testes Psicológicos</title>
-    <!-- Carregamento do Tailwind CSS para um design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -16,6 +15,11 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed; /* Mantém a imagem fixa ao rolar */
+            /* NOVAS REGRAS DE SEGURANÇA BÁSICAS */
+            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
         }
         .quiz-container {
             max-width: 800px;
@@ -27,12 +31,11 @@
         .likert-option:hover {
             background-color: #eff6ff; /* blue-50 */
         }
-        /* MUDANÇA CRUCIAL: Contraste aprimorado para a opção selecionada */
+        /* Contraste aprimorado para a opção selecionada */
         .selected-option {
             background-color: #1d4ed8 !important; /* Blue-700 escuro */
             color: white;
             font-weight: 700;
-            /* Adiciona uma borda chamativa ao redor */
             box-shadow: 0 0 0 4px #EC4899; /* Cor pink/magenta do tema */
             transform: scale(1.05); /* Pequeno zoom */
             border-color: transparent !important;
@@ -91,24 +94,63 @@
         .text-shadow {
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }
+        
+        /* Estilo para o preço riscado (PONTO 5) */
+        .old-price {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        /* Estilo para o container do botão do Mercado Pago (PONTO 3) */
+        #payment-button-container {
+            min-height: 50px; /* Garante espaço para o botão MP */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        /* Estilo para a tela de carregamento (Corrigido PONTO 2) */
+        #loading-screen {
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: fixed; /* Adicionado fixed para cobrir toda a tela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #EC4899;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <!-- 1. Header Fixo e Simples -->
     <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <!-- Logo/Marca com a cor Rosada (#EC4899) -->
                 <span class="text-3xl font-extrabold text-pink-600">Psico</span>
                 <span class="text-3xl font-extrabold text-gray-800">Quiz</span>
             </div>
-            <!-- Botão "Ver Testes" removido conforme solicitado -->
         </nav>
     </header>
 
     <main>
-        <!-- 2. Seleção de Quiz (Hero Section) -->
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center" id="quiz-selection">
             <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">
                 DESVENDE SUA MENTE
@@ -117,40 +159,30 @@
                 Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.
             </p>
             
-            <!-- Grid de Cards de Seleção -->
             <div id="quiz-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Cards serão injetados aqui via JavaScript -->
-            </div>
+                </div>
             
-            <!-- CTA desnecessária, pois a compra é no final do quiz -->
             <div id="quiz-start-cta" class="hidden"></div> 
-
         </section>
 
-        <!-- 3. Quiz Container (Onde as perguntas aparecerão) -->
         <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
             <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
                 <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-6 text-gray-900"></h2>
                 
                 <div id="quiz-questions" class="space-y-8">
-                    <!-- Perguntas serão injetadas aqui -->
-                </div>
+                    </div>
                 
-                <!-- Botão de Envio/Resultado -->
                 <div class="text-center mt-10">
                     <button id="submit-quiz-btn" class="px-8 py-3 bg-green-600 text-white text-lg font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 hidden">
                         VER MEU RESULTADO FINAL
                     </button>
                 </div>
 
-                <!-- Área de Resultado (Agora com a lógica de bloqueio) -->
                 <div id="quiz-result" class="mt-10 p-6 bg-gray-100 rounded-lg hidden">
-                    <!-- Resultado será injetado aqui -->
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- 4. Seção Sobre Nós -->
         <section class="bg-gray-100 py-16 mt-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-900">
@@ -163,7 +195,6 @@
         </section>
     </main>
 
-    <!-- 5. Footer -->
     <footer class="bg-gray-900 text-white py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p class="text-sm">&copy; 2025 PsicoQuiz. Todos os direitos reservados.</p>
@@ -173,25 +204,46 @@
         </div>
     </footer>
     
-    <!-- Modal de Simulação de Compra (Usado agora para o resultado) -->
     <div id="purchase-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
-            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Acesso Bloqueado</h3>
-            <p class="text-gray-700 mb-6">Seu diagnóstico foi concluído, mas o **Relatório Completo** está bloqueado. Adquira o acesso para revelar sua análise detalhada, gráficos e plano de ação.</p>
+            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Seu Relatório está Pronto!</h3>
+            <p class="text-gray-700 mb-4">Seu diagnóstico foi concluído. Desbloqueie o **Relatório Completo** para revelar sua análise detalhada, gráficos e plano de ação.</p>
             
-            <p id="modal-price" class="text-3xl font-extrabold text-red-600 mb-6">APENAS R$ 9,99</p>
+            <p class="text-gray-500 text-lg old-price">De R$ 25,00</p>
+            <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-4">Por R$ 8,99</p>
 
-            <button id="confirm-purchase-btn" class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300 w-full mb-3">
-                Desbloquear e Ver Resultado (Mercado Pago)
-            </button>
+            <div id="payment-button-container" class="mb-4">
+                </div>
+            
+            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+
             <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
-                Voltar aos Testes
+                Cancelar
             </button>
         </div>
     </div>
+    
+    <div id="loading-screen" class="fixed inset-0 hidden">
+        <div class="loader"></div>
+        <p class="mt-4 text-xl font-semibold text-gray-700">Aguardando Confirmação do Pagamento...</p>
+        <p class="text-sm text-gray-500">Isso pode levar alguns instantes.</p>
+    </div>
+
+    <script src="https://sdk.mercadopago.com/js/v2"></script> 
 
     <script>
-        // --- CONFIGURAÇÃO DE TODOS OS QUIZZES ---
+        // Adiciona um evento para impedir o clique direito em todo o documento
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // CHAVE PÚBLICA (NÃO O ACCESS TOKEN SECRETO)
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
+        
+        // ID DE PREFERÊNCIA FORNECIDO POR VOCÊ (PONTO 3)
+        const PREFERENCE_ID_SIMULADO = "210637269-9fa0440d-9820-4a4c-a664-5eab8b06f0cc";
+        
+        // PREÇO PARA EXIBIÇÃO (PONTOS 5 e 6)
+        const PRICE_DISPLAY = "R$ 8,99";
+        
         const likertScale = [
             { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
             { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
@@ -202,8 +254,14 @@
 
         let userAnswers = [];
         let activeQuizId = null;
-        const PRICE = "R$ 9,99"; // Preço atualizado para R$ 9,99
+        
+        // Inicializa o SDK do Mercado Pago
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
+            locale: 'pt-BR'
+        });
 
+        // --- BANCO DE DADOS DOS QUIZZES ---
+        // (PONTO 4: Textos de resultado 'desc' foram melhorados)
         const quizzes = {
             burnout: {
                 title: "Teste de Risco de Burnout",
@@ -228,7 +286,7 @@
                     "15. Tenho tido dores de cabeça ou musculares frequentes.",
                     "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
                     "17. Eu evito interações sociais no ambiente de trabalho.",
-                    "18. Sinto que tenho pouco controle sobre minha carga de trabalho.",
+                    "18. Sinto que tenho poco controle sobre minha carga de trabalho.",
                     "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
                     "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
                     "21. Sinto que a energia que invisto não compensa o resultado.",
@@ -245,9 +303,21 @@
                 inverted_questions: [3, 9, 13, 16, 19, 26, 29], 
                 
                 get_result: (score) => {
-                    if (score <= 65) return { title: "Baixo Risco", desc: "Sua pontuação indica um excelente manejo de estresse e alta eficácia. Mantenha o foco no equilíbrio entre vida pessoal e profissional. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Sinais de sobrecarga estão presentes. É fundamental ver o diagnóstico completo para evitar o esgotamento. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Alto Risco de Burnout", desc: "Atenção! Sua pontuação é ALTA. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de ação urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                    if (score <= 65) return { 
+                        title: "Baixo Risco de Burnout", 
+                        desc: "Seu relatório indica que você possui um excelente equilíbrio entre as demandas profissionais e sua energia pessoal. Sua capacidade de se 'desligar' do trabalho e sua eficácia são seus maiores aliados. O plano de ação focará em manter e blindar esse estado.", 
+                        color: 'bg-green-500' 
+                    };
+                    if (score <= 105) return { 
+                        title: "Risco Moderado (Alerta)", 
+                        desc: "Seu relatório aponta sinais claros de exaustão emocional e cinismo. Você está na 'zona de perigo', onde o estresse está se tornando crônico. O plano de ação é focado em reverter esse quadro com técnicas de recuperação de energia e estabelecimento de limites.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Alto Risco de Burnout", 
+                        desc: "Seu relatório mostra um esgotamento crítico. Sua exaustão emocional, distanciamento (cinismo) e sensação de ineficácia estão no auge. Isso exige atenção imediata. O plano de ação é focado em intervenção e recuperação urgente da sua saúde mental e física.", 
+                        color: 'bg-red-500' 
+                    };
                 }
             },
             qi: {
@@ -265,7 +335,7 @@
                     "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
                     "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
                     "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
-                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simples.",
+                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
                     "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
                     "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
                     "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)",
@@ -287,11 +357,23 @@
                     "29. Eu tenho dificuldade em organizar meus pensamentos em uma discussão. (Invertida)",
                     "30. Eu sinto que minha mente trabalha em alta velocidade."
                 ],
-                inverted_questions: [13, 14, 20, 22, 29], // 5 perguntas invertidas
+                inverted_questions: [13, 14, 20, 22, 29],
                 get_result: (score) => {
-                    if (score <= 85) return { title: "Raciocínio Básico", desc: "Sua pontuação indica um raciocínio lógico funcional, mas que se beneficia de exercícios diários. Adquira o acesso para ver o plano de melhoria.", color: 'bg-yellow-500' };
-                    if (score <= 130) return { title: "Raciocínio Acima da Média", desc: "Sua capacidade lógica e fluida é forte. Adquira o acesso para ver o score exato e áreas de excelência.", color: 'bg-green-500' };
-                    return { title: "Raciocínio Excepcional (QI Alto)", desc: "Sua pontuação é extremamente alta! Adquira o acesso para ver o score exato e o relatório completo.", color: 'bg-blue-600' };
+                    if (score <= 85) return { 
+                        title: "Raciocínio Lógico Sólido", 
+                        desc: "Seu relatório indica uma capacidade funcional e prática de resolver problemas. Sua inteligência é eficaz no dia a dia. O plano de ação focará em 'exercícios cerebrais' para aumentar a velocidade de processamento e a identificação de padrões.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    if (score <= 130) return { 
+                        title: "Raciocínio Acima da Média", 
+                        desc: "Seu relatório mostra uma inteligência fluida forte, com alta capacidade de aprendizado e adaptação. Você identifica padrões complexos com facilidade. O plano de ação focará em como aplicar essa habilidade em novas áreas para maximizar seu potencial.", 
+                        color: 'bg-green-500' 
+                    };
+                    return { 
+                        title: "Raciocínio Excepcional", 
+                        desc: "Seu relatório aponta uma capacidade cognitiva muito elevada. Sua velocidade de processamento, lógica abstrata e memória de trabalho são seus superpoderes. O plano de ação focará em desafios complexos para manter sua mente engajada e evitar o tédio intelectual.", 
+                        color: 'bg-blue-600' 
+                    };
                 }
             },
             stress: {
@@ -333,9 +415,21 @@
                 ],
                 inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
                 get_result: (score) => {
-                    if (score <= 60) return { title: "Stress Baixo e Saudável", desc: "Você demonstra ótima resiliência e controle. Adquira o relatório completo para manter esse equilíbrio. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 100) return { title: "Stress Moderado (Cuidado)", desc: "Sinais de sobrecarga estão presentes. É crucial ver o diagnóstico completo para adotar técnicas de relaxamento eficazes. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Stress Alto (Intervenção Urgente)", desc: "Você está sob intensa pressão! Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução imediata do stress. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                    if (score <= 60) return { 
+                        title: "Nível de Stress Saudável (Resiliente)", 
+                        desc: "Seu relatório indica que você tem uma excelente gestão de estresse. Sua capacidade de relaxar e organizar suas demandas é alta. O plano de ação focará em fortalecer sua resiliência para que você mantenha esse estado mesmo sob nova pressão.", 
+                        color: 'bg-green-500' 
+                    };
+                    if (score <= 100) return { 
+                        title: "Nível de Stress Moderado (Sobrecarga)", 
+                        desc: "Seu relatório aponta que você está acumulando tensão física e mental. Você provavelmente se sente 'no limite' e com dificuldade de relaxar. O plano de ação focará em técnicas de relaxamento ativo e gerenciamento de prioridades para reduzir a sobrecarga.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Nível de Stress Alto (Exaustão)", 
+                        desc: "Seu relatório mostra que seu corpo e mente estão em estado de alerta constante. A tensão muscular, irritabilidade e falta de controle são sinais claros. O plano de ação focará em estratégias de intervenção imediata para 'desligar o alarme' e recuperar seu equilíbrio.", 
+                        color: 'bg-red-500' 
+                    };
                 }
             },
             anxiety: {
@@ -377,9 +471,21 @@
                 ],
                 inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
                 get_result: (score) => {
-                    if (score <= 65) return { title: "Ansiedade Baixa", desc: "Você lida bem com a maioria das incertezas e demonstra boa capacidade de manter a calma. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 105) return { title: "Ansiedade Moderada", desc: "Sua pontuação indica sinais de apreensão. É crucial ver o diagnóstico completo para adotar técnicas de controle. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Ansiedade Elevada", desc: "O seu nível de apreensão e medo é alto. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de redução urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                    if (score <= 65) return { 
+                        title: "Nível de Ansiedade Baixo (Serenidade)", 
+                        desc: "Seu relatório indica que você tem uma ótima capacidade de gerenciar preocupações e manter a calma. Sua mente foca no presente. O plano de ação focará em como usar essa serenidade como uma ferramenta para enfrentar desafios maiores.", 
+                        color: 'bg-green-500' 
+                    };
+                    if (score <= 105) return { 
+                        title: "Nível de Ansiedade Moderado (Apreensão)", 
+                        desc: "Seu relatório aponta um estado de apreensão constante. Preocupações com o futuro ('e se...') e sintomas físicos leves são frequentes. O plano de ação focará em técnicas para 'aterrar' sua mente no presente e quebrar o ciclo de pensamentos negativos.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Nível de Ansiedade Elevado (Alerta)", 
+                        desc: "Seu relatório mostra que a ansiedade está impactando sua vida diária, com sintomas físicos (palpitações, inquietação) e mentais (medo, evasão). O plano de ação focará em estratégias de alívio imediato dos sintomas e na reestruturação de pensamentos catastróficos.", 
+                        color: 'bg-red-500' 
+                    };
                 }
             },
             sadness: {
@@ -421,53 +527,21 @@
                 ],
                 inverted_questions: [6, 9, 13, 16, 18, 20, 23, 27, 29, 30],
                 get_result: (score) => {
-                    if (score <= 60) return { title: "Humor Estável (Saudável)", desc: "Seu estado emocional é equilibrado. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 100) return { title: "Tristeza Moderada (Atenção)", desc: "Sinais de desânimo estão presentes. É crucial ver o diagnóstico completo para recuperar sua energia. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Tristeza Significativa (Alerta)", desc: "Os sinais indicam um estado de humor persistente e baixo. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de apoio urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
-                }
-            },
-            humility: {
-                title: "Sou Uma Pessoa Humilde?",
-                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
-                card_id: "card-humility",
-                image_url: 'humilde.png',
-                questions: [
-                    "1. Admito meus erros facilmente e sem me justificar.",
-                    "2. Eu procuro ativamente e valorizo o feedback negativo.",
-                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)",
-                    "4. Me coloco no lugar dos outros para entender suas falhas.",
-                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
-                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.",
-                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
-                    "8. Reconheço e elogio publicamente as conquistas dos outros.",
-                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)",
-                    "10. Peço desculpas rapidamente quando sei que errei.",
-                    "11. Eu me sinto ofendido(a) quando minhas ideias são rejeitadas. (Invertida)",
-                    "12. Eu realmente ouço a perspectiva dos outros sem interromper.",
-                    "13. Sinto que a maioria das pessoas não entende minha genialidade. (Invertida)",
-                    "14. Eu dou crédito a quem merece sem me preocupar em ser o centro das atenções.",
-                    "15. Evito falar sobre minhas conquistas para não parecer arrogante.",
-                    "16. Aceito que posso estar errado(a) sobre assuntos que domino.",
-                    "17. Eu me comparo negativamente com os outros. (Invertida)",
-                    "18. Meus amigos diriam que sou uma pessoa de 'cabeça aberta'.",
-                    "19. Eu me irrito com pessoas que fazem perguntas 'óbvias'. (Invertida)",
-                    "20. Eu me sinto à vontade pedindo ajuda quando preciso.",
-                    "21. Acredito que a maioria das pessoas são bem-intencionadas.",
-                    "22. Tenho dificuldade em elogiar ou admirar o sucesso alheio. (Invertida)",
-                    "23. Fico chateado(a) se não sou convidado(a) para eventos importantes. (Invertida)",
-                    "24. Eu me preocupo mais em aprender do que em impressionar.",
-                    "25. Acredito que há muitas lições a serem aprendidas com o fracasso.",
-                    "26. Eu me sinto superior intelectualmente à maioria das pessoas. (Invertida)",
-                    "27. Consigo me alegrar sinceramente com o sucesso dos outros.",
-                    "28. Eu sou paciente ao ensinar algo a alguém que está aprendendo.",
-                    "29. Tenho o costume de corrigir os erros dos outros em público. (Invertida)",
-                    "30. Eu valorizo o esforço tanto quanto o resultado final."
-                ],
-                inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
-                get_result: (score) => {
-                    if (score <= 80) return { title: "Humildade em Construção", desc: "Sua pontuação sugere dificuldades em aceitar falhas e dar crédito aos outros, com traços de autoimportância. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
-                    if (score <= 120) return { title: "Humildade Moderada", desc: "Você demonstra equilíbrio, mas pode ter dificuldade em aceitar críticas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Humildade Alta", desc: "Você demonstra uma forte capacidade de autoconhecimento. Adquira o acesso para ver o plano de ação para potencializar seu perfil. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
+                    if (score <= 60) return { 
+                        title: "Humor Estável (Saudável)", 
+                        desc: "Seu relatório indica um estado emocional equilibrado e positivo. Você tem energia, motivação e uma visão esperançosa do futuro. O plano de ação focará em como cultivar e proteger essa perspectiva positiva.", 
+                        color: 'bg-green-500' 
+                    };
+                    if (score <= 100) return { 
+                        title: "Tristeza Moderada (Atenção)", 
+                        desc: "Seu relatório aponta sinais de desânimo, perda de interesse e baixa energia. Sua motivação está sendo afetada. O plano de ação focará em estratégias de 'ativação comportamental' para reintroduzir prazer e propósito na sua rotina.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Tristeza Significativa (Alerta)", 
+                        desc: "Seu relatório mostra um estado de humor persistentemente baixo, com sentimentos de inutilidade, fadiga e isolamento. Isso é um sinal sério. O plano de ação focará em passos de apoio urgentes e na busca por conexões de suporte.", 
+                        color: 'bg-red-500' 
+                    };
                 }
             },
             arrogance: {
@@ -509,40 +583,112 @@
                 ],
                 inverted_questions: [4, 7, 9, 12, 14, 16, 17, 20, 22, 23, 26, 28],
                 get_result: (score) => {
-                    if (score <= 80) return { title: "Arrogância Baixa (Modestia)", desc: "Sua pontuação é baixa. Adquira o acesso para ver o plano de desenvolvimento. (Este é o único feedback GRÁTIS)", color: 'bg-green-500' };
-                    if (score <= 120) return { title: "Arrogância Moderada", desc: "Há traços de autoimportância ou insegurança em situações específicas. Adquira o acesso para ver a análise completa. (Este é o único feedback GRÁTIS)", color: 'bg-yellow-500' };
-                    return { title: "Arrogância Alta (Cuidado)", desc: "Os sinais de autoimportância são altos. Não podemos te dar detalhes aqui. Adquira o acesso para ver o plano de melhoria urgente. (Este é o único feedback GRÁTIS)", color: 'bg-red-500' };
+                    if (score <= 80) return { 
+                        title: "Nível Baixo (Modéstia)", 
+                        desc: "Seu relatório indica que você tem uma visão equilibrada de si mesmo, reconhecendo suas falhas e o valor dos outros. O plano de ação focará em como usar essa modéstia para construir confiança e liderar pelo exemplo.", 
+                        color: 'bg-green-500' 
+                    };
+                    if (score <= 120) return { 
+                        title: "Nível Moderado (Autoconfiança Elevada)", 
+                        desc: "Seu relatório aponta uma forte autoconfiança que, em momentos de estresse, pode ser vista como arrogância (ex: interromper, corrigir). O plano de ação focará em praticar a escuta ativa e em diferenciar confiança de superioridade.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Nível Alto (Arrogância)", 
+                        desc: "Seu relatório sugere que uma necessidade de superioridade e validação está prejudicando suas relações. A dificuldade em aceitar críticas é um ponto-chave. O plano de ação focará em desenvolver a humildade e a empatia como ferramentas de força.", 
+                        color: 'bg-red-500' 
+                    };
+                }
+            },
+            humility: {
+                title: "Sou Uma Pessoa Humilde?",
+                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
+                card_id: "card-humility",
+                image_url: 'humilde.png',
+                questions: [
+                    "1. Admito meus erros facilmente e sem me justificar.",
+                    "2. Eu procuro ativamente e valorizo o feedback negativo.",
+                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)",
+                    "4. Me coloco no lugar dos outros para entender suas falhas.",
+                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
+                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.",
+                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
+                    "8. Reconheço e elogio publicamente as conquistas dos outros.",
+                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)",
+                    "10. Peço desculpas rapidamente quando sei que errei.",
+                    "11. Eu me sinto ofendido(a) quando minhas ideias são rejeitadas. (Invertida)",
+                    "12. Eu realmente ouço a perspectiva dos outros sem interromper.",
+                    "13. Sinto que a maioria das pessoas não entende minha genialidade. (Invertida)",
+                    "14. Eu dou crédito a quem merece sem me preocupar em ser o centro das atenções.",
+                    "15. Evito falar sobre minhas conquistas para não parecer arrogante.",
+                    "16. Aceito que posso estar errado(a) sobre assuntos que domino.",
+                    "17. Eu me comparo negativamente com os outros. (Invertida)",
+                    "18. Meus amigos diriam que sou uma pessoa de 'cabeça aberta'.",
+                    "19. Eu me irrito com pessoas que fazem perguntas 'óbvias'. (Invertida)",
+                    "20. Eu me sinto à vontade pedindo ajuda quando preciso.",
+                    "21. Acredito que a maioria das pessoas são bem-intencionadas.",
+                    "22. Tenho dificuldade em elogiar ou admirar o sucesso alheio. (Invertida)",
+                    "23. Fico chateado(a) se não sou convidado(a) para eventos importantes. (Invertida)",
+                    "24. Eu me preocupo mais em aprender do que em impressionar.",
+                    "25. Acredito que há muitas lições a serem aprendidas com o fracasso.",
+                    "26. Eu me sinto superior intelectualmente à maioria das pessoas. (Invertida)",
+                    "27. Consigo me alegrar sinceramente com o sucesso dos outros.",
+                    "28. Eu sou paciente ao ensinar algo a alguém que está aprendendo.",
+                    "29. Tenho o costume de corrigir os erros dos outros em público. (Invertida)",
+                    "30. Eu valorizo o esforço tanto quanto o resultado final."
+                ],
+                inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
+                get_result: (score) => {
+                    if (score <= 80) return { 
+                        title: "Humildade em Construção", 
+                        desc: "Seu relatório indica uma forte autoconfiança que pode estar inibindo sua capacidade de aprender com os outros e admitir erros. O plano de ação focará em praticar a vulnerabilidade e a escuta ativa.", 
+                        color: 'bg-red-500' 
+                    };
+                    if (score <= 120) return { 
+                        title: "Humildade Moderada (Equilíbrio)", 
+                        desc: "Seu relatório aponta um bom equilíbrio entre confiança e humildade. Você geralmente aceita críticas, mas pode ter dificuldade em certas áreas. O plano de ação focará em identificar esses 'pontos cegos' para fortalecer sua abertura.", 
+                        color: 'bg-yellow-500' 
+                    };
+                    return { 
+                        title: "Humildade Alta (Abertura)", 
+                        desc: "Seu relatório mostra uma forte capacidade de autoconhecimento, abertura a críticas e valorização dos outros. Você vê o aprendizado em todos. O plano de ação focará em como usar essa humildade para inspirar e mentorar pessoas ao seu redor.", 
+                        color: 'bg-green-500' 
+                    };
                 }
             }
         };
 
+        // --- SELETORES DE ELEMENTOS ---
+        
         const quizCardsGrid = document.getElementById('quiz-cards-grid');
         const quizSelection = document.getElementById('quiz-selection');
         const quizStartCta = document.getElementById('quiz-start-cta');
-        const quizCtaTitle = document.getElementById('quiz-cta-title');
-        const quizCtaSubtitle = document.getElementById('quiz-cta-subtitle');
-        const buyQuizBtn = document.getElementById('buy-quiz-btn'); 
         const quizSection = document.getElementById('quiz-section');
         const activeQuizTitle = document.getElementById('active-quiz-title');
         const quizQuestionsContainer = document.getElementById('quiz-questions');
         const submitQuizBtn = document.getElementById('submit-quiz-btn');
         const quizResultArea = document.getElementById('quiz-result');
+        
+        // Elementos do Modal e Pagamento
         const purchaseModal = document.getElementById('purchase-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalPrice = document.getElementById('modal-price');
-        const confirmPurchaseBtn = document.getElementById('confirm-purchase-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
+        const loadingScreen = document.getElementById('loading-screen');
+        const paymentButtonContainer = document.getElementById('payment-button-container');
 
+
+        // --- FUNÇÕES PRINCIPAIS ---
 
         // Renderiza os cards de seleção na Home
         function renderQuizCards() {
-            // ORDEM CORRIGIDA: Burnout, QI, Stress, Ansiedade, Tristeza, Arrogância, Humildade
             const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
             
             quizCardsGrid.innerHTML = orderedKeys.map(key => {
                 const quiz = quizzes[key];
                 if (!quiz) return ''; 
                 
+                // (PONTO 1: Texto "GRATUITO" removido)
                 return `
                     <div id="${quiz.card_id}" 
                          class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white" 
@@ -552,7 +698,7 @@
                             <h3 class="text-2xl font-bold mb-1 text-red-500 text-shadow">${quiz.title}</h3>
                             <p class="text-sm opacity-90 text-white text-shadow">${quiz.subtitle}</p>
                             <span class="inline-block mt-3 px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full hover:bg-blue-700 transition">
-                                CLIQUE PARA INICIAR TESTE GRATUITO
+                                CLIQUE PARA INICIAR O TESTE
                             </span>
                         </div>
                     </div>
@@ -564,7 +710,7 @@
             });
         }
         
-        // Manipula a seleção do Quiz (Ação ao clicar no card)
+        // Ação ao clicar no card
         function handleQuizSelection(event) {
             const card = event.currentTarget;
             const quizId = card.getAttribute('data-quiz-id');
@@ -573,117 +719,7 @@
             loadQuiz(); // Inicia o quiz diretamente
         }
 
-        // --- COBRANÇA NO FINAL DO QUIZ (MOVED FROM CTA) ---
-        // Exibe o modal de compra ao clicar em 'VER MEU RESULTADO FINAL'
-        submitQuizBtn.addEventListener('click', () => {
-            const quiz = quizzes[activeQuizId];
-            
-            // 1. Calcula a pontuação e mostra o feedback GRÁTIS
-            calculateAndShowFreeResult(); 
-            
-            // 2. Bloqueia o resultado detalhado com o modal de compra
-            modalTitle.textContent = `Desbloquear Relatório ${quiz.title}`;
-            modalPrice.textContent = `APENAS ${PRICE}`;
-            purchaseModal.classList.remove('hidden');
-        });
-
-
-        // Evento que simula a compra e INICIA o quiz
-        confirmPurchaseBtn.addEventListener('click', () => {
-            // REDIRECIONAMENTO PARA MERCADO PAGO AQUI
-            // Substitua 'SEU_LINK_DE_CHECKOUT_MERCADO_PAGO_AQUI' pelo seu link real
-            window.open('SEU_LINK_DE_CHECKOUT_MERCADO_PAGO_AQUI', '_blank');
-
-            // --- Lógica Pós-Pagamento ---
-            // IMPORTANTE: Na vida real, o Mercado Pago faria um webhook ou um redirecionamento 
-            // para liberar o resultado. Aqui, vamos apenas fechar o modal.
-            purchaseModal.classList.add('hidden'); 
-            
-            // Aqui, você chamaria a função para carregar o resultado COMPLETO se fosse um sistema real
-            // Por enquanto, o resultado GRÁTIS já foi mostrado.
-            quizResultArea.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        // Fecha o Modal
-        closeModalBtn.addEventListener('click', () => {
-            purchaseModal.classList.add('hidden');
-        });
-
-
-        // Função para calcular a pontuação e mostrar o resultado GRATUITO (visão geral)
-        function calculateAndShowFreeResult() {
-            const quiz = quizzes[activeQuizId];
-            let totalScore = 0;
-            
-            userAnswers.forEach((answer, index) => {
-                const questionNumber = index + 1;
-                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
-                    totalScore += (6 - answer);
-                } else {
-                    totalScore += answer;
-                }
-            });
-
-            // Obtém o resultado GRÁTIS
-            const resultData = quiz.get_result(totalScore);
-
-            // GERA O TEXTO DE ELABORAÇÃO (30 FRASES SIMULADAS)
-            const elaborateDescription = `
-                <div class="mt-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
-                    <h5 class="text-lg font-bold text-gray-900 mb-3">Visão Geral: Seu Nível de Consciência</h5>
-                    <p class="text-base text-gray-700 space-y-3">
-                        <span class="block">Parabéns por completar sua autoavaliação! Este teste é o primeiro passo crucial em sua jornada de autoconhecimento. A pontuação que você obteve reflete a intensidade de certos padrões emocionais e cognitivos em sua vida diária.</span>
-                        <span class="block">Neste momento, você identificou o seu **Status Inicial** (Sua pontuação é ${totalScore}). Para muitos, essa simples classificação já é um alívio, pois traz clareza sobre uma sensação que antes era apenas um incômodo.</span>
-                        <span class="block">No entanto, o número e a classificação ("${resultData.title}") são apenas a ponta do iceberg. A verdadeira mudança acontece quando você entende o **Porquê** e o **Como** por trás desse resultado.</span>
-                        <span class="block">Você deve estar se perguntando: "O que isso significa na prática?", "Quais perguntas específicas me levaram a esse resultado?", ou "O que eu faço agora para mudar essa situação?".</span>
-                        <span class="block font-bold text-red-600">A resposta detalhada a essas perguntas está no seu Relatório Completo e Personalizado.</span>
-                        <span class="block">**O que o Relatório Completo DESBLOQUEIA:**</span>
-                        <ul class="list-disc list-inside ml-4 text-sm space-y-1">
-                            <li><span class="font-semibold">ANÁLISE DE IMPACTO:</span> Descubra em qual das 5 dimensões (Ex: Físico, Emocional, Social) sua pontuação é mais alta.</li>
-                            <li><span class="font-semibold">PLANO DE AÇÃO RÁPIDO:</span> Receba 10 ideias práticas e imediatas para começar a gerenciar sua pontuação hoje mesmo (Ex: Exercícios de respiração, técnicas de organização).</li>
-                            <li><span class="font-semibold">MAPA DO PRÓXIMO NÍVEL:</span> Instruções detalhadas para potencializar seus pontos fortes e enfraquecer seus pontos de desafio.</li>
-                            <li><span class="font-semibold">ESCALA DE RISCO:</span> Visualização gráfica da sua posição exata na escala de autoconhecimento.</li>
-                            <li><span class="font-semibold">RECURSOS EXCLUSIVOS:</span> Indicação de livros e vídeos para aprofundar seu entendimento.</li>
-                        </ul>
-                        <span class="block mt-4">Não se contente com a superfície. O valor deste conhecimento excede em muito o investimento de ${PRICE}. É o primeiro passo para retomar o controle da sua vida.</span>
-                        <span class="block">Clique no botão abaixo para desbloquear seu Relatório Completo. Seu futuro mental começa agora!</span>
-                    </p>
-                </div>
-            `;
-
-
-            // Injeta o resultado na tela
-            quizResultArea.classList.remove('hidden');
-            quizResultArea.innerHTML = `
-                <h3 class="text-2xl font-bold text-center mb-4 text-gray-900">${quiz.title}</h3>
-                <h4 class="text-xl font-bold text-center mb-4">Sua Pontuação de Fim de Quiz: ${totalScore}</h4>
-                <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
-                    Classificação GRÁTIS: ${resultData.title}
-                </div>
-                ${elaborateDescription}
-
-                <!-- CTA para Venda/Próximo Passo -->
-                <div class="text-center mt-6">
-                    <button id="final-purchase-btn" class="px-8 py-4 bg-red-600 text-white text-xl font-bold rounded-lg shadow-xl hover:bg-red-700 transition duration-300">
-                        DESBLOQUEAR RELATÓRIO COMPLETO POR ${PRICE}
-                    </button>
-                </div>
-            `;
-            
-            // Adiciona o listener para o novo botão de compra
-            document.getElementById('final-purchase-btn').addEventListener('click', () => {
-                purchaseModal.classList.remove('hidden');
-                // Garante que o modal mostre o preço e o título correto antes de abrir
-                document.getElementById('modal-title').textContent = `Desbloquear Relatório ${quiz.title}`;
-                document.getElementById('modal-price').textContent = `APENAS ${PRICE}`;
-            });
-
-            // Rola a tela para o resultado
-            quizResultArea.scrollIntoView({ behavior: 'smooth' });
-        }
-
-
-        // Função que Carrega o quiz selecionado e inicia o questionário
+        // Carrega as perguntas do quiz
         function loadQuiz() {
             if (!activeQuizId) return;
             
@@ -692,13 +728,11 @@
             // Reseta variáveis
             userAnswers = new Array(quiz.questions.length).fill(0);
             quizQuestionsContainer.innerHTML = '';
-            quizResultArea.classList.add('hidden');
+            quizResultArea.classList.add('hidden'); // Garante que o resultado anterior suma
             submitQuizBtn.classList.add('hidden');
 
-            // 1. Configura o Título da Seção
             activeQuizTitle.textContent = quiz.title;
 
-            // 2. Renderiza as perguntas
             quiz.questions.forEach((questionText, index) => {
                 const questionElement = document.createElement('div');
                 questionElement.className = 'p-4 border border-gray-200 rounded-lg shadow-sm';
@@ -719,48 +753,36 @@
                 quizQuestionsContainer.appendChild(questionElement);
             });
 
-            // 3. Adiciona listener de clique para as opções no novo DOM
             document.querySelectorAll('.likert-option').forEach(option => {
                 option.addEventListener('click', handleOptionClick);
             });
             
-            // 4. Exibe a seção do quiz
             quizSection.classList.remove('hidden');
-            quizStartCta.classList.add('hidden'); 
-            quizCardsGrid.classList.add('hidden'); // Esconde cards ao iniciar
+            quizSelection.classList.add('hidden'); // Esconde a home inteira
             quizSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-
-        // Função para capturar a resposta
+        // Captura a resposta
         function handleOptionClick(event) {
             const element = event.currentTarget;
             const questionIndex = parseInt(element.getAttribute('data-question-index'));
             const value = parseInt(element.getAttribute('data-value'));
 
-            // Remove a seleção antiga
             const optionsContainer = document.getElementById(`options-${questionIndex}`);
             optionsContainer.querySelectorAll('.likert-option').forEach(opt => {
                 opt.classList.remove('selected-option', 'text-white', 'font-semibold');
-                // Garante que as classes de cor originais voltem
                 const originalClasses = likertScale.find(scale => scale.value === parseInt(opt.getAttribute('data-value'))).class;
                 opt.className = `likert-option ${originalClasses} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center`;
             });
 
-            // Adiciona a nova seleção e a classe de estilo forte
             element.classList.add('selected-option');
-            
-            // Armazena a resposta
             userAnswers[questionIndex] = value;
-
-            // Verifica se todas as perguntas foram respondidas para exibir o botão de submissão
             checkCompletion();
         }
 
-        // Verifica se todas as respostas estão preenchidas
+        // Verifica se todas as perguntas foram respondidas
         function checkCompletion() {
             const allAnswered = userAnswers.every(answer => answer !== 0);
-
             if (allAnswered) {
                 submitQuizBtn.classList.remove('hidden');
             } else {
@@ -768,6 +790,142 @@
             }
         }
 
+        // --- FLUXO DE PAGAMENTO (PONTOS 2, 3, 5) ---
+
+        // 1. Botão "VER RESULTADO" é clicado
+        submitQuizBtn.addEventListener('click', () => {
+            const quiz = quizzes[activeQuizId];
+            
+            // (PONTO 2: Não mostrar info grátis)
+            
+            // 1. Configura o modal de pagamento
+            modalTitle.textContent = `Seu Relatório de ${quiz.title.split(' ')[2]} está Pronto!`;
+            
+            // (PONTO 5: Preço já está no HTML, mas garantimos aqui)
+            document.getElementById('modal-price').textContent = `Por ${PRICE_DISPLAY}`;
+            
+            // 2. Injeta o botão REAL do Mercado Pago (PONTO 3)
+            injectMercadoPagoButton(PREFERENCE_ID_SIMULADO); 
+            
+            // 3. Mostra o modal
+            purchaseModal.classList.remove('hidden');
+        });
+
+        // 2. Injeta o botão do Mercado Pago
+        function injectMercadoPagoButton(preferenceId) {
+            paymentButtonContainer.innerHTML = ''; // Limpa o container
+            
+            const mpButtonScript = document.createElement('script');
+            mpButtonScript.src = "https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js";
+            mpButtonScript.setAttribute('data-preference-id', preferenceId);
+            mpButtonScript.setAttribute('data-source', 'button');
+            
+            // (PONTO 6: Preço no botão)
+            mpButtonScript.setAttribute('data-label', `PAGAR ${PRICE_DISPLAY}`);
+            
+            paymentButtonContainer.appendChild(mpButtonScript);
+            
+            // 3. Adiciona o listener de clique ao botão do MP
+            mpButtonScript.onload = () => {
+                const mpButton = document.querySelector('.mercadopago-button');
+                if (mpButton) {
+                    mpButton.onclick = (e) => {
+                        // O checkout do MP se abrirá
+                        
+                        // (PONTO 2: Lógica de carregamento só acontece AQUI)
+                        purchaseModal.classList.add('hidden');
+                        loadingScreen.classList.remove('hidden');
+
+                        // 4. Simula o tempo de transação
+                        setTimeout(() => {
+                            loadingScreen.classList.add('hidden');
+                            
+                            // 5. Libera o resultado completo!
+                            unlockAccess();
+                        }, 5000); // 5 segundos de espera
+                    };
+                }
+            };
+        }
+
+        // 4. Libera o acesso e mostra o resultado COMPLETO
+        function unlockAccess() {
+             const quiz = quizzes[activeQuizId];
+             let totalScore = 0;
+            
+             // Calcula o score (PONTO 4: Cálculo top já implementado)
+             userAnswers.forEach((answer, index) => {
+                 const questionNumber = index + 1;
+                 if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                     totalScore += (6 - answer);
+                 } else {
+                     totalScore += answer;
+                 }
+             });
+
+            const resultData = quiz.get_result(totalScore);
+
+             // (PONTO 4: Textos de resultado melhores)
+             quizResultArea.classList.remove('hidden'); 
+             quizResultArea.innerHTML = `
+                 <h3 class="text-3xl font-extrabold text-center mb-4 text-green-600">✅ ACESSO LIBERADO!</h3>
+                 <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '')}</h4>
+                 
+                 <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
+                     Diagnóstico Principal: ${resultData.title}
+                 </div>
+                 
+                 <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação: ${totalScore} de ${quiz.questions.length * 5}</h4>
+
+                 <div class="mt-4 p-5 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
+                     
+                     <p class="text-base text-gray-700">
+                         <span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span>
+                         <span class="block mt-1">${resultData.desc}</span>
+                     </p>
+                     
+                     <p class="text-base text-gray-700">
+                         <span class="font-bold text-lg text-blue-800">PLANO DE AÇÃO SUGERIDO:</span>
+                         <span class="block mt-1">Baseado na sua pontuação ${totalScore}, seu foco deve ser:</span>
+                         <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
+                            ${
+                                // Lógica para plano de ação personalizado
+                                resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia')
+                                ? `<li><strong>Manutenção:</strong> Seu resultado é positivo! O foco é blindar sua mente. Pratique a gratidão diária e anote 3 coisas pelas quais você é grato(a).</li>
+                                   <li><strong>Fortalecimento:</strong> Ensine o que você sabe. Ajudar alguém com seus desafios (seja paciência, organização ou controle) fortalece suas próprias habilidades.</li>
+                                   <li><strong>Prevenção:</strong> Identifique seus 'gatilhos' de estresse. O que te tira do sério? Crie um plano de 1 minuto para quando eles aparecerem (ex: respirar fundo 5 vezes).</li>`
+                                : ''
+                            }
+                            ${
+                                resultData.title.includes('Moderado') || resultData.title.includes('Apreensão') || resultData.title.includes('Autoconfiança')
+                                ? `<li><strong>Reconhecimento:</strong> Você está na zona de alerta. O primeiro passo é admitir que o estresse está vencendo. Separe 10 minutos por dia para 'não fazer nada' (sem celular, sem TV).</li>
+                                   <li><strong>Ação Imediata:</strong> Escreva o que está te sobrecarregando. Tire da cabeça e coloque no papel. Depois, circule UMA coisa que você pode resolver hoje.</li>
+                                   <li><strong>Limite:</strong> Pratique dizer 'não'. Comece com coisas pequenas. "Pode me ajudar agora?" -> "Posso te ajudar em 30 minutos, estou focado(a) em algo."</li>`
+                                : ''
+                            }
+                             ${
+                                resultData.title.includes('Alto') || resultData.title.includes('Elevado') || resultData.title.includes('Exaustão') || resultData.title.includes('Significativa') || resultData.title.includes('Construção')
+                                ? `<li><strong>Ação Urgente:</strong> Seu nível de alerta é alto. Fale com alguém de confiança (amigo, família) sobre como está se sentindo. Não guarde para você.</li>
+                                   <li><strong>Rotina de Sono:</strong> Priorize o sono. Tente dormir e acordar no mesmo horário por 3 dias seguidos, mesmo no fim de semana. Seu cérebro precisa desse reset.</li>
+                                   <li><strong>Movimento Leve:</strong> Faça uma caminhada de 15 minutos. O movimento físico é o antídoto mais rápido para a carga mental excessiva.</li>
+                                   <li><strong>Ajuda Profissional:</strong> Considere seriamente conversar com um psicólogo. Este teste é um indicador, e sua pontuação sugere que um apoio profissional faria uma grande diferença.</li>`
+                                : ''
+                            }
+                         </ul>
+                     </p>
+                     <p class="mt-4 text-lg font-semibold text-blue-800">
+                         **Próximo Passo:** Salve este relatório! Releia este plano de ação amanhã e escolha UMA pequena atitude para colocar em prática.
+                     </p>
+                 </div>
+             `;
+
+             quizResultArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fecha o Modal
+        closeModalBtn.addEventListener('click', () => {
+            purchaseModal.classList.add('hidden');
+        });
         
         // Inicialização
         document.addEventListener('DOMContentLoaded', renderQuizCards);
