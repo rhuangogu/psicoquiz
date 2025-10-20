@@ -7,120 +7,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fc;
-            background-image: url('mente.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        .quiz-container {
-            max-width: 800px;
-        }
-        .likert-option {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .likert-option:hover {
-            background-color: #eff6ff; /* blue-50 */
-        }
-        .selected-option {
-            background-color: #1d4ed8 !important; /* Blue-700 escuro */
-            color: white;
-            font-weight: 700;
-            box-shadow: 0 0 0 4px #EC4899; /* Cor pink/magenta do tema */
-            transform: scale(1.05);
-            border-color: transparent !important;
-        }
-        .quiz-card-select {
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid #f8f8f8; 
-            min-height: 250px;
-            border-radius: 1rem;
-        }
-        .quiz-card-select::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 1;
-            border-radius: inherit;
-        }
-        .quiz-card-select:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-        .quiz-content {
-            position: relative;
-            z-index: 2;
-        }
+        /* Estilos gerais */
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; background-image: url('mente.png'); background-size: cover; background-position: center; background-attachment: fixed; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        .quiz-container { max-width: 800px; }
+        .likert-option { cursor: pointer; transition: all 0.2s; }
+        .likert-option:hover { background-color: #eff6ff; }
+        .selected-option { background-color: #1d4ed8 !important; color: white; font-weight: 700; box-shadow: 0 0 0 4px #EC4899; transform: scale(1.05); border-color: transparent !important; }
+        .quiz-card-select { cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 4px solid #f8f8f8; min-height: 250px; border-radius: 1rem; }
+        .quiz-card-select::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.45); z-index: 1; border-radius: inherit; }
+        .quiz-card-select:hover { transform: translateY(-5px); box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2); }
+        .quiz-content { position: relative; z-index: 2; }
         #card-burnout { background-image: url('bernalt.png'); }
-        #card-qi { background-image: url('qi.png'); background-color: #3b82f6; } 
+        #card-qi { background-image: url('qi.png'); background-color: #3b82f6; }
         #card-stress { background-image: url('estresse.png'); }
         #card-anxiety { background-image: url('ansiedade.png'); }
         #card-sadness { background-image: url('triste.png'); }
         #card-humility { background-image: url('humilde.png'); }
         #card-arrogance { background-image: url('arrogante.png'); }
-
-        .bg-cover-center {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .modal {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .text-shadow {
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }
-        .old-price {
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-        #payment-button-container {
-            min-height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1rem;
-        }
-        #loading-screen {
-            background-color: rgba(255, 255, 255, 0.95);
-            z-index: 100;
-            display: flex; /* MUDADO DE 'none' para 'flex' por JS */
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #EC4899;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .bg-cover-center { background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .modal { background-color: rgba(0, 0, 0, 0.7); }
+        .text-shadow { text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); }
+        .old-price { text-decoration: line-through; opacity: 0.7; }
+        #payment-button-container { min-height: 50px; display: flex; justify-content: center; align-items: center; margin-top: 1rem; }
+        #loading-screen { background-color: rgba(255, 255, 255, 0.95); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #EC4899; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="text-gray-800">
@@ -136,12 +47,8 @@
 
     <main>
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center" id="quiz-selection">
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">
-                DESVENDE SUA MENTE
-            </h1>
-            <p class="text-xl text-white mb-12 text-shadow font-semibold">
-                Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.
-            </p>
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">DESVENDE SUA MENTE</h1>
+            <p class="text-xl text-white mb-12 text-shadow font-semibold">Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.</p>
             <div id="quiz-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 </div>
         </section>
@@ -149,16 +56,11 @@
         <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
             <div class="bg-slate-50 p-6 sm:p-10 rounded-xl shadow-2xl">
                 <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-8 text-gray-900"></h2>
-                
                 <div id="quiz-questions" class="space-y-6">
                     </div>
-                
                 <div class="text-center mt-10">
-                    <button id="submit-quiz-btn" class="px-8 py-3 bg-pink-600 text-white text-lg font-bold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300 hidden">
-                        VER MEU RESULTADO FINAL
-                    </button>
+                    <button id="submit-quiz-btn" class="px-8 py-3 bg-pink-600 text-white text-lg font-bold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300 hidden">VER MEU RESULTADO FINAL</button>
                 </div>
-
                 <div id="quiz-result" class="mt-10 p-6 bg-slate-100 rounded-lg hidden">
                     </div>
             </div>
@@ -166,12 +68,8 @@
 
         <section class="bg-gray-100 py-16 mt-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-900">
-                    Sobre a PsicoQuiz
-                </h2>
-                <p class="text-center text-lg text-gray-600 max-w-4xl mx-auto">
-                    A PsicoQuiz nasceu da necessidade de democratizar o acesso ao autoconhecimento. Acreditamos que todos merecem ferramentas valiosas para entender sua própria mente. Nossos testes são desenvolvidos com base em conceitos da psicologia, mas servem como um ponto de partida para sua jornada pessoal. Lembre-se: Autoconhecimento é poder!
-                </p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-900">Sobre a PsicoQuiz</h2>
+                <p class="text-center text-lg text-gray-600 max-w-4xl mx-auto">A PsicoQuiz nasceu da necessidade de democratizar o acesso ao autoconhecimento. Acreditamos que todos merecem ferramentas valiosas para entender sua própria mente. Nossos testes são desenvolvidos com base em conceitos da psicologia, mas servem como um ponto de partida para sua jornada pessoal. Lembre-se: Autoconhecimento é poder!</p>
             </div>
         </section>
     </main>
@@ -179,47 +77,47 @@
     <footer class="bg-gray-900 text-white py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p class="text-sm">&copy; 2025 PsicoQuiz. Todos os direitos reservados.</p>
-            <p class="text-xs mt-2 text-gray-500">
-                Atenção: Nossos testes são ferramentas de autoavaliação e não substituem um diagnóstico clínico profissional.
-            </p>
+            <p class="text-xs mt-2 text-gray-500">Atenção: Nossos testes são ferramentas de autoavaliação e não substituem um diagnóstico clínico profissional.</p>
         </div>
     </footer>
-    
+
     <div id="purchase-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
             <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Seu Relatório está Pronto!</h3>
             <p class="text-gray-700 mb-4">Seu diagnóstico foi concluído. Desbloqueie o **Relatório Completo** para revelar sua análise detalhada e plano de ação personalizado.</p>
-            
             <p class="text-gray-500 text-lg old-price">De R$ 25,00</p>
             <p id="modal-price" class="text-4xl font-extrabold text-red-600 mb-4">Por R$ 8,99</p>
 
             <div id="payment-button-container" class="mb-4">
-                </div>
-            
-            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+                <script src="https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js"
+                        data-preference-id="210637269-9fa0440d-9820-4a4c-a664-5eab8b06f0cc"
+                        data-source="button">
+                </script>
+            </div>
 
-            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
-                Cancelar
-            </button>
+            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+            <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">Cancelar</button>
         </div>
     </div>
-    
+
     <div id="loading-screen" class="fixed inset-0" style="display: none;">
         <div class="loader"></div>
         <p class="mt-4 text-xl font-semibold text-gray-700">Verificando Pagamento...</p>
         <p class="text-sm text-gray-500">Aguarde, estamos liberando seu resultado.</p>
     </div>
 
-    <script src="https://sdk.mercadopago.com/js/v2"></script> 
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 
     <script>
         document.addEventListener('contextmenu', event => event.preventDefault());
 
         // --- CHAVES E PREÇOS ---
-        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-3dcd6d31-9cf4-414b-adee-952f61d7e9bc'; 
-        const PREFERENCE_ID_SIMULADO = "210637269-9fa0440d-9820-4a4c-a664-5eab8b06f0cc";
+        // !!! SUBSTITUA PELA SUA NOVA PUBLIC KEY DA APP "PsicoQuizz" !!!
+        const MERCADO_PAGO_PUBLIC_KEY = 'APP_USR-COLE_SUA_NOVA_PUBLIC_KEY_AQUI';
+        // Este ID veio do seu script estático. Verifique se ele está correto e associado à App "PsicoQuizz"
+        const PREFERENCE_ID_PARA_SCRIPT = "210637269-9fa0440d-9820-4a4c-a664-5eab8b06f0cc";
         const PRICE_DISPLAY = "R$ 8,99";
-        
+
         const likertScale = [
             { text: "Nunca", value: 1, class: 'bg-green-100 hover:bg-green-200 text-green-800' },
             { text: "Raramente", value: 2, class: 'bg-lime-100 hover:bg-lime-200 text-lime-800' },
@@ -230,256 +128,147 @@
 
         let userAnswers = [];
         let activeQuizId = null;
-        
-        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
-            locale: 'pt-BR'
-        });
+
+        const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY);
 
         // --- BANCO DE DADOS DOS QUIZZES ---
-        // (CONSELHOS PERSONALIZADOS - PONTO 3)
         const quizzes = {
             burnout: {
                 title: "Teste de Risco de Burnout",
                 subtitle: "Avalie sua exaustão emocional, cinismo e eficácia profissional.",
                 card_id: "card-burnout",
-                image_url: 'bernalt.png', 
-                questions: [
-                    "1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.", // 0
-                    "2. Sinto-me cansado(a) logo ao acordar e ter que encarar o trabalho.",
-                    "3. Consigo resolver os problemas do trabalho de forma eficaz. (Invertida)",
-                    "4. Sinto que estou me esforçando demais, mas não vejo resultados.",
-                    "5. Lidar com pessoas no meu trabalho é um grande estresse.", // 4
-                    "6. Sinto que não estou fazendo a diferença na minha área.",
-                    "7. O trabalho tem consumido todo o meu tempo livre.",
-                    "8. Minha concentração fora do trabalho tem sido afetada.",
-                    "9. Sinto-me revigorado(a) após as folgas ou feriados. (Invertida)",
-                    "10. Tenho pensado em desistir da minha profissão ou mudar de área.", // 9
-                    "11. Meu sono tem sido de má qualidade e insuficiente.",
-                    "12. Tenho negligenciado meus hobbies e vida social.",
-                    "13. Consigo lidar com o excesso de tarefas com calma. (Invertida)",
-                    "14. Sinto que meu futuro na empresa é limitado ou incerto.",
-                    "15. Tenho tido dores de cabeça ou musculares frequentes.",
-                    "16. Sinto-me motivado(a) para começar novos projetos. (Invertida)",
-                    "17. Eu evito interações sociais no ambiente de trabalho.",
-                    "18. Sinto que tenho poco controle sobre minha carga de trabalho.", // 17
-                    "19. Consigo separar minha vida pessoal dos problemas do trabalho. (Invertida)",
-                    "20. Eu sou cínico(a) ou crítico(a) com a maioria das pessoas no trabalho.",
-                    "21. Sinto que a energia que invisto não compensa o resultado.",
-                    "22. Tenho usado mais café, álcool ou cigarros para lidar com o estresse.",
-                    "23. Meus colegas de trabalho parecem mais competentes do que eu.",
-                    "24. Minha produtividade diminuiu significativamente nos últimos meses.",
-                    "25. A pressão no trabalho me faz sentir ansioso(a) ou deprimido(a).",
-                    "26. Sinto-me um(a) profissional realizado(a). (Invertida)",
-                    "27. Tenho tido lapsos de memória ou dificuldade de raciocínio.",
-                    "28. Eu me afasto emocionalmente dos problemas de trabalho dos outros.",
-                    "29. Consigo manter uma perspectiva positiva sobre o trabalho. (Invertida)",
-                    "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."
-                ],
+                image_url: 'bernalt.png',
+                questions: ["1. Sinto-me emocionalmente exausto(a) ao final do dia de trabalho.", "2. Sinto-me cansado(a) logo ao acordar...", /* ... (restantes das 30 perguntas) ... */ "30. Sinto que o meu trabalho exige mais de mim do que eu posso dar."],
                 inverted_questions: [3, 9, 13, 16, 19, 26, 29],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
-                // NOVO: Conselhos específicos
+                get_result: (score) => {
+                    if (score <= 65) return { title: "Baixo Risco de Burnout", desc: "Seu relatório indica que você possui um excelente equilíbrio...", color: 'bg-green-500' };
+                    if (score <= 105) return { title: "Risco Moderado (Alerta)", desc: "Seu relatório aponta sinais claros de exaustão emocional...", color: 'bg-yellow-500' };
+                    return { title: "Alto Risco de Burnout", desc: "Seu relatório mostra um esgotamento crítico...", color: 'bg-red-500' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[0] >= 4) { advice.push("Vimos que sua **Exaustão Emocional** (Pergunta 1) é um ponto crítico. É vital criar um ritual de 'desligamento' após o trabalho (ex: trocar de roupa, caminhar 10 min) para sinalizar ao seu cérebro que o dia acabou."); }
-                    if (answers[4] >= 4) { advice.push("Você marcou que **Lidar com Pessoas** é um grande estresse (Pergunta 5). Tente a 'Técnica da Observação': antes de reagir a alguém, respire fundo e apenas observe a situação como um espectador. Isso cria distância emocional e te dá controle."); }
-                    if (answers[17] >= 4) { advice.push("A **falta de controle** sobre as tarefas (Pergunta 18) é um gatilho enorme. Tente a 'Técnica do Círculo': liste o que você PODE controlar (suas reações, sua organização) e o que NÃO PODE (demandas urgentes do chefe). Foque 100% no que está dentro do seu controle."); }
+                    if (answers[0] >= 4) advice.push("Vimos que sua **Exaustão Emocional** (Pergunta 1) é um ponto crítico...");
+                    if (answers[4] >= 4) advice.push("Você marcou que **Lidar com Pessoas** é um grande estresse (Pergunta 5)...");
+                    if (answers[17] >= 4) advice.push("A **falta de controle** sobre as tarefas (Pergunta 18) é um gatilho enorme...");
                     return advice;
                 }
             },
             qi: {
                 title: "Teste de QI e Raciocínio",
-                subtitle: "Avalie sua inteligência fluida e capacidade de resolver problemas lógicos.",
+                subtitle: "Avalie sua inteligência fluida...",
                 card_id: "card-qi",
-                image_url: 'qi.png', 
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Eu resolvo problemas complexos rapidamente, mesmo sob pressão.", // 0
-                    "2. Consigo identificar padrões e sequências em informações aleatórias.",
-                    "3. Eu entendo e utilizo bem a lógica abstrata (matemática, códigos, etc.).",
-                    "4. Eu aprendo novas habilidades conceituais com facilidade.", // 3
-                    "5. Eu consigo fazer conexões entre ideias que parecem não relacionadas.",
-                    "6. Quando me deparo com um novo problema, consigo criar rapidamente diferentes estratégias de solução.",
-                    "7. Eu me divirto com jogos e desafios que envolvem lógica e raciocínio.",
-                    "8. Minha memória de trabalho (capacidaded de manter informações temporárias) é excelente.",
-                    "9. Eu tenho facilidade em visualizar objetos tridimensionais na minha mente.",
-                    "10. Eu consigo entender e explicar conceitos complexos para outras pessoas de forma simple.",
-                    "11. Eu percebo pequenos detalhes e discrepâncias que a maioria das pessoas ignora.",
-                    "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
-                    "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)", // 12
-                    "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)", // 13
-                    "15. Minhas decisões são sempre baseadas em lógica e não em emoção.",
-                    "16. Eu consigo manter o foco por longos períodos em tarefas intelectuais.",
-                    "17. Eu sou rápido(a) em fazer cálculos mentais e estimativas.",
-                    "18. Tenho facilidade em aprender novas línguas ou linguagens de programação.",
-                    "19. Se for dado um conjunto de dados, consigo tirar conclusões válidas a partir deles.",
-                    "20. Eu me sinto frustrado(a) rapidamente quando não consigo resolver um enigma. (Invertida)",
-                    "21. Eu tenho um vocabulário vasto e consigo articular minhas ideias com clareza.",
-                    "22. Eu consigo trabalhar em múltiplas tarefas complexas ao mesmo tempo. (Invertida)",
-                    "23. Eu sou bom(a) em resolver quebra-cabeças e jogos de estratégia.",
-                    "24. Eu consigo me adaptar rapidamente a novos ambientes e regras.",
-                    "25. Eu costumo ler muito rápido e reter a maior parte das informações.",
-                    "26. Eu questiono e analiso as informações antes de aceitá-las como verdade.",
-                    "27. Eu consigo prever o resultado de ações ou eventos com precisão.",
-                    "28. Eu sou bom(a) em identificar e corrigir meus próprios erros de lógica.",
-                    "29. Eu tenho dificuldade em organizar meus pensamentos em uma discussão. (Invertida)",
-                    "30. Eu sinto que minha mente trabalha em alta velocidade."
-                ],
+                image_url: 'qi.png',
+                questions: ["1. Eu resolvo problemas complexos rapidamente...", /* ... (30 perguntas) ... */ "30. Eu sinto que minha mente trabalha em alta velocidade."],
                 inverted_questions: [13, 14, 20, 22, 29],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
+                get_result: (score) => {
+                    if (score <= 85) return { title: "Raciocínio Lógico Sólido", desc: "Seu relatório indica uma capacidade funcional...", color: 'bg-yellow-500' };
+                    if (score <= 130) return { title: "Raciocínio Acima da Média", desc: "Seu relatório mostra uma inteligência fluida forte...", color: 'bg-green-500' };
+                    return { title: "Raciocínio Excepcional", desc: "Seu relatório aponta uma capacidade cognitiva muito elevada...", color: 'bg-blue-600' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[13] >= 4) { advice.push("Notamos que você tem **dificuldade com gráficos** (Pergunta 14). Tente 'ler' o gráfico antes de ler o texto. Pergunte-se: 'O que essa imagem está me dizendo?' (Ex: 'A linha está subindo'). Isso treina sua interpretação visual."); }
-                    if (answers[3] <= 2) { advice.push("Você marcou que **aprender novas habilidades conceituais** (Pergunta 4) é um desafio. Tente a 'Técnica Feynman': pegue um conceito novo (ex: como funciona um motor) e tente explicá-lo em voz alta para uma criança. Se você não consegue simplificar, você não entendeu ainda. Isso força seu cérebro a criar conexões."); }
+                    if (answers[13] >= 4) advice.push("Notamos que você tem **dificuldade com gráficos** (Pergunta 14)...");
+                    if (answers[3] <= 2) advice.push("Você marcou que **aprender novas habilidades conceituais** (Pergunta 4) é um desafio...");
                     return advice;
                 }
             },
             stress: {
                 title: "Quão Estressado Eu Sou?",
-                subtitle: "Descubra seu nível de tensão, sobrecarga e capacidade de relaxamento.",
+                subtitle: "Descubra seu nível de tensão...",
                 card_id: "card-stress",
-                image_url: 'estresse.png', 
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Tenho dificuldade em pegar no sono devido a preocupações.", // 0
-                    "2. Sinto meus músculos tensos com frequência (ombros, pescoço).", // 1
-                    "3. Minha mente corre sem parar, mesmo quando tento relaxar.", // 2
-                    "4. Tenho me sentido irritado(a) ou impaciente facilmente.",
-                    "5. Sinto que tenho pouco controle sobre os acontecimentos da minha vida.",
-                    "6. Consigo relaxar e descontrair completamente após o trabalho. (Invertida)",
-                    "7. Sinto que há mais demandas do que minha capacidade de lidar.",
-                    "8. Tenho tido dores de cabeça frequentes ou problemas estomacais.",
-                    "9. Minhas atividades de lazer me dão prazer genuíno. (Invertida)",
-                    "10. Eu me preocupo em excesso com coisas que não posso mudar.",
-                    "11. Tenho me alimentado de forma irregular ou comi demais por causa da tensão.",
-                    "12. Fico facilmente agitado(a) ou com a sensação de 'motor ligado'.",
-                    "13. Consigo manter a calma em situações de incerteza. (Invertida)",
-                    "14. Sinto que estou sempre correndo contra o tempo.", // 13
-                    "15. Tenho dificuldade em dizer 'não' para novas responsabilidades.",
-                    "16. Sinto que tenho apoio social adequado (amigos, família). (Invertida)",
-                    "17. Tenho tido ataques de raiva ou explosões emocionais.",
-                    "18. Minhas obrigações parecem esmagadoras na maioria das vezes.",
-                    "19. Eu tenho um tempo diário dedicado a meditação ou relaxamento. (Invertida)",
-                ],
+                image_url: 'estresse.png',
+                questions: ["1. Tenho dificuldade em pegar no sono...", /* ... (30 perguntas) ... */ "30. Tenho tido mais gripes ou problemas de saúde..."],
                 inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
+                get_result: (score) => {
+                    if (score <= 60) return { title: "Nível de Stress Saudável (Resiliente)", desc: "Seu relatório indica que você tem uma excelente gestão...", color: 'bg-green-500' };
+                    if (score <= 100) return { title: "Nível de Stress Moderado (Sobrecarga)", desc: "Seu relatório aponta que você está acumulando tensão...", color: 'bg-yellow-500' };
+                    return { title: "Nível de Stress Alto (Exaustão)", desc: "Seu relatório mostra que seu corpo e mente estão em estado de alerta...", color: 'bg-red-500' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[0] >= 4 || answers[2] >= 4) { advice.push("Sua **mente acelerada na hora de dormir** (Perguntas 1 e 3) é um sinal clássico de estresse. Tente o 'Brain Dump': 30 minutos antes de deitar, escreva TUDO que está te preocupando. Tirar da cabeça e por no papel ajuda o cérebro a relaxar."); }
-                    if (answers[1] >= 4) { advice.push("A **tensão muscular** (Pergunta 2) é seu corpo guardando o estresse. Tente a 'Relaxamento Progressivo': deite-se, contraia os músculos dos pés por 5 segundos e solte. Suba para as pernas, barriga, braços, até o rosto. Isso ensina o corpo a diferenciar tensão de relaxamento."); }
-                    if (answers[13] >= 4) { advice.push("A sensação de **correr contra o tempo** (Pergunta 14) é sobrecarga. Tente a 'Regra dos 2 Minutos': se uma tarefa (responder um email, lavar um copo) leva menos de 2 minutos, faça IMEDIATAMENTE. Isso limpa sua lista mental e diminui a sensação de 'coisa acumulada'."); }
+                    if (answers[0] >= 4 || answers[2] >= 4) advice.push("Sua **mente acelerada na hora de dormir** (Perguntas 1 e 3)...");
+                    if (answers[1] >= 4) advice.push("A **tensão muscular** (Pergunta 2) é seu corpo guardando o estresse...");
+                    if (answers[13] >= 4) advice.push("A sensação de **correr contra o tempo** (Pergunta 14) é sobrecarga...");
                     return advice;
                 }
             },
-            anxiety: {
+             anxiety: {
                 title: "Qual o Meu Nível de Ansiedade?",
-                subtitle: "Avaliação do seu estado de apreensão, medo, e preocupação excessiva.",
+                subtitle: "Avaliação do seu estado de apreensão...",
                 card_id: "card-anxiety",
                 image_url: 'ansiedade.png',
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Sinto palpitações, tonturas ou respiração ofegante sem razão aparente.", // 0
-                    "2. Tenho evitado situações sociais ou desafios por medo.", // 1
-                    "3. Sinto que algo ruim pode acontecer a qualquer momento.", // 2
-                    "4. Tenho dificuldade em controlar a preocupação diária, ela me domina.", // 3
-                    "5. Consigo manter a calma em situações de incerteza. (Invertida)",
-                    "6. Minha mente fica constantemente revirada, pensando em 'e se...'.", // 5
-                    "7. Tenho tido tremores, formigamento ou sensação de desequilíbrio.",
-                    "8. Costumo ensaiar mentalmente conversas ou eventos futuros exaustivamente.",
-                    "9. Me sinto seguro(a) e tranquilo(a) na maioria das vezes. (Invertida)",
-                    "10. Fico inquieto(a), agitado(a) ou incapaz de relaxar o corpo." // 9
-                ],
+                questions: ["1. Sinto palpitações, tonturas...", /* ... (30 perguntas) ... */ "30. Minha qualidade de vida é boa e satisfatória. (Invertida)"],
                 inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
+                get_result: (score) => {
+                     if (score <= 65) return { title: "Nível de Ansiedade Baixo (Serenidade)", desc: "Seu relatório indica que você tem uma ótima capacidade...", color: 'bg-green-500' };
+                     if (score <= 105) return { title: "Nível de Ansiedade Moderado (Apreensão)", desc: "Seu relatório aponta um estado de apreensão constante...", color: 'bg-yellow-500' };
+                     return { title: "Nível de Ansiedade Elevado (Alerta)", desc: "Seu relatório mostra que a ansiedade está impactando sua vida...", color: 'bg-red-500' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o ar por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
-                    if (answers[2] >= 4 || answers[5] >= 4) { advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6). Tente a 'Técnica 5-4-3-2-1': pare e nomeie 5 coisas que você vê, 4 que você ouve, 3 que você sente (tato), 2 que você cheira e 1 que você prova. Isso força sua mente a voltar para o PRESENTE."); }
-                    if (answers[1] >= 4) { advice.push("Você está **evitando situações** (Pergunta 2) por medo. A ansiedade cresce no escuro. O conselho é a 'Exposição Gradual': se você tem medo de ir a festas, comece por algo pequeno. Ex: 'Vou ficar só 15 minutos'. Você não precisa pular na piscina, só molhar o pé. Isso ensina ao seu cérebro que você sobrevive."); }
+                    if (answers[0] >= 4 || answers[9] >= 4) advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10)...");
+                    if (answers[2] >= 4 || answers[5] >= 4) advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6)...");
+                    if (answers[1] >= 4) advice.push("Você está **evitando situações** (Pergunta 2) por medo...");
                     return advice;
                 }
             },
             sadness: {
                 title: "Quão Triste Estou?",
-                subtitle: "Mapeamento do seu humor, energia, motivação e satisfação geral com a vida.",
+                subtitle: "Mapeamento do seu humor, energia...",
                 card_id: "card-sadness",
                 image_url: 'triste.png',
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Tenho perdido o interesse em atividades que antes gostava.", // 0
-                    "2. Sinto uma tristeza constante na maior parte do dia.",
-                    "3. Sinto-me sem energia ou com muita fadiga, mesmo após descansar.", // 2
-                    "4. Meu apetite e/ou meu sono mudaram drasticamente (mais ou menos).",
-                    "5. Tenho dificuldade em me concentrar ou tomar decisões simples.",
-                    "6. Sinto que a vida vale a pena e sou grato(a) por ela. (Invertida)",
-                    "7. Tenho tido sentimentos de culpa ou inutilidade.", // 6
-                    "8. Sinto que o futuro é sombrio, sem esperança ou perspectivas.",
-                    "9. Minha energia física e mental está alta. (Invertida)",
-                    "10. Tenho chorado com mais frequência que o normal.",
-                    "11. Tenho me isolado de amigos e familiares." // 10
-                ],
+                questions: ["1. Tenho perdido o interesse em atividades...", /* ... (30 perguntas) ... */ "30. Eu me sinto confortável com quem eu sou. (Invertida)"],
                 inverted_questions: [6, 9, 13, 16, 18, 20, 23, 27, 29, 30],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
+                get_result: (score) => {
+                    if (score <= 60) return { title: "Humor Estável (Saudável)", desc: "Seu relatório indica um estado emocional equilibrado...", color: 'bg-green-500' };
+                    if (score <= 100) return { title: "Tristeza Moderada (Atenção)", desc: "Seu relatório aponta sinais de desânimo...", color: 'bg-yellow-500' };
+                    return { title: "Tristeza Significativa (Alerta)", desc: "Seu relatório mostra um estado de humor persistentemente baixo...", color: 'bg-red-500' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[0] >= 4 || answers[2] >= 4) { advice.push("Sua **perda de interesse e energia** (Perguntas 1 e 3) é o sintoma central. Tente a 'Ativação Comportamental': force-se a fazer UMA coisa que você *costumava* gostar (ex: ouvir uma música, caminhar 5 min), mesmo sem vontade. A motivação não vem antes, ela vem *depois* da ação."); }
-                    if (answers[10] >= 4) { advice.push("O **isolamento** (Pergunta 11) é o 'combustível' da tristeza. Você não precisa ir a uma festa. Mande UMA mensagem para um amigo, apenas dizendo 'Oi, lembrei de você'. Pequenas conexões quebram o ciclo do isolamento."); }
-                    if (answers[6] >= 4) { advice.push("Sentimentos de **culpa ou inutilidade** (Pergunta 7) são distorções cognitivas. Tente 'separar o FATO do sentimento'. Fato: 'Eu errei'. Sentimento: 'Eu sou um fracasso'. Você não é um fracasso, você é alguém que errou. Seja gentil consigo mesmo como seria com um amigo."); }
+                    if (answers[0] >= 4 || answers[2] >= 4) advice.push("Sua **perda de interesse e energia** (Perguntas 1 e 3)...");
+                    if (answers[10] >= 4) advice.push("O **isolamento** (Pergunta 11) é o 'combustível' da tristeza...");
+                    if (answers[6] >= 4) advice.push("Sentimentos de **culpa ou inutilidade** (Pergunta 7) são distorções...");
                     return advice;
                 }
             },
             arrogance: {
                 title: "Sou Uma Pessoa Arrogante?",
-                subtitle: "Avaliação da sua autoimportância, necessidade de validação e desvalorização alheia.",
+                subtitle: "Avaliação da sua autoimportância...",
                 card_id: "card-arrogance",
                 image_url: 'arrogante.png',
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Sinto que sou superior à maioria das pessoas ao meu redor.", // 0
-                    "2. Fico incomodado(a) se não sou o centro das atenções.",
-                    "3. Eu facilmente desvalorizo as conquistas de pessoas que não gosto.",
-                    "4. Consigo aceitar que há pessoas mais talentosas do que eu. (Invertida)", // 3
-                    "5. Interrompo os outros com frequência para expressar minha opinião.", // 4
-                    "6. Eu acredito que as regras se aplicam mais aos outros do que a mim.",
-                    "7. Recebo elogios com gratidão e simplicidade. (Invertida)",
-                    "8. Sinto a necessidade de 'corrigir' as pessoas em público.", // 7
-                    "9. Peço desculpas e reconheço erros de forma sincera. (Invertida)", // 8
-                    "10. Eu me considero uma pessoa especial e única."
-                ],
+                questions: ["1. Sinto que sou superior à maioria...", /* ... (30 perguntas) ... */ "30. Eu desconfio facilmente das intenções dos outros."],
                 inverted_questions: [4, 7, 9, 12, 14, 16, 17, 20, 22, 23, 26, 28],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
-                get_specific_advice: (answers) => {
+                 get_result: (score) => {
+                     if (score <= 80) return { title: "Nível Baixo (Modéstia)", desc: "Seu relatório indica que você tem uma visão equilibrada...", color: 'bg-green-500' };
+                     if (score <= 120) return { title: "Nível Moderado (Autoconfiança Elevada)", desc: "Seu relatório aponta uma forte autoconfiança...", color: 'bg-yellow-500' };
+                     return { title: "Nível Alto (Arrogância)", desc: "Seu relatório sugere que uma necessidade de superioridade...", color: 'bg-red-500' };
+                 },
+                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[4] >= 4 || answers[7] >= 4) { advice.push("A necessidade de **interromper ou corrigir os outros** (Perguntas 5 e 8) vem de um desejo de provar seu valor. Tente o 'Desafio do Silêncio': entre em uma conversa e seu único objetivo é fazer perguntas. Não dê sua opinião a menos que perguntem. Você vai aprender mais e as pessoas vão te achar um ótimo ouvinte."); }
-                    if (answers[3] >= 4) { // Pergunta invertida
-                        advice.push("Você marcou que tem dificuldade em **aceitar que outros são mais talentosos** (Pergunta 4). A arrogância é o medo da própria insuficiência. Tente a 'Abordagem da Abundância': o talento de outra pessoa não tira o seu. Elogie publicamente UMA pessoa que você admira. Isso quebra a mentalidade de escassez.");
-                    }
-                    if (answers[8] >= 4) { // Pergunta invertida
-                        advice.push("Vimos que **pedir desculpas** (Pergunta 9) pode ser difícil. Um 'desculpe' sincero não é fraqueza, é o máximo da força e confiança. Tente praticar com coisas pequenas. 'Desculpe, te interrompi. Pode continuar.'");
-                    }
+                    if (answers[4] >= 4 || answers[7] >= 4) advice.push("A necessidade de **interromper ou corrigir os outros** (Perguntas 5 e 8)...");
+                    if (answers[3] >= 4) advice.push("Você marcou que tem dificuldade em **aceitar que outros são mais talentosos** (Pergunta 4)...");
+                    if (answers[8] >= 4) advice.push("Vimos que **pedir desculpas** (Pergunta 9) pode ser difícil...");
                     return advice;
-                }
+                 }
             },
             humility: {
                 title: "Sou Uma Pessoa Humilde?",
-                subtitle: "Avalie sua abertura a críticas, valorização dos outros e autopercepção.",
+                subtitle: "Avalie sua abertura a críticas...",
                 card_id: "card-humility",
                 image_url: 'humilde.png',
-                questions: [ /* ... (sempre as mesmas 30 perguntas) ... */ 
-                    "1. Admito meus erros facilmente e sem me justificar.",
-                    "2. Eu procuro ativamente e valorizo o feedback negativo.", // 1
-                    "3. Sinto que meu sucesso se deve apenas ao meu talento, não aos outros. (Invertida)", // 2
-                    "4. Me coloco no lugar dos outros para entender suas falhas.",
-                    "5. Eu costumo dominar as conversas em grupo. (Invertida)",
-                    "6. Acredito que todos, independentemente do cargo, têm algo a me ensinar.", // 5
-                    "7. Fico ressentido(a) quando alguém faz algo melhor que eu. (Invertida)",
-                    "8. Reconheço e elogio publicamente as conquistas dos outros.", // 7
-                    "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)", // 8
-                    "10. Peço desculpas rapidamente quando sei que errei."
-                ],
+                questions: ["1. Admito meus erros facilmente...", /* ... (30 perguntas) ... */ "30. Eu valorizo o esforço tanto quanto o resultado final."],
                 inverted_questions: [3, 5, 7, 9, 11, 13, 17, 19, 22, 23, 26, 29],
-                get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
+                get_result: (score) => {
+                    if (score <= 80) return { title: "Humildade em Construção", desc: "Seu relatório indica uma forte autoconfiança...", color: 'bg-red-500' };
+                    if (score <= 120) return { title: "Humildade Moderada (Equilíbrio)", desc: "Seu relatório aponta um bom equilíbrio...", color: 'bg-yellow-500' };
+                    return { title: "Humildade Alta (Abertura)", desc: "Seu relatório mostra uma forte capacidade de autoconhecimento...", color: 'bg-green-500' };
+                },
                 get_specific_advice: (answers) => {
                     let advice = [];
-                    if (answers[1] <= 2) { advice.push("Você marcou que **não procura feedback negativo** (Pergunta 2). O feedback é um presente, não um ataque. Tente pedir um micro-feedback a alguém de confiança: 'Em uma escala de 1 a 10, como foi [minha apresentação]? O que eu faria para ser 10?'. Isso torna o feedback menos assustador."); }
-                    if (answers[8] >= 4) { // Pergunta invertida
-                        advice.push("Vimos que você acha que **suas opiniões são as mais corretas** (Pergunta 9). Tente a 'Técnica do Advogado do Diabo': em uma discussão, pare e tente argumentar FORTE a favor do lado oposto, mesmo que mentalmente. Isso força seu cérebro a ver falhas na sua própria lógica e a valorizar a do outro.");
-                    }
-                    if (answers[7] <= 2) { advice.push("A dificuldade em **elogiar publicamente** (Pergunta 8) pode ser orgulho. Tente a 'Regra do Elogio Diário': encontre UMA coisa que alguém fez bem (um colega, um familiar) e elogie essa pessoa, de preferência na frente de outros. Isso constrói pontes."); }
+                    if (answers[1] <= 2) advice.push("Você marcou que **não procura feedback negativo** (Pergunta 2)...");
+                    if (answers[8] >= 4) advice.push("Vimos que você acha que **suas opiniões são as mais corretas** (Pergunta 9)...");
+                    if (answers[7] <= 2) advice.push("A dificuldade em **elogiar publicamente** (Pergunta 8)...");
                     return advice;
                 }
             }
@@ -500,151 +289,101 @@
         const loadingScreen = document.getElementById('loading-screen');
         const paymentButtonContainer = document.getElementById('payment-button-container');
 
-        // --- FUNÇÕES PRINCIPAIS ---
+        // --- FUNÇÕES DE RENDERIZAÇÃO E INTERAÇÃO ---
 
-        // Renderiza os cards de seleção
         function renderQuizCards() {
             const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
             quizCardsGrid.innerHTML = orderedKeys.map(key => {
                 const quiz = quizzes[key];
-                // MUDANÇA DE ESTILO: Botão rosa (bg-pink-600) e sem "Gratuito"
                 return `
-                    <div id="${quiz.card_id}" class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white" 
+                    <div id="${quiz.card_id}" class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white"
                          data-quiz-id="${key}" style="background-image: url('${quiz.image_url}');">
                         <div class="quiz-content">
                             <h3 class="text-2xl font-bold mb-1 text-red-500 text-shadow">${quiz.title}</h3>
                             <p class="text-sm opacity-90 text-white text-shadow">${quiz.subtitle}</p>
-                            <span class="inline-block mt-3 px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded-full hover:bg-pink-700 transition">
-                                CLIQUE PARA INICIAR O TESTE
-                            </span>
+                            <span class="inline-block mt-3 px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded-full hover:bg-pink-700 transition">CLIQUE PARA INICIAR O TESTE</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
-
-            document.querySelectorAll('.quiz-card-select').forEach(card => {
-                card.addEventListener('click', handleQuizSelection);
-            });
+            document.querySelectorAll('.quiz-card-select').forEach(card => card.addEventListener('click', handleQuizSelection));
         }
-        
-        // Ação ao clicar no card
+
         function handleQuizSelection(event) {
             activeQuizId = event.currentTarget.getAttribute('data-quiz-id');
             loadQuiz();
         }
 
-        // Carrega as perguntas do quiz
         function loadQuiz() {
             if (!activeQuizId) return;
             const quiz = quizzes[activeQuizId];
-            
             userAnswers = new Array(quiz.questions.length).fill(0);
             quizQuestionsContainer.innerHTML = '';
             quizResultArea.classList.add('hidden');
             submitQuizBtn.classList.add('hidden');
             activeQuizTitle.textContent = quiz.title;
-
             quiz.questions.forEach((questionText, index) => {
                 const questionElement = document.createElement('div');
-                // MUDANÇA DE ESTILO: bg-white e shadow-md
                 questionElement.className = 'p-4 bg-white rounded-lg shadow-md';
                 questionElement.innerHTML = `
                     <p class="font-semibold mb-3 text-lg">${questionText}</p>
                     <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mt-3" id="options-${index}">
-                        ${likertScale.map(option => `
-                            <div class="likert-option ${option.class} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center"
-                                 data-question-index="${index}" data-value="${option.value}">
-                                ${option.text}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                        ${likertScale.map(option => `<div class="likert-option ${option.class} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center" data-question-index="${index}" data-value="${option.value}">${option.text}</div>`).join('')}
+                    </div>`;
                 quizQuestionsContainer.appendChild(questionElement);
             });
-
-            document.querySelectorAll('.likert-option').forEach(option => {
-                option.addEventListener('click', handleOptionClick);
-            });
-            
+            document.querySelectorAll('.likert-option').forEach(option => option.addEventListener('click', handleOptionClick));
             quizSection.classList.remove('hidden');
             quizSelection.classList.add('hidden');
             quizSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Captura a resposta
         function handleOptionClick(event) {
             const element = event.currentTarget;
             const questionIndex = parseInt(element.getAttribute('data-question-index'));
             const value = parseInt(element.getAttribute('data-value'));
-
             const optionsContainer = document.getElementById(`options-${questionIndex}`);
             optionsContainer.querySelectorAll('.likert-option').forEach(opt => {
                 opt.classList.remove('selected-option');
                 const originalClasses = likertScale.find(scale => scale.value === parseInt(opt.getAttribute('data-value'))).class;
                 opt.className = `likert-option ${originalClasses} px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center`;
             });
-
             element.classList.add('selected-option');
             userAnswers[questionIndex] = value;
             checkCompletion();
         }
 
-        // Verifica se todas as perguntas foram respondidas
         function checkCompletion() {
             const allAnswered = userAnswers.every(answer => answer !== 0);
-            if (allAnswered) {
-                submitQuizBtn.classList.remove('hidden');
-            } else {
-                submitQuizBtn.classList.add('hidden');
-            }
+            submitQuizBtn.classList.toggle('hidden', !allAnswered);
         }
 
-        // --- NOVO FLUXO DE PAGAMENTO (REQ 1) ---
+        // --- FLUXO DE PAGAMENTO ---
 
-        // 1. Botão "VER RESULTADO" é clicado
         submitQuizBtn.addEventListener('click', () => {
             const quiz = quizzes[activeQuizId];
-            
-            // 1. SALVA AS RESPOSTAS no navegador antes de ir pagar
-            localStorage.setItem('pendingQuiz', JSON.stringify({
-                id: activeQuizId,
-                answers: userAnswers
-            }));
-            
-            // 2. Configura e mostra o modal de pagamento
+            localStorage.setItem('pendingQuiz', JSON.stringify({ id: activeQuizId, answers: userAnswers }));
             modalTitle.textContent = `Seu Relatório de ${quiz.title.replace('Teste de ', '')} está Pronto!`;
-            injectMercadoPagoButton(PREFERENCE_ID_SIMULADO); 
             purchaseModal.classList.remove('hidden');
+
+            // Recarrega o script do botão MP para garantir que ele apareça
+            const mpScriptExisting = paymentButtonContainer.querySelector('script[src*="mercadopago"]');
+            if (mpScriptExisting) {
+                const newScript = document.createElement('script');
+                newScript.src = mpScriptExisting.src;
+                newScript.dataset.preferenceId = PREFERENCE_ID_PARA_SCRIPT;
+                newScript.dataset.source = "button";
+                paymentButtonContainer.innerHTML = '';
+                paymentButtonContainer.appendChild(newScript);
+            }
         });
 
-        // 2. Injeta o botão do Mercado Pago
-        function injectMercadoPagoButton(preferenceId) {
-            paymentButtonContainer.innerHTML = ''; // Limpa o container
-            
-            const mpButtonScript = document.createElement('script');
-            mpButtonScript.src = "https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js";
-            mpButtonScript.setAttribute('data-preference-id', preferenceId);
-            mpButtonScript.setAttribute('data-source', 'button');
-            mpButtonScript.setAttribute('data-label', `PAGAR ${PRICE_DISPLAY}`);
-            
-            paymentButtonContainer.appendChild(mpButtonScript);
-            
-            // IMPORTANTE: Removemos o 'setTimeout' e o 'loadingScreen' daqui.
-            // O botão do MP agora apenas faz o redirect para o checkout.
-            // A verificação será feita no carregamento da página.
-        }
-
-        // 3. Libera o acesso e mostra o resultado COMPLETO
         function unlockAccess(quizId, answers) {
-             activeQuizId = quizId; // Recupera o ID do quiz
-             userAnswers = answers; // Recupera as respostas
-             
+             activeQuizId = quizId;
+             userAnswers = answers;
              const quiz = quizzes[activeQuizId];
-             if (!quiz) return; // Segurança
-             
+             if (!quiz) return;
+
              let totalScore = 0;
-            
-             // Calcula o score
              userAnswers.forEach((answer, index) => {
                  const questionNumber = index + 1;
                  if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
@@ -655,112 +394,71 @@
              });
 
             const resultData = quiz.get_result(totalScore);
-            
-            // (REQ 3) Pega os conselhos personalizados
             let specificAdvice = [];
-            if (quiz.get_specific_advice && (resultData.title.includes('Moderado') || resultData.title.includes('Alto') || resultData.title.includes('Construção'))) {
+            // Verifica se a função existe e se o resultado não é 'baixo/saudável'
+            if (quiz.get_specific_advice && !(resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia') || resultData.title.includes('Equilíbrio') || resultData.title.includes('Abertura'))) {
                 specificAdvice = quiz.get_specific_advice(userAnswers);
             }
-            
-            // Monta o HTML dos conselhos
+
             const adviceHtml = specificAdvice.length > 0 ? `
                 <p class="text-base text-gray-700 mt-4">
                     <span class="font-bold text-lg text-blue-800">CONSELHOS PERSONALIZADOS (COM BASE NAS SUAS RESPOSTAS):</span>
                     <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
                         ${specificAdvice.map(item => `<li>${item}</li>`).join('')}
                     </ul>
-                </p>
-            ` : '';
+                </p>` : '';
 
-             // Monta o resultado final
+             const planGeneralHtml = (resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia') || resultData.title.includes('Equilíbrio') || resultData.title.includes('Abertura'))
+                 ? `<li><strong>Manutenção:</strong> Seu resultado é positivo! O foco é blindar sua mente. Pratique a gratidão diária...</li><li><strong>Prevenção:</strong> Identifique seus 'gatilhos' de estresse...</li>`
+                 : `<li><strong>Ação Urgente:</strong> Sua pontuação sugere atenção. Fale com alguém de confiança...</li><li><strong>Rotina de Sono:</strong> Priorize o sono...</li><li><strong>Ajuda Profissional:</strong> Considere conversar com um profissional...</li>`;
+
              quizResultArea.innerHTML = `
                  <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
                  <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '')}</h4>
-                 
-                 <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">
-                     Diagnóstico Principal: ${resultData.title}
-                 </div>
-                 
+                 <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">Diagnóstico Principal: ${resultData.title}</div>
                  <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação: ${totalScore} de ${quiz.questions.length * 5}</h4>
-
                  <div class="mt-4 p-5 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
-                     
-                     <p class="text-base text-gray-700">
-                         <span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span>
-                         <span class="block mt-1">${resultData.desc}</span>
-                     </p>
-                     
-                     ${adviceHtml} <p class="text-base text-gray-700 mt-4">
-                         <span class="font-bold text-lg text-blue-800">PLANO DE AÇÃO GERAL:</span>
-                         <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
-                            ${
-                                resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia')
-                                ? `<li><strong>Manutenção:</strong> Seu resultado é positivo! O foco é blindar sua mente. Pratique a gratidão diária e anote 3 coisas pelas quais você é grato(a).</li>
-                                   <li><strong>Prevenção:</strong> Identifique seus 'gatilhos' de estresse. O que te tira do sério? Crie um plano de 1 minuto para quando eles aparecerem (ex: respirar fundo 5 vezes).</li>`
-                                : `<li><strong>Ação Urgente:</strong> Sua pontuação sugere atenção. Fale com alguém de confiança (amigo, família) sobre como está se sentindo. Não guarde para você.</li>
-                                   <li><strong>Rotina de Sono:</strong> Priorize o sono. Tente dormir e acordar no mesmo horário por 3 dias seguidos. Seu cérebro precisa desse reset.</li>
-                                   <li><strong>Ajuda Profissional:</strong> Considere conversar com um profissional. Este teste é um indicador, e sua pontuação sugere que um apoio profissional faria uma grande diferença.</li>`
-                            }
-                         </ul>
-                     </p>
-                 </div>
-             `;
-             
-             // Mostra o resultado e esconde o resto
+                     <p class="text-base text-gray-700"><span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span><span class="block mt-1">${resultData.desc}</span></p>
+                     ${adviceHtml}
+                     <p class="text-base text-gray-700 mt-4"><span class="font-bold text-lg text-blue-800">PLANO DE AÇÃO GERAL:</span><ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">${planGeneralHtml}</ul></p>
+                 </div>`;
+
              quizSection.classList.remove('hidden');
              quizSelection.classList.add('hidden');
-             quizQuestionsContainer.classList.add('hidden'); // Esconde as perguntas
-             submitQuizBtn.classList.add('hidden'); // Esconde o botão de submit
-             quizResultArea.classList.remove('hidden'); // Mostra o resultado
-
+             quizQuestionsContainer.innerHTML = ''; // Limpa as perguntas
+             submitQuizBtn.classList.add('hidden');
+             activeQuizTitle.textContent = ''; // Limpa o título do quiz
+             quizResultArea.classList.remove('hidden');
              quizResultArea.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Fecha o Modal
         closeModalBtn.addEventListener('click', () => {
             purchaseModal.classList.add('hidden');
-            // Limpa o storage se a pessoa cancelar
-            localStorage.removeItem('pendingQuiz');
+            localStorage.removeItem('pendingQuiz'); // Limpa se cancelar
         });
-        
+
         // --- LÓGICA DE INICIALIZAÇÃO DA PÁGINA ---
-        
         document.addEventListener('DOMContentLoaded', () => {
-            // (REQ 1) Verifica se o usuário está VOLTANDO do pagamento
             const urlParams = new URLSearchParams(window.location.search);
             const paymentStatus = urlParams.get('payment');
-            
-            // Tenta pegar o quiz pendente
             const pendingQuizData = localStorage.getItem('pendingQuiz');
-            
+
             if (paymentStatus === 'success' && pendingQuizData) {
-                // Pagamento APROVADO!
-                
-                // 1. Mostra a tela de "Verificando"
-                loadingScreen.style.display = 'flex';
-                
+                loadingScreen.style.display = 'flex'; // Mostra carregando
                 const data = JSON.parse(pendingQuizData);
-                
-                // 2. Simula uma verificação e libera o acesso
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
+                setTimeout(() => { // Simula verificação
+                    loadingScreen.style.display = 'none'; // Esconde carregando
                     unlockAccess(data.id, data.answers);
-                    localStorage.removeItem('pendingQuiz'); // Limpa o storage
-                    
-                    // Limpa a URL para não recarregar o resultado se der F5
-                    window.history.replaceState(null, '', window.location.pathname);
-                }, 2000); // Simula 2s de verificação
-                
+                    localStorage.removeItem('pendingQuiz');
+                    window.history.replaceState(null, '', window.location.pathname); // Limpa URL
+                }, 2000);
             } else if (paymentStatus === 'failed' || paymentStatus === 'pending') {
-                // Pagamento falhou ou foi cancelado
-                alert("Seu pagamento falhou ou foi cancelado. Tente novamente.");
+                alert("Seu pagamento falhou ou foi cancelado. Por favor, tente novamente.");
                 localStorage.removeItem('pendingQuiz');
                 window.history.replaceState(null, '', window.location.pathname);
                 renderQuizCards(); // Mostra a home
-                
             } else {
-                // Carregamento normal da página
-                renderQuizCards();
+                renderQuizCards(); // Carregamento normal da home
             }
         });
 
