@@ -236,6 +236,7 @@
     let activeQuizId = null;
     
     // --- BANCO DE DADOS DOS QUIZZES (COMPLETO) ---
+    // (MANTIDO O SEU OBJETO ORIGINAL EXTENSO E CORRETO AQUI)
     const quizzes = {
         burnout: {
             title: "Teste de Risco de Burnout",
@@ -442,7 +443,7 @@
             },
             get_specific_advice: (answers) => {
                 let advice = [];
-                if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o ar por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
+                if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o air por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
                 if (answers[2] >= 4 || answers[5] >= 4) { advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6). Tente a 'Técnica 5-4-3-2-1': pare e nomeie 5 coisas que você vê, 4 que você ouve, 3 que você sente (tato), 2 que você cheira e 1 que você prova. Isso força sua mente a voltar para o PRESENTE."); }
                 if (answers[1] >= 4) { advice.push("Você está **evitando situações** (Pergunta 2) por medo. A ansiedade cresce no escuro. O conselho é a 'Exposição Gradual': se você tem medo de ir a festas, comece por algo pequeno. Ex: 'Vou ficar só 15 minutos'. Você não precisa pular na piscina, só molhar o pé. Isso ensina ao seu cérebro que você sobrevive."); }
                 return advice;
@@ -654,6 +655,11 @@
         document.querySelectorAll('.quiz-card-select').forEach(card => {
             card.addEventListener('click', handleQuizSelection);
         });
+        
+        // Garante que o quiz-selection está visível e o quiz-section invisível
+        quizSelection.classList.remove('hidden');
+        quizSection.classList.add('hidden');
+        loadingScreen.classList.add('hidden'); // Esconde o loading caso tenha sido forçado antes
     }
 
     function handleQuizSelection(event) {
@@ -689,8 +695,6 @@
             quizQuestionsContainer.appendChild(questionElement);
         });
 
-        // Adicionando listener dinamicamente dentro do loop de renderização para simplificar
-        
         quizSection.classList.remove('hidden');
         quizSelection.classList.add('hidden');
         quizQuestionsContainer.classList.remove('hidden');
@@ -715,27 +719,27 @@
     }
 
     function checkCompletion() {
-        const allAnswered = userAnswers.every(answer => answer !== 0); 
-        if (allAnswered) {
+        const totalQuestions = quizzes[activeQuizId].questions.length;
+        const submittedQuestions = userAnswers.filter(a => a !== 0).length;
+
+        if (submittedQuestions === totalQuestions) {
             submitQuizBtn.classList.remove('hidden');
         } else {
             submitQuizBtn.classList.add('hidden');
         }
     }
 
-    // --- FUNÇÕES DE PAGAMENTO E RESULTADO ---
-
     // 1. Botão "VER RESULTADO" é clicado -> Salva e Abre Modal
     submitQuizBtn.addEventListener('click', () => {
         if (!activeQuizId) return;
 
-        // Calcula a pontuação total (salvamos o array de respostas, não o score)
+        // Salva as respostas
         localStorage.setItem('pendingQuiz', JSON.stringify({ id: activeQuizId, answers: userAnswers }));
 
         // Configura e abre o modal
         modalTitle.textContent = `Seu Relatório de ${quizzes[activeQuizId].title.replace('Teste de ', '')} está Pronto!`;
         document.getElementById('modal-price').textContent = `Por ${PRICE_DISPLAY}`;
-        checkoutLink.href = CHECKOUT_URL;
+        checkoutLink.href = CHECKOUT_URL; // Liga o link do Ko-fi ao botão
         purchaseModal.classList.remove('hidden');
     });
 
@@ -764,7 +768,6 @@
         const resultData = quiz.get_result(totalScore);
         let specificAdvice = [];
         
-        // Lógica de conselhos
         const isLowRisk = resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia');
         if (quiz.get_specific_advice && !isLowRisk) {
             specificAdvice = quiz.get_specific_advice(answers);
@@ -822,7 +825,6 @@
             if (storedQuizData) {
                 const data = JSON.parse(storedQuizData);
 
-                // Simula um pequeno delay para a UX
                 setTimeout(() => {
                     document.getElementById('loading-screen').classList.add('hidden');
                     
@@ -833,15 +835,13 @@
                         window.location.href = window.location.pathname;
                     }
                     
-                    // Limpa a URL e o storage
                     history.replaceState(null, '', window.location.pathname);
-                    localStorage.removeItem('pendingQuiz');
                 }, 1500); 
                 
                 return true;
             } else {
                 document.getElementById('loading-screen').classList.add('hidden');
-                alert("Acesso liberado, mas não encontramos as respostas do seu quiz. Por favor, refaça o teste.");
+                alert("Acesso liberado, mas não encontramos as respostas do seu quiz (Limpeza de cache?). Por favor, refaça o teste.");
                 history.replaceState(null, '', window.location.pathname);
             }
         }
@@ -850,12 +850,15 @@
 
     // --- INICIALIZAÇÃO ---
     document.addEventListener('DOMContentLoaded', () => {
+        // Tenta liberar o acesso, se retornar true, não renderiza a home
         const accessGranted = validateAccess();
 
         if (!accessGranted) {
+            // Se o acesso NÃO foi concedido, renderiza a seleção de quizzes normalmente
             renderQuizCards();
         }
     });
 </script>
 </body>
 </html>
+
