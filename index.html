@@ -121,6 +121,14 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* NOVO ESTILO: Cor de aviso para o botão de "Voltar" do modal */
+        #close-modal-btn.release-result-btn {
+            color: #16a34a; /* green-600 */
+            font-weight: bold;
+            font-size: 1rem;
+            padding-top: 10px;
+            display: block; /* Para ocupar a linha toda */
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -196,10 +204,10 @@
             <div id="payment-button-container" class="mb-4">
             </div>
             
-            <p class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
-
+            <p id="modal-payment-info" class="text-xs text-gray-500 mb-4">A transação será processada no ambiente seguro do Mercado Pago.</p>
+            
             <button id="close-modal-btn" class="text-sm text-gray-500 hover:text-gray-700 transition">
-                Cancelar
+                Cancelar e Voltar
             </button>
         </div>
     </div>
@@ -232,7 +240,8 @@
 
         let userAnswers = [];
         let activeQuizId = null;
-        
+        let paymentAttempted = false; // Novo flag para saber se o pagamento foi tentado
+
         // Inicializa o SDK do Mercado Pago
         const mp = new MercadoPago(MERCADO_PAGO_PUBLIC_KEY, {
             locale: 'pt-BR'
@@ -632,10 +641,10 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const loadingScreen = document.getElementById('loading-screen');
         const paymentButtonContainer = document.getElementById('payment-button-container');
+        const modalPaymentInfo = document.getElementById('modal-payment-info'); // Novo seletor
 
-        // --- FUNÇÕES PRINCIPAIS ---
+        // --- FUNÇÕES DE INTERFACE ---
 
-        // Renderiza os cards de seleção
         function renderQuizCards() {
             const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
             quizCardsGrid.innerHTML = orderedKeys.map(key => {
@@ -659,13 +668,11 @@
             });
         }
         
-        // Ação ao clicar no card
         function handleQuizSelection(event) {
             activeQuizId = event.currentTarget.getAttribute('data-quiz-id');
             loadQuiz();
         }
 
-        // Carrega as perguntas do quiz
         function loadQuiz() {
             if (!activeQuizId) return;
             const quiz = quizzes[activeQuizId];
@@ -675,7 +682,7 @@
             quizResultArea.classList.add('hidden');
             submitQuizBtn.classList.add('hidden');
             activeQuizTitle.textContent = quiz.title;
-            activeQuizTitle.classList.remove('hidden'); // Garante que o título aparece ao começar um quiz
+            activeQuizTitle.classList.remove('hidden');
 
             quiz.questions.forEach((questionText, index) => {
                 const questionElement = document.createElement('div');
@@ -700,11 +707,10 @@
             
             quizSection.classList.remove('hidden');
             quizSelection.classList.add('hidden');
-            quizQuestionsContainer.classList.remove('hidden'); // Mostra o container das perguntas
+            quizQuestionsContainer.classList.remove('hidden');
             quizSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Captura a resposta
         function handleOptionClick(event) {
             const element = event.currentTarget;
             const questionIndex = parseInt(element.getAttribute('data-question-index'));
@@ -722,9 +728,7 @@
             checkCompletion();
         }
 
-        // Verifica se todas as perguntas foram respondidas
         function checkCompletion() {
-            // Verifica se TODAS as respostas são diferentes de 0 (o valor inicial)
             const allAnswered = userAnswers.every(answer => answer !== 0); 
             if (allAnswered) {
                 submitQuizBtn.classList.remove('hidden');
@@ -733,77 +737,91 @@
             }
         }
 
-        // 1. Botão "VER RESULTADO" é clicado (ALTERADO CONFORME REQUISIÇÃO 1)
+        // --- FUNÇÕES DE PAGAMENTO E RESULTADO ---
+
+        // 1. Botão "VER RESULTADO" é clicado
         submitQuizBtn.addEventListener('click', () => {
             const quiz = quizzes[activeQuizId];
+            
             // 1. Salva ANTES de mostrar o modal
             localStorage.setItem('pendingQuiz', JSON.stringify({ id: activeQuizId, answers: userAnswers }));
+            
+            // 2. Seta o flag de tentativa
+            paymentAttempted = true; 
 
-            // 2. Configura e mostra o modal de pagamento
+            // 3. Configura o modal
             modalTitle.textContent = `Seu Relatório de ${quiz.title.replace('Teste de ', '')} está Pronto!`;
-            purchaseModal.classList.remove('hidden'); // Apenas mostra o modal
+            
+            // 4. MUDANÇA: Altera o botão de "Cancelar" para "Já Paguei, Mostrar Resultado"
+            closeModalBtn.textContent = 'Ainda não paguei, voltar para o teste'; // Default
+            closeModalBtn.classList.remove('release-result-btn');
+            modalPaymentInfo.textContent = 'A transação será processada no ambiente seguro do Mercado Pago.';
 
-            // 3. (OPCIONAL MAS RECOMENDADO) Recarrega o script do botão MP dinamicamente
-            paymentButtonContainer.innerHTML = ''; // Limpa antes
+            // 5. Injeta o botão do Mercado Pago
+            paymentButtonContainer.innerHTML = ''; 
 
             const mpButtonScript = document.createElement('script');
             mpButtonScript.src = "https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js";
-            // Usa o ID da preferência do seu Mercado Pago
             mpButtonScript.setAttribute('data-preference-id', PREFERENCE_ID_PARA_SCRIPT); 
             mpButtonScript.setAttribute('data-source', 'button');
             mpButtonScript.setAttribute('data-label', `PAGAR ${PRICE_DISPLAY}`);
             
             paymentButtonContainer.appendChild(mpButtonScript);
+            
+            // 6. Mostra o modal
+            purchaseModal.classList.remove('hidden');
+
+            // 7. Configura o setTimeout para alterar o botão de cancelamento
+            // Damos 3 segundos para o checkout carregar, depois oferecemos a opção manual
+            setTimeout(() => {
+                if (purchaseModal.classList.contains('hidden')) return; // Se o modal já foi fechado, não faz nada
+                
+                closeModalBtn.textContent = 'Já paguei, Liberar Resultado!';
+                closeModalBtn.classList.add('release-result-btn');
+                modalPaymentInfo.textContent = 'Se você já efetuou o pagamento, clique no botão verde para liberar o acesso.';
+
+            }, 3000); // 3 segundos para carregar o checkout e fazer a primeira tentativa
         });
 
-        // Libera o acesso e mostra o resultado COMPLETO (ALTERADO CONFORME REQUISIÇÃO 2)
+        // Libera o acesso e mostra o resultado COMPLETO
         function unlockAccess(quizId, answers) {
-            activeQuizId = quizId; // Recupera o ID do quiz salvo
-            userAnswers = answers; // Recupera as respostas salvas
+            activeQuizId = quizId;
+            userAnswers = answers;
             const quiz = quizzes[activeQuizId];
-            if (!quiz) { console.error("Quiz não encontrado após retorno:", quizId); return; } // Segurança
+            if (!quiz) { console.error("Quiz não encontrado após retorno:", quizId); return; }
 
             let totalScore = 0;
-            // Calcula o score
             userAnswers.forEach((answer, index) => {
                 const questionNumber = index + 1;
-                const answerValue = parseInt(answer); // Converte para número
-                // Verifica se a resposta é válida antes de calcular
+                const answerValue = parseInt(answer);
                 if (!isNaN(answerValue) && answerValue > 0) {
                     if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
                         totalScore += (6 - answerValue);
                     } else {
                         totalScore += answerValue;
                     }
-                } else {
-                    console.warn(`Resposta inválida ou ausente para a pergunta ${index + 1} do quiz ${quizId}:`, answer);
                 }
             });
 
-            const resultData = quiz.get_result(totalScore); // Pega o resultado principal
-            let specificAdvice = []; // Array para conselhos específicos
-
-            // Define se o resultado é de baixo risco/positivo para decidir se mostra o conselho específico
+            const resultData = quiz.get_result(totalScore);
+            let specificAdvice = [];
             const isLowRisk = resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia') || resultData.title.includes('Equilíbrio') || resultData.title.includes('Abertura') || resultData.title.includes('Acima da Média') || resultData.title.includes('Excepcional');
             if (quiz.get_specific_advice && !isLowRisk) {
-                specificAdvice = quiz.get_specific_advice(userAnswers); // Pega os conselhos
+                specificAdvice = quiz.get_specific_advice(userAnswers);
             }
 
-            // Monta o HTML dos conselhos específicos (se houver)
             const adviceHtml = specificAdvice.length > 0 ? `
                 <p class="text-base text-gray-700 mt-4">
                     <span class="font-bold text-lg text-blue-800">CONSELHOS PERSONALIZADOS (COM BASE NAS SUAS RESPOSTAS):</span>
                     <ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">
                         ${specificAdvice.map(item => `<li>${item}</li>`).join('')}
                     </ul>
-                </p>` : ''; // Se não houver conselhos, string vazia
+                </p>` : '';
 
-            // Monta o HTML do Plano de Ação General baseado no resultado
             const planGeneralHtml = isLowRisk
                 ? `<li><strong>Manutenção e Potencialização:</strong> Seu resultado é ótimo! Explore formas de usar suas forças (seja resiliência, lógica ou humildade) para mentorar outros ou buscar desafios ainda maiores.</li><li><strong>Prevenção:</strong> Mesmo estando bem, identifique pequenos sinais de alerta (ex: um dia de irritabilidade, dificuldade de foco). Use suas ferramentas (respiração, organização) preventivamente.</li>`
                 : `<li><strong>Ação Urgente:</strong> Sua pontuação sugere atenção imediata. O primeiro passo é reconhecer e aceitar o resultado. Falar com alguém de confiança é crucial.</li><li><strong>Rotina Restauradora:</strong> Foque em pequenas vitórias diárias: arrumar a cama, beber água suficiente, dar uma volta curta. Isso reconstrói a sensação de controle.</li><li><strong>Ajuda Profissional:</strong> Não hesite em buscar um psicólogo ou terapeuta. Este teste é um sinalizador, e um profissional pode te guiar de forma personalizada e profunda.</li>`;
 
-            // Gera o HTML COMPLETO do resultado final
             quizResultArea.innerHTML = `
                 <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
                 <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '')}</h4>
@@ -815,71 +833,98 @@
                     <p class="text-base text-gray-700 mt-4"><span class="font-bold text-lg text-blue-800">PLANO DE AÇÃO GERAL:</span><ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">${planGeneralHtml}</ul></p>
                 </div>`;
 
-            // Garante que a seção correta seja exibida e outras escondidas
             quizSection.classList.remove('hidden');
-            quizSelection.classList.add('hidden'); // Esconde a seleção de cards
-            quizQuestionsContainer.innerHTML = ''; // Limpa as perguntas do DOM para não ficarem visíveis
-            quizQuestionsContainer.classList.add('hidden'); // Esconde o container das perguntas
-            submitQuizBtn.classList.add('hidden'); // Esconde o botão de submissão
-            activeQuizTitle.classList.add('hidden'); // Esconde o título do quiz que estava sendo feito
-            quizResultArea.classList.remove('hidden'); // Mostra a área de resultado
-            quizResultArea.scrollIntoView({ behavior: 'smooth' }); // Rola para o resultado
+            quizSelection.classList.add('hidden');
+            quizQuestionsContainer.innerHTML = '';
+            quizQuestionsContainer.classList.add('hidden');
+            submitQuizBtn.classList.add('hidden');
+            activeQuizTitle.classList.add('hidden');
+            quizResultArea.classList.remove('hidden');
+            quizResultArea.scrollIntoView({ behavior: 'smooth' });
+            
+            // Garante que o quiz não seja reaberto se o usuário voltar
+            localStorage.removeItem('pendingQuiz');
+            paymentAttempted = false; // Reseta o flag
         }
 
-        // Fecha o Modal (ALTERADO CONFORME REQUISIÇÃO 3)
+        // Fecha o Modal (MODIFICADO PARA TER DUPLA FUNÇÃO)
         closeModalBtn.addEventListener('click', () => {
             purchaseModal.classList.add('hidden');
-            // Limpa o storage se a pessoa cancelar o pagamento no modal
-            localStorage.removeItem('pendingQuiz');
+            
+            // Lógica para liberar o resultado manualmente (A SOLUÇÃO DO SEU PROBLEMA)
+            if (closeModalBtn.classList.contains('release-result-btn')) {
+                // Se o botão estiver no modo "Já Paguei, Liberar Resultado!"
+                const pendingQuizData = localStorage.getItem('pendingQuiz');
+                if (pendingQuizData) {
+                    loadingScreen.style.display = 'flex';
+                    const data = JSON.parse(pendingQuizData);
+                    
+                    // Simula a verificação de pagamento com um pequeno atraso
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        
+                        // Assumimos que a pessoa pagou, liberando o acesso
+                        unlockAccess(data.id, data.answers); 
+                        
+                        // Limpa o URL e o storage
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 1500); // Espera 1.5 segundos para simular a verificação
+                    
+                } else {
+                    alert("Ocorreu um erro: Os dados do seu teste não foram encontrados. Por favor, refaça o teste.");
+                    renderQuizCards();
+                }
+            } else {
+                // Se o botão estiver no modo "Cancelar e Voltar para o teste"
+                // E a pessoa ainda não tentou pagar, limpamos o storage
+                if (!paymentAttempted) {
+                    localStorage.removeItem('pendingQuiz');
+                }
+            }
         });
         
-        // --- LÓGICA DE INICIALIZAÇÃO DA PÁGINA (ALTERADO CONFORME REQUISIÇÃO 4) ---
+        // --- LÓGICA DE INICIALIZAÇÃO DA PÁGINA ---
         
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const paymentStatus = urlParams.get('payment'); // Pega ?payment=... da URL
-            const pendingQuizData = localStorage.getItem('pendingQuiz'); // Pega as respostas salvas
+            const paymentStatus = urlParams.get('payment');
+            const pendingQuizData = localStorage.getItem('pendingQuiz');
 
             if (paymentStatus === 'success' && pendingQuizData) {
-                // Se voltou com SUCESSO e tem respostas salvas
-                loadingScreen.style.display = 'flex'; // Mostra "Verificando Pagamento..."
+                // Se voltou com SUCESSO e tem respostas salvas (do redirect padrão do MP, se funcionar)
+                loadingScreen.style.display = 'flex';
                 try {
-                    const data = JSON.parse(pendingQuizData); // Tenta ler os dados salvos
-                    // Verifica se os dados são válidos
+                    const data = JSON.parse(pendingQuizData);
                     if (data && data.id && Array.isArray(data.answers)) {
-                        setTimeout(() => { // Simula um tempinho de verificação
-                            loadingScreen.style.display = 'none'; // Esconde o loading
-                            unlockAccess(data.id, data.answers); // CHAMA A FUNÇÃO QUE MOSTRA O RESULTADO!
-                            localStorage.removeItem('pendingQuiz'); // Limpa os dados salvos
-                            // Limpa a URL (?payment=success) para não reprocessar se der F5
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            unlockAccess(data.id, data.answers); 
                             window.history.replaceState({}, document.title, window.location.pathname);
-                        }, 2000); // Espera 2 segundos
+                        }, 2000); 
                     } else {
-                        // Se os dados salvos estiverem estranhos
                         throw new Error("Dados do quiz pendente estão incompletos ou corrompidos.");
                     }
                 } catch (e) {
-                    // Se der erro ao ler os dados salvos
                     console.error("Erro ao processar dados do quiz pendente:", e);
                     loadingScreen.style.display = 'none';
                     alert("Ocorreu um erro ao carregar seu resultado. Os dados parecem estar corrompidos. Tente refazer o teste.");
                     localStorage.removeItem('pendingQuiz');
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    renderQuizCards(); // Volta pra home em caso de erro grave
+                    renderQuizCards(); 
                 }
             } else if (paymentStatus === 'failed' || paymentStatus === 'pending') {
                 // Se voltou com FALHA ou PENDENTE
                 alert("Seu pagamento falhou ou foi cancelado. Por favor, tente novamente.");
-                localStorage.removeItem('pendingQuiz'); // Limpa os dados salvos
-                window.history.replaceState({}, document.title, window.location.pathname); // Limpa a URL
-                renderQuizCards(); // Mostra a home
+                localStorage.removeItem('pendingQuiz');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                renderQuizCards();
             } else {
-                // Carregamento normal da página (sem ?payment=...)
-                // Limpa qualquer quiz pendente antigo que possa ter ficado no localStorage
+                // Carregamento normal da página
                 if (pendingQuizData) {
+                    // Remove dados antigos que não foram pagos ou concluídos.
                     localStorage.removeItem('pendingQuiz');
                 }
-                renderQuizCards(); // Mostra a home normalmente
+                renderQuizCards();
             }
         });
 
