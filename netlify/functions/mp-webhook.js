@@ -34,4 +34,5 @@ exports.handler = async (event) => {
         console.error('Erro no Webhook:', error);
         return { statusCode: 500, body: 'Erro interno no Webhook.' };
     }
+
 };
