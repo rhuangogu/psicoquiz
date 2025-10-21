@@ -34,7 +34,7 @@ exports.handler = async (event) => {
                     type: 'CPF',
                     number: '19119119100'
                 },
-                address: { // <-- NOVA ADIÇÃO AQUI
+                address: {
                     zip_code: '01001000',
                     street_name: 'Praça da Sé',
                     street_number: '1',
@@ -66,13 +66,13 @@ exports.handler = async (event) => {
                     id: data.id,
                     qrCode: pixInfo.qr_code,
                     qrCodeBase64: pixInfo.qr_code_base64,
-                    pixKey: pixInfo.qr_code,
+                    pixKey: pixInfo.qr_code // <--- CORREÇÃO AQUI (vírgula removida)
                 }),
             };
         } else {
             console.error('Erro MP:', data);
+SO
             return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
-A. (Era 400 antes, mas 500 é o retorno correto do nosso backend pro frontend)
         }
     } catch (error) {
         console.error('Erro na função generate-pix:', error);
