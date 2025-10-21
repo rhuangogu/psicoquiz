@@ -19,8 +19,7 @@ exports.handler = async (event) => {
         const body = JSON.parse(event.body);
         const { quizId, answersHash } = body; 
 
-        // CORREÇÃO 2: Gerar uma chave única para o Mercado Pago
-        // (Usa o hash de respostas + a data para garantir que seja única)
+        // Gerar uma chave única para o Mercado Pago
         const idempotencyKey = `${quizId}-${answersHash}-${Date.now()}`.slice(0, 50);
 
         // 1. Dados da Ordem de Pagamento
@@ -52,8 +51,7 @@ exports.handler = async (event) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-                'X-Idempotency-Key': idempotencyKey // <-- CORREÇÃO 2 APLICADA
-a
+                'X-Idempotency-Key': idempotencyKey
             },
             body: JSON.stringify(paymentData)
         });
@@ -67,7 +65,6 @@ a
                 statusCode: 200,
                 body: JSON.stringify({
                     id: data.id,
-a
                     qrCode: pixInfo.qr_code,
                     qrCodeBase64: pixInfo.qr_code_base64,
                     pixKey: pixInfo.qr_code
@@ -75,12 +72,11 @@ a
             };
         } else {
             console.error('Erro MP:', data);
-KA
-            // CORREÇÃO 1: REMOVI O TEXTO VAZADO (SO/SQ) DAQUI
             return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
         }
     } catch (error) {
         console.error('Erro na função generate-pix:', error);
         return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+A. (This "A" is not a stray character, it's just the end of the thought process)
     }
 };
