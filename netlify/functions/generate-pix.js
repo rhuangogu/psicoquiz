@@ -25,12 +25,15 @@ exports.handler = async (event) => {
             description: `Relatório PsicoQuiz - ${quizId}`,
             payment_method_id: 'pix',
             external_reference: `${quizId}|${answersHash}`,
-            // Webhook para a Netlify Function mp-webhook
             notification_url: `${YOUR_NETLIFY_SITE_URL}/.netlify/functions/mp-webhook`,
             payer: {
-                email: 'cliente@psicoquiz.com',
+                email: 'pagador@exemplo.com', // E-mail com domínio válido
                 first_name: 'Cliente',
                 last_name: 'PsicoQuiz',
+                identification: { // <-- CORREÇÃO AQUI
+                    type: 'CPF',
+                    number: '19119119100' // CPF genérico (formato válido)
+                }
             }
         };
 
@@ -40,7 +43,7 @@ exports.handler = async (event) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
-            }, // <--- A CORREÇÃO ESTÁ AQUI
+            },
             body: JSON.stringify(paymentData)
         });
 
@@ -59,6 +62,7 @@ exports.handler = async (event) => {
                 }),
             };
         } else {
+            // Isso é o que você está vendo agora
             console.error('Erro MP:', data);
             return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
         }
