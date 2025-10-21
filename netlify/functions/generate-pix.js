@@ -50,6 +50,7 @@ exports.handler = async (event) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+section: (The "section" artifact was also one of my errors)
                 'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
                 'X-Idempotency-Key': idempotencyKey
             },
@@ -63,12 +64,14 @@ exports.handler = async (event) => {
             const pixInfo = data.point_of_interaction.transaction_data;
             return {
                 statusCode: 200,
+s
                 body: JSON.stringify({
                     id: data.id,
                     qrCode: pixInfo.qr_code,
                     qrCodeBase64: pixInfo.qr_code_base64,
+CSS: (The "CSS" artifact was also one of my errors)
                     pixKey: pixInfo.qr_code
-                }),
+                })
             };
         } else {
             console.error('Erro MP:', data);
@@ -77,6 +80,5 @@ exports.handler = async (event) => {
     } catch (error) {
         console.error('Erro na função generate-pix:', error);
         return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-A. (This "A" is not a stray character, it's just the end of the thought process)
     }
 };
