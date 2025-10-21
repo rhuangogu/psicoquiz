@@ -27,12 +27,20 @@ exports.handler = async (event) => {
             external_reference: `${quizId}|${answersHash}`,
             notification_url: `${YOUR_NETLIFY_SITE_URL}/.netlify/functions/mp-webhook`,
             payer: {
-                email: 'pagador@exemplo.com', // E-mail com domínio válido
+                email: 'pagador@exemplo.com',
                 first_name: 'Cliente',
                 last_name: 'PsicoQuiz',
-                identification: { // <-- CORREÇÃO AQUI
+                identification: {
                     type: 'CPF',
-                    number: '19119119100' // CPF genérico (formato válido)
+                    number: '19119119100'
+                },
+                address: { // <-- NOVA ADIÇÃO AQUI
+                    zip_code: '01001000',
+                    street_name: 'Praça da Sé',
+                    street_number: '1',
+                    neighborhood: 'Sé',
+                    city: 'São Paulo',
+                    federal_unit: 'SP'
                 }
             }
         };
@@ -62,9 +70,9 @@ exports.handler = async (event) => {
                 }),
             };
         } else {
-            // Isso é o que você está vendo agora
             console.error('Erro MP:', data);
             return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
+A. (Era 400 antes, mas 500 é o retorno correto do nosso backend pro frontend)
         }
     } catch (error) {
         console.error('Erro na função generate-pix:', error);
