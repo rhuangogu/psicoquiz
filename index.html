@@ -228,8 +228,6 @@
         { text: "Sempre", value: 5, class: 'bg-red-100 hover:bg-red-200 text-red-800' }
     ];
 
-    let userAnswers = [];
-    let activeQuizId = null;
     
     // --- BANCO DE DADOS DOS QUIZZES (COMPLETO E CORRIGIDO) ---
     const quizzes = {
@@ -533,8 +531,14 @@
                 "10. Peço desculpas rapidamente quando sei que errei."
             ],
             inverted_questions: [3, 5, 7, 9, 11, 13, 16, 17, 19, 22, 23, 24, 26, 29],
-            get_result: (score) => { /* ... (mesmos get_result do código anterior) ... */ },
-            get_specific_advice: (answers) => {
+            get_result: (score) => {
+    const max = 50; 
+    if (score <= max * 0.3) return { title: "Humildade Elevada", desc: "Você demonstra humildade genuína, abertura ao aprendizado e empatia pelos outros. Sua percepção realista sobre si mesmo inspira confiança e respeito.", color: "bg-green-600" };
+    if (score <= max * 0.5) return { title: "Humildade Equilibrada", desc: "Você tem boa autopercepção, mas às vezes pode subestimar ou supervalorizar suas capacidades. O equilíbrio está em aceitar suas forças sem negar seus limites.", color: "bg-yellow-600" };
+    if (score <= max * 0.7) return { title: "Baixa Humildade", desc: "Você demonstra dificuldade em reconhecer falhas ou aceitar críticas. Trabalhar a empatia e o reconhecimento do esforço alheio pode fortalecer suas relações.", color: "bg-orange-600" };
+    return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais. Buscar autoconhecimento e vulnerabilidade é essencial.", color: "bg-red-600" };
+}, 
+get_specific_advice: (answers) => {
                 let advice = [];
                 if (answers[1] <= 2) { advice.push("Você marcou que **não procura feedback negativo** (Pergunta 2). O feedback é um presente, não um ataque. Tente pedir um micro-feedback a alguém de confiança: 'Em uma escala de 1 a 10, como foi [minha apresentação]? O que eu faria para ser 10?'. Isso torna o feedback menos assustador."); }
                 if (answers[8] >= 4) { // Pergunta invertida
@@ -848,39 +852,44 @@
     }
 
     function validateAccess() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const receivedKey = urlParams.get('chave');
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const receivedKey = urlParams.get('chave');
 
-        if (receivedKey === SECRET_KEY) { 
-             const storedQuizData = localStorage.getItem('pendingQuiz');
-             if (storedQuizData) {
-                const data = JSON.parse(storedQuizData);
-                document.getElementById('loading-screen').style.display = 'flex';
+            if (receivedKey === SECRET_KEY) {
+                const storedQuizData = localStorage.getItem('pendingQuiz');
+                if (storedQuizData) {
+                    const data = JSON.parse(storedQuizData);
 
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    if (data && data.id && Array.isArray(data.answers)) {
-                        unlockAccess(data.id, data.answers);
-                    } else {
-                        alert("Erro ao carregar o resultado. Por favor, refaça o teste.");
-                        renderQuizCards();
-                    }
-                    history.replaceState(null, '', window.location.pathname);
-                }, 1500); 
-                return true;
-             }
+                    loadingScreen.style.display = 'flex';
+
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+
+                        if (data && data.id && Array.isArray(data.answers)) {
+                            unlockAccess(data.id, data.answers);
+                        } else {
+                            alert("Erro ao carregar o resultado. Por favor, refaça o teste.");
+                            localStorage.removeItem('pendingQuiz');
+                            renderQuizCards();
+                        }
+                        history.replaceState(null, '', window.location.pathname);
+                    }, 1500);
+                    return true;
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error("Erro ao validar acesso, limpando localStorage:", error);
+            localStorage.removeItem('pendingQuiz');
+            return false;
         }
-        return false;
     }
 
-    // --- INICIALIZAÇÃO ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const accessGranted = validateAccess();
-
-        if (!accessGranted) {
-            renderQuizCards();
-        }
-    });
+    // 🚀 Inicia a página corretamente
+    if (!validateAccess()) {
+        renderQuizCards();
+    }
 </script>
 </body>
 </html>
