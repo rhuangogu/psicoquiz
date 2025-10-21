@@ -19,9 +19,13 @@ exports.handler = async (event) => {
         const body = JSON.parse(event.body);
         const { quizId, answersHash } = body; 
 
+        // CORREÇÃO 2: Gerar uma chave única para o Mercado Pago
+        // (Usa o hash de respostas + a data para garantir que seja única)
+        const idempotencyKey = `${quizId}-${answersHash}-${Date.now()}`.slice(0, 50);
+
         // 1. Dados da Ordem de Pagamento
         const paymentData = {
-            transaction_amount: 8.99, // R$ 8,99
+            transaction_amount: 8.99,
             description: `Relatório PsicoQuiz - ${quizId}`,
             payment_method_id: 'pix',
             external_reference: `${quizId}|${answersHash}`,
@@ -30,18 +34,15 @@ exports.handler = async (event) => {
                 email: 'pagador@exemplo.com',
                 first_name: 'Cliente',
                 last_name: 'PsicoQuiz',
-                identification: {
-                    type: 'CPF',
-                    number: '19119119100'
-                },
-                address: {
-                    zip_code: '01001000',
-                    street_name: 'Praça da Sé',
-                    street_number: '1',
-                    neighborhood: 'Sé',
-                    city: 'São Paulo',
-                    federal_unit: 'SP'
-                }
+                identification: { type: 'CPF', number: '19119119100' },
+                address: {
+                    zip_code: '01001000',
+                    street_name: 'Praça da Sé',
+                    street_number: '1',
+                    neighborhood: 'Sé',
+                    city: 'São Paulo',
+                    federal_unit: 'SP'
+                }
             }
         };
 
@@ -50,7 +51,9 @@ exports.handler = async (event) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`
+                'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+                'X-Idempotency-Key': idempotencyKey // <-- CORREÇÃO 2 APLICADA
+a
             },
             body: JSON.stringify(paymentData)
         });
@@ -64,14 +67,16 @@ exports.handler = async (event) => {
                 statusCode: 200,
                 body: JSON.stringify({
                     id: data.id,
+a
                     qrCode: pixInfo.qr_code,
                     qrCodeBase64: pixInfo.qr_code_base64,
-                    pixKey: pixInfo.qr_code // <--- CORREÇÃO AQUI (vírgula removida)
+                    pixKey: pixInfo.qr_code
                 }),
             };
         } else {
             console.error('Erro MP:', data);
-SO
+KA
+            // CORREÇÃO 1: REMOVI O TEXTO VAZADO (SO/SQ) DAQUI
             return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
         }
     } catch (error) {
