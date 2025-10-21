@@ -50,7 +50,6 @@ exports.handler = async (event) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-section: (The "section" artifact was also one of my errors)
                 'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
                 'X-Idempotency-Key': idempotencyKey
             },
@@ -64,12 +63,10 @@ section: (The "section" artifact was also one of my errors)
             const pixInfo = data.point_of_interaction.transaction_data;
             return {
                 statusCode: 200,
-s
                 body: JSON.stringify({
                     id: data.id,
                     qrCode: pixInfo.qr_code,
                     qrCodeBase64: pixInfo.qr_code_base64,
-CSS: (The "CSS" artifact was also one of my errors)
                     pixKey: pixInfo.qr_code
                 })
             };
