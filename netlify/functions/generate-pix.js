@@ -17,35 +17,25 @@ exports.handler = async (event) => {
 
     try {
         const body = JSON.parse(event.body);
-        const { quizId, answersHash } = body; 
+        const { quizId, answersHash } = body;
 
-        // Gerar uma chave única para o Mercado Pago
         const idempotencyKey = `${quizId}-${answersHash}-${Date.now()}`.slice(0, 50);
 
-        // 1. Dados da Ordem de Pagamento
         const paymentData = {
             transaction_amount: 8.99,
             description: `Relatório PsicoQuiz - ${quizId}`,
             payment_method_id: 'pix',
             external_reference: `${quizId}|${answersHash}`,
-            notification_url: `${YOUR_NETLIFY_SITE_URL}/.netlify/functions/mp-webhook`,
+            notification_url: `${YOUR_NETLIFY_SITE_URL}/.netlify/functions/mp-webhook`, // Continua útil se quiser logar
             payer: {
                 email: 'pagador@exemplo.com',
                 first_name: 'Cliente',
                 last_name: 'PsicoQuiz',
                 identification: { type: 'CPF', number: '19119119100' },
-                address: {
-                    zip_code: '01001000',
-                    street_name: 'Praça da Sé',
-                    street_number: '1',
-                    neighborhood: 'Sé',
-                    city: 'São Paulo',
-                    federal_unit: 'SP'
-                }
+                address: { zip_code: '01001000', street_name: 'Praça da Sé', street_number: '1', neighborhood: 'Sé', city: 'São Paulo', federal_unit: 'SP' }
             }
         };
 
-        // 2. Chama a API do Mercado Pago
         const response = await fetch('https://api.mercadopago.com/v1/payments', {
             method: 'POST',
             headers: {
@@ -58,24 +48,26 @@ exports.handler = async (event) => {
 
         const data = await response.json();
 
-        if (response.ok) {
-            // Retorna a imagem do QR Code e a chave PIX para o Frontend
+        if (response.ok && data.point_of_interaction?.transaction_data) {
             const pixInfo = data.point_of_interaction.transaction_data;
             return {
                 statusCode: 200,
                 body: JSON.stringify({
-                    id: data.id,
-                    qrCode: pixInfo.qr_code,
+                    // --- CORREÇÃO AQUI ---
+                    payment_id: data.id, // Adicionamos o ID do pagamento
+                    // --- FIM DA CORREÇÃO ---
                     qrCodeBase64: pixInfo.qr_code_base64,
-                    pixKey: pixInfo.qr_code
+                    pixKey: pixInfo.qr_code // A chave copia-e-cola é o próprio QR Code em texto
                 })
             };
         } else {
-            console.error('Erro MP:', data);
-            return { statusCode: 500, body: JSON.stringify({ error: `Falha ao criar o pagamento no MP. Status: ${response.status}` }) };
+            console.error('Erro MP ao gerar PIX:', data); // Log mais detalhado
+            // Retorna o erro específico do MP se disponível
+            const errorMessage = data.message || `Falha ao criar pagamento no MP. Status: ${response.status}`;
+            return { statusCode: response.status || 500, body: JSON.stringify({ error: errorMessage }) };
         }
     } catch (error) {
         console.error('Erro na função generate-pix:', error);
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+        return { statusCode: 500, body: JSON.stringify({ error: 'Erro interno no servidor ao gerar PIX.' }) };
     }
 };
