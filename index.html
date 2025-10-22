@@ -230,7 +230,7 @@
     ];
 
     
-    // --- BANCO DE DADOS DOS QUIZZES (COMPLETO E CORRIGIDO) ---
+    // --- BANCO DE DADOS DOS QUIZZES (ATUALIZADO COM MENSAGENS HUMANIZADAS) ---
     const quizzes = {
         burnout: {
             title: "Teste de Risco de Burnout",
@@ -272,10 +272,18 @@
             inverted_questions: [3, 9, 13, 16, 19, 26, 29],
             get_result: (score) => { 
                 const max = 150; 
-                if (score <= max * 0.3) return { title: "Baixo Risco", desc: "Seus níveis de exaustão, cinismo e ineficácia profissional estão baixos. Você demonstra boa resiliência e controle sobre seu ambiente de trabalho. Continue priorizando o autocuidado e o equilíbrio entre vida pessoal e profissional para manter este estado saudável.", color: "bg-green-600" };
-                if (score <= max * 0.5) return { title: "Risco Moderado", desc: "Você está mostrando alguns sinais iniciais de sobrecarga, como cansaço ou cinismo leve. É um alerta para não ignorar. O estresse está começando a corroer sua eficácia. É crucial reavaliar sua carga de trabalho e criar limites mais rígidos.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Risco Alto", desc: "Seus sintomas de exaustão emocional são significativos, e a despersonalização no trabalho está presente. Você está em um estado de desgaste considerável. É urgente buscar ajuda e implementar estratégias de recuperação, como tirar folgas e reorganizar prioridades.", color: "bg-orange-600" };
-                return { title: "Burnout Elevado", desc: "Sua pontuação indica um alto nível de esgotamento e ineficácia. A exaustão é profunda e afeta todas as áreas da sua vida. A intervenção profissional imediata é altamente recomendada para iniciar o processo de recuperação e reestruturação da sua rotina.", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Baixo Risco", color: "bg-green-600",
+                    desc: "Parabéns, você demonstra uma **resiliência notável**! Seus níveis de exaustão e cinismo estão baixos. Você tem conseguido equilibrar sua vida profissional e pessoal, mantendo o controle e a eficácia. Este resultado é um atestado de que suas estratégias de autocuidado e gestão de estresse estão funcionando. É fundamental continuar cultivando esses hábitos e ser uma inspiração de equilíbrio para os colegas."
+                };
+                if (score <= max * 0.5) return { title: "Risco Moderado", color: "bg-yellow-600",
+                    desc: "Sua pontuação é um **alerta amarelo**. Você está sentindo os primeiros sinais de sobrecarga, como um cansaço persistente ou uma leve perda de entusiasmo. Não ignore esses sussurros da sua mente e corpo. Este é o momento crucial de agir, antes que o estresse se torne crônico. É hora de reavaliar sua carga e reforçar suas fronteiras pessoais."
+                };
+                if (score <= max * 0.7) return { title: "Risco Alto", color: "bg-orange-600",
+                    desc: "Você está em um estado de **desgaste considerável**. Os sintomas de exaustão emocional são significativos, e a despersonalização no trabalho (cinismo ou distanciamento) já afeta seu dia a dia. É um momento de parar, respirar e reconhecer que você está exigindo demais de si. A busca por ajuda não é um sinal de fraqueza, mas sim de coragem e autocuidado urgente."
+                };
+                return { title: "Burnout Elevado", color: "bg-red-600",
+                    desc: "O diagnóstico é claro: **alto nível de esgotamento**. A exaustão é profunda e afeta todas as áreas da sua vida, do sono à capacidade de sentir prazer. Você não está funcionando, você está sobrevivendo. É vital que você se coloque em primeiro lugar agora. Lembre-se, sua saúde é o seu maior ativo. Isso não é um fracasso, é uma doença que precisa de tratamento imediato."
+                };
             },
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -325,10 +333,18 @@
             inverted_questions: [13, 14, 20, 22, 29],
             get_result: (score) => {
                 const max = 150; 
-                if (score <= max * 0.4) return { title: "Raciocínio em Construção", desc: "Sua pontuação sugere que você pode estar em fase de desenvolvimento de habilidades lógicas e de raciocínio abstrato. O foco deve ser em exercícios de memória de trabalho e pensamento lateral. A prática de novos jogos de lógica e leitura ativa podem ajudar.", color: "bg-red-600" };
-                if (score <= max * 0.6) return { title: "Raciocínio Médio", desc: "Você tem uma capacidade de raciocínio sólida, mas encontra desafios em áreas específicas (como visualização espacial ou processamento rápido). Você resolve problemas, mas pode levar mais tempo. O treinamento focado pode trazer melhorias significativas.", color: "bg-yellow-600" };
-                if (score <= max * 0.8) return { title: "Raciocínio Acima da Média", desc: "Você demonstra alta capacidade de inteligência fluida, com facilidade para identificar padrões, resolver problemas complexos e aprender rapidamente. Seus pontos fortes estão na lógica e na capacidade de abstração.", color: "bg-green-600" };
-                return { title: "Raciocínio Excepcional", desc: "Sua pontuação é excelente, indicando uma inteligência fluida notável. Sua mente é rápida, eficiente e tem grande capacidade de síntese e análise. Continue se desafiando com problemas complexos e use essa habilidade para ser um líder no raciocínio.", color: "bg-blue-600" };
+                if (score <= max * 0.4) return { title: "Raciocínio em Construção", color: "bg-red-600",
+                    desc: "Este é o seu ponto de partida! Sua pontuação mostra que suas habilidades lógicas e de raciocínio abstrato estão em fase de construção. Isso não é um limite, mas um convite ao crescimento. O caminho para a excelência passa pelo desenvolvimento contínuo da sua memória de trabalho e pensamento lateral. Acredite na sua capacidade de absorver e aplicar novos conhecimentos."
+                };
+                if (score <= max * 0.6) return { title: "Raciocínio Médio", color: "bg-yellow-600",
+                    desc: "Sua capacidade de raciocínio é sólida e funcional, você consegue resolver a maioria dos problemas com eficácia, mas pode sentir que leva um pouco mais de tempo para 'pegar' alguns conceitos complexos. Você tem uma base excelente, mas há áreas específicas (como a velocidade de processamento) que, se treinadas, podem levar seu QI para o próximo nível. Invista em desafios diários!"
+                };
+                if (score <= max * 0.8) return { title: "Raciocínio Acima da Média", color: "bg-green-600",
+                    desc: "Seus resultados demonstram uma **inteligência fluida notável**! Você tem grande facilidade para identificar padrões, sintetizar informações e aprender rapidamente. Sua lógica é um motor potente, e você consegue fazer conexões abstratas que a maioria não vê. Seu potencial está em aplicar essa capacidade para resolver problemas complexos e liderar projetos que exijam inovação."
+                };
+                return { title: "Raciocínio Excepcional", color: "bg-blue-600",
+                    desc: "Parabéns, você alcançou uma pontuação **excepcional**! Sua mente é um recurso de alta velocidade, capaz de processar dados e abstrair conceitos em um nível muito superior. Você não apenas resolve problemas, mas enxerga a arquitetura lógica por trás deles. Seu papel é buscar constantemente novos desafios e usar essa habilidade para impactar positivamente seu campo de atuação."
+                };
             },
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -377,10 +393,18 @@
             inverted_questions: [6, 9, 13, 16, 19, 23, 26, 28],
             get_result: (score) => {
                 const max = 150; 
-                if (score <= max * 0.3) return { title: "Nível de Serenidade", desc: "Seu nível de estresse é baixo. Você demonstra uma excelente capacidade de gerenciar pressões, relaxar e manter o controle emocional. Seu foco deve ser em manter este equilíbrio, talvez ajudando outros a alcançá-lo.", color: "bg-blue-600" };
-                if (score <= max * 0.5) return { title: "Estresse Moderado", desc: "Você sente o estresse em momentos de pico, mas geralmente consegue se recuperar. Os sinais físicos (tensão muscular, dificuldade de sono ocasional) estão presentes, mas não são incapacitantes. Crie mais momentos de 'pausa ativa' (ex: alongamento) no seu dia.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Estresse Alto", desc: "O estresse está afetando significativamente sua qualidade de vida, manifestando-se em sintomas físicos e emocionais frequentes (irritação, dores de cabeça). Sua capacidade de relaxamento está comprometida. É hora de reavaliar urgentemente suas fontes de pressão e iniciar uma rotina de descompressão.", color: "bg-orange-600" };
-                return { title: "Sobrecarga Crítica", desc: "Sua pontuação indica que você está em um estado de sobrecarga crônica. Seu corpo e mente estão reagindo ao estresse constante com esgotamento. Você precisa de uma intervenção de autocuidado profunda. Redução de demandas e apoio profissional são essenciais.", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Nível de Serenidade", color: "bg-blue-600",
+                    desc: "Incrível! Você demonstra um **nível de estresse muito baixo** e uma excelente capacidade de gerenciar pressões. Você é uma pessoa tranquila, mantém o controle emocional e sabe a hora certa de parar e recarregar. Use essa serenidade como uma base sólida para todos os seus projetos e continue priorizando seu bem-estar."
+                };
+                if (score <= max * 0.5) return { title: "Estresse Moderado", color: "bg-yellow-600",
+                    desc: "Você está na média: sente o estresse, mas não está à beira do colapso. No entanto, o cansaço mental e a tensão física ocasional são sinais de que você precisa aumentar seu 'buffer' de resiliência. Considere este um convite para criar mini-pausas conscientes no seu dia e garantir que o seu tempo livre seja realmente livre de preocupações."
+                };
+                if (score <= max * 0.7) return { title: "Estresse Alto", color: "bg-orange-600",
+                    desc: "O estresse está gritando, e ele afeta sua vida de maneira significativa, manifestando-se em irritação, dores de cabeça ou dificuldade para dormir. Você está em um ciclo de pressão constante. É urgente reavaliar o que está consumindo sua energia. Lembre-se: sua paz é mais valiosa do que qualquer prazo ou demanda externa."
+                };
+                return { title: "Sobrecarga Crítica", color: "bg-red-600",
+                    desc: "Você está em um estado de **Sobrecarga Crônica**. Seu corpo está reagindo ao estresse constante com esgotamento. A mente acelerada, a tensão muscular e a irritação são constantes. Você precisa desacelerar drasticamente. Trate sua mente e corpo com a mesma urgência que trataria uma emergência de saúde. O autocuidado é, neste momento, sua prioridade número um."
+                };
             },
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -430,14 +454,22 @@
             inverted_questions: [5, 9, 15, 18, 21, 23, 27, 30],
             get_result: (score) => {
                 const max = 150; 
-                if (score <= max * 0.3) return { title: "Ansiedade Saudável", desc: "Você demonstra um nível baixo de ansiedade, o que é ótimo! Isso significa que você usa a ansiedade (o motor da ação) de forma produtiva, mas não deixa que ela controle sua vida. Você é tranquilo e tem boas ferramentas para lidar com o estresse.", color: "bg-green-600" };
-                if (score <= max * 0.5) return { title: "Ansiedade Moderada", desc: "Você sente ansiedade ocasionalmente, principalmente em situações de pressão ou incerteza. Os sintomas físicos são leves e passageiros. O risco é deixar que essa ansiedade se torne crônica. Use a respiração e o foco no presente para manter o controle.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Ansiedade Alta", desc: "Sua pontuação indica uma presença significativa de ansiedade, com preocupação excessiva e sintomas físicos frequentes (palpitações, inquietação). Isso já afeta suas decisões e bem-estar. É essencial buscar técnicas de aterramento e relaxamento de forma diária.", color: "bg-orange-600" };
-                return { title: "Ansiedade Crítica", desc: "Você está em um nível crítico de ansiedade, onde a preocupação e o medo dominam grande parte da sua vida. Sintomas incapacitantes, como ataques de pânico ou evitação, podem estar presentes. É urgente procurar apoio profissional qualificado para aprender a gerenciar e reduzir essa carga emocional.", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Ansiedade Saudável", color: "bg-green-600",
+                    desc: "Sua relação com a ansiedade é **saudável e produtiva**. Você usa a energia dela como um motor para a ação, sem deixar que ela tome conta do seu bem-estar. Você lida bem com incertezas e permanece focado no presente. Continue a praticar o 'desapego' das preocupações futuras para manter essa estabilidade invejável."
+                };
+                if (score <= max * 0.5) return { title: "Ansiedade Moderada", color: "bg-yellow-600",
+                    desc: "A ansiedade aparece em momentos de pico, mas você geralmente consegue se recuperar. Os 'e se...' surgem, e os sintomas físicos (como inquietação) são um lembrete. Este é o momento de construir seu kit de ferramentas anti-ansiedade. Práticas diárias de respiração e aterramento são seu melhor investimento agora para evitar que essa ansiedade se torne crônica."
+                };
+                if (score <= max * 0.7) return { title: "Ansiedade Alta", color: "bg-orange-600",
+                    desc: "Sua pontuação indica que a **preocupação excessiva** e os sintomas físicos (palpitações, tensão) já são uma presença significativa na sua vida. A ansiedade está afetando suas escolhas, seu foco e seu descanso. É como se você vivesse em estado de alerta. Você precisa de ferramentas ativas para acalmar seu sistema nervoso e focar no que pode controlar."
+                };
+                return { title: "Ansiedade Crítica", color: "bg-red-600",
+                    desc: "Você está em um nível **crítico** onde o medo e a apreensão dominam. É provável que ataques de pânico, evitação ou pensamentos intrusivos sejam frequentes. Lembre-se: ansiedade é um estado tratável. Sua mente está te pedindo socorro. Você precisa de apoio profissional imediato para aprender a respirar, a reestruturar pensamentos e a encontrar o caminho de volta para a segurança interna."
+                };
             },
             get_specific_advice: (answers) => {
                 let advice = [];
-                if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o air por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
+                if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o ar por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
                 if (answers[2] >= 4 || answers[5] >= 4) { advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6). Tente a 'Técnica 5-4-3-2-1': pare e nomeie 5 coisas que você vê, 4 que você ouve, 3 que você sente (tato), 2 que você cheira e 1 que você prova. Isso força sua mente a voltar para o PRESENTE."); }
                 if (answers[1] >= 4) { advice.push("Você está **evitando situações** (Pergunta 2) por medo. A ansiedade cresce no escuro. O conselho é a 'Exposição Gradual': se você tem medo de ir a festas, comece por algo pequeno. Ex: 'Vou ficar só 15 minutos'. Você não precisa pular na piscina, só molhar o pé. Isso ensina ao seu cérebro que você sobrevive."); }
                 return advice;
@@ -464,10 +496,18 @@
             inverted_questions: [6, 9], // Inverti apenas as 2 corretas para este teste de 11 perguntas
             get_result: (score) => { 
                 const max = 55; // 11 perguntas * 5 pontos
-                if (score <= max * 0.3) return { title: "Humor Estável", desc: "Seu humor está estável, e você demonstra bom engajamento com a vida e energia. Você tem as ferramentas emocionais para lidar com a tristeza passageira de forma eficaz, mantendo uma perspectiva positiva e propósito claro.", color: "bg-green-600" };
-                if (score <= max * 0.5) return { title: "Tristeza Leve", desc: "Você tem tido períodos de tristeza, perda de interesse ou fadiga, mas os sintomas não são persistentes ou incapacitantes. É um momento de vulnerabilidade, onde pequenos ajustes no autocuidado (exercício, sono) farão uma grande diferença.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Tristeza Moderada", desc: "Os sintomas de humor deprimido, perda de prazer e falta de energia são frequentes e duradouros, afetando seu funcionamento diário (concentração, sono). É fundamental reativar a vida social e buscar atividades que gerem um senso de realização.", color: "bg-orange-600" };
-                return { title: "Tristeza Severa", desc: "Sua pontuação indica a presença de sintomas severos, como sentimentos de inutilidade, desesperança e isolamento. Há um impacto significativo na sua vida. Por favor, procure apoio profissional imediatamente (psicólogo e/ou psiquiatra) e não enfrente isso sozinho(a).", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Humor Estável", color: "bg-green-600",
+                    desc: "Parabéns pela sua **estabilidade emocional**! Você demonstra bom engajamento com a vida, energia e propósito. A tristeza, quando aparece, é passageira e você possui excelentes recursos internos para lidar com ela. Mantenha seus hábitos de gratidão e conexões sociais para preservar este estado de bem-estar."
+                };
+                if (score <= max * 0.5) return { title: "Tristeza Leve", color: "bg-yellow-600",
+                    desc: "Você está em um período de vulnerabilidade, com a presença de tristeza ou desinteresse ocasional. É como uma nuvem passageira que precisa de atenção para não se fixar. O momento é de proatividade: pequenos ajustes na rotina (exercício, exposição ao sol e alimentação) podem ser o suficiente para trazer a energia de volta. Não se isole!"
+                };
+                if (score <= max * 0.7) return { title: "Tristeza Moderada", color: "bg-orange-600",
+                    desc: "Os sintomas de humor deprimido e falta de prazer são frequentes, afetando seu foco, sono e motivação. Você está em um estado de baixa energia que exige intervenção. Não espere a vontade de fazer as coisas voltar: force-se gentilmente à 'Ativação Comportamental' (fazer atividades mesmo sem querer) e retome suas conexões sociais. Você não precisa carregar esse peso sozinho(a)."
+                };
+                return { title: "Tristeza Severa", color: "bg-red-600",
+                    desc: "Sua pontuação indica a presença de **sintomas severos**, como sentimentos de inutilidade, desesperança e isolamento profundo. Sua vida está sendo significativamente impactada. Este é o momento de acionar sua rede de apoio e **procurar ajuda profissional imediatamente**. Sua recuperação é possível, mas a intervenção de um psicólogo e/ou psiquiatra é essencial."
+                };
             },
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -497,10 +537,18 @@
             inverted_questions: [4, 7, 9], // Apenas as 3 corretas para o teste de 10 perguntas
             get_result: (score) => { 
                 const max = 50; 
-                if (score <= max * 0.3) return { title: "Nível de Modéstia", desc: "Seu nível de arrogância é baixo. Você demonstra humildade, abertura para aprender e a capacidade de valorizar os outros. Você confia em si mesmo(a) sem precisar diminuir ninguém. Sua força está na autenticidade e na cooperação.", color: "bg-blue-600" };
-                if (score <= max * 0.5) return { title: "Tendência Leve", desc: "Você tem momentos em que a auto-importância fala mais alto, principalmente em situações de estresse ou insegurança. Você é capaz de reconhecer o erro, mas a necessidade de validação ainda é uma luta interna. O foco é na escuta e na empatia.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Arrogância Moderada", desc: "Você demonstra traços significativos de superioridade e dificuldade em aceitar críticas. A necessidade de ser o centro das atenções é alta e pode estar afetando seus relacionamentos. Você precisa cultivar a empatia e o reconhecimento alheio ativamente.", color: "bg-orange-600" };
-                return { title: "Arrogância Elevada", desc: "Sua pontuação é alta e indica um padrão de comportamento focado na auto-exaltação e na desvalorização dos outros. Essa postura isola e impede o crescimento. É urgente iniciar um processo de autoconhecimento profundo para descobrir a origem dessa necessidade de se provar.", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Nível de Modéstia", color: "bg-blue-600",
+                    desc: "Sua pontuação é excelente! Você demonstra **humildade genuína**, com uma autopercepção equilibrada. Você valoriza os outros, está aberto(a) a aprender e entende que seu valor não depende de diminuir ninguém. Continue usando sua confiança para construir pontes e incentivar a cooperação."
+                };
+                if (score <= max * 0.5) return { title: "Tendência Leve", color: "bg-yellow-600",
+                    desc: "Há momentos em que a auto-importância pode falar mais alto, especialmente quando se sente inseguro(a) ou sob pressão. Você consegue reconhecer seus erros, mas a necessidade sutil de validação ainda existe. O foco é transformar o desejo de 'estar certo(a)' na paixão por 'aprender'. Concentre-se ativamente na escuta e na empatia."
+                };
+                if (score <= max * 0.7) return { title: "Arrogância Moderada", color: "bg-orange-600",
+                    desc: "Você apresenta traços significativos de superioridade e dificuldade em lidar com críticas. Essa postura pode estar prejudicando seus relacionamentos e limitando seu crescimento, pois a arrogância fecha a porta para o aprendizado. Lembre-se: o sucesso duradouro é construído com colaboração, não com isolamento. Cultive a vulnerabilidade."
+                };
+                return { title: "Arrogância Elevada", color: "bg-red-600",
+                    desc: "Sua pontuação é alta e sugere um padrão de comportamento focado na exaltação própria e na desvalorização alheia. A arrogância é frequentemente uma máscara para a insegurança profunda. O isolamento social e profissional é um risco real. É crucial iniciar um processo de autoconhecimento para descobrir a origem dessa necessidade de se provar e construir uma autoconfiança autêntica."
+                };
             }, 
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -534,10 +582,18 @@
             inverted_questions: [3, 5, 7, 9], // Apenas as 4 corretas para o teste de 10 perguntas
             get_result: (score) => {
                 const max = 50; 
-                if (score <= max * 0.3) return { title: "Humildade Elevada", desc: "Você demonstra humildade genuína, abertura ao aprendizado e empatia pelos outros. Sua percepção realista sobre si mesmo inspira confiança e respeito.", color: "bg-green-600" };
-                if (score <= max * 0.5) return { title: "Humildade Equilibrada", desc: "Você tem boa autopercepção, mas às vezes pode subestimar ou supervalorizar suas capacidades. O equilíbrio está em aceitar suas forças sem negar seus limites.", color: "bg-yellow-600" };
-                if (score <= max * 0.7) return { title: "Baixa Humildade", desc: "Você demonstra dificuldade em reconhecer falhas ou aceitar críticas. Trabalhar a empatia e o reconhecimento do esforço alheio pode fortalecer suas relações.", color: "bg-orange-600" };
-                return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais e impedir o crescimento.", color: "bg-red-600" };
+                if (score <= max * 0.3) return { title: "Humildade Elevada", color: "bg-green-600",
+                    desc: "Você tem um **nível de humildade notável**! Sua força vem da sua capacidade de ser vulnerável, de admitir erros e de valorizar o talento dos outros. Você é um ímã para o aprendizado e para boas conexões. Use essa habilidade para ser um mentor ou líder que inspira pelo exemplo e pela cooperação."
+                };
+                if (score <= max * 0.5) return { title: "Humildade Equilibrada", color: "bg-yellow-600",
+                    desc: "Seu nível de humildade é bom, mas há uma luta sutil entre a autoconfiança e o medo de parecer fraco. Você precisa de um empurrão para aceitar críticas como presentes e não como ataques. O próximo passo é integrar a humildade não apenas no seu discurso, mas na sua busca ativa por feedback honesto."
+                };
+                if (score <= max * 0.7) return { title: "Baixa Humildade", color: "bg-orange-600",
+                    desc: "Você demonstra dificuldade em ceder, admitir falhas ou aceitar que o sucesso de terceiros não diminui o seu. Essa resistência pode ser uma barreira invisível para o seu crescimento. É hora de desarmar a defensiva e focar na empatia: tente ver o esforço e a história por trás das falhas dos outros, e seja mais gentil com as suas."
+                };
+                return { title: "Arrogância Alta", color: "bg-red-600",
+                    desc: "Sua pontuação indica que a necessidade de estar certo e ser superior é dominante. Isso o coloca em um caminho de isolamento e impede o aprendizado. A humildade é o reconhecimento de que todos estão em uma jornada. Você precisa começar a ouvir ativamente e a se expor à autocrítica construtiva. A ajuda profissional pode ser essencial para desconstruir essa barreira."
+                };
             }, 
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -818,9 +874,28 @@
                 </ul>
             </p>` : '';
 
-        const planGeneralHtml = isLowRisk
-            ? `<li><strong>Manutenção:</strong> Seu resultado é positivo! Continue cultivando o equilíbrio.</li><li><strong>Prevenção:</strong> Identifique seus 'gatilhos' de estresse. Crie um plano de 1 minuto para quando eles aparecerem.</li>`
-            : `<li><strong>Ação Urgente:</strong> Sua pontuação sugere atenção imediata. Fale com alguém de confiança sobre como está se sentindo.</li><li><strong>Ajuda Profissional:</strong> Considere conversar com um profissional. Este teste é um indicador, e um apoio faria uma grande diferença.</li>`;
+        // Lógica humanizada para o Plano de Ação Geral
+        let planGeneralHtml = '';
+        if (isLowRisk) {
+            planGeneralHtml = `
+                <li><strong>Mantenha o Equilíbrio:</strong> Sua estabilidade é um superpoder. Continue priorizando suas fontes de prazer, conexões sociais e sono de qualidade.</li>
+                <li><strong>Crescimento Contínuo:</strong> Para o QI, continue se desafiando com novos aprendizados. Para a humildade, use sua segurança para incentivar os outros.</li>
+                <li><strong>Prevenção Ativa:</strong> Identifique seus 'gatilhos' de estresse ou vulnerabilidade e crie um plano de 1 minuto para quando eles aparecerem.</li>
+            `;
+        } else if (resultData.title.includes('Médio') || resultData.title.includes('Leve') || resultData.title.includes('Equilibrada')) {
+            planGeneralHtml = `
+                <li><strong>Autocuidado Proativo:</strong> Este é o momento ideal para a intervenção. Implemente rotinas diárias de 15 minutos (como meditação, exercícios de respiração ou Brain Dump) para prevenir a progressão dos sintomas.</li>
+                <li><strong>Ação Deliberada:</strong> Para o QI/Raciocínio, comece a estudar ativamente uma nova habilidade ou resolva quebra-cabeças complexos diariamente. Para o Burnout/Estresse, aprenda a dizer 'NÃO' para novas demandas.</li>
+                <li><strong>Busque Orientação:</strong> Considere uma **sessão de orientação** com um coach ou terapeuta para refinar suas estratégias. Este é um investimento na sua saúde futura.</li>
+            `;
+        } else {
+            planGeneralHtml = `
+                <li><strong>Apoio Urgente:</strong> Sua pontuação sugere que você precisa de atenção imediata. Fale com alguém de confiança e comece a acionar sua rede de apoio social.</li>
+                <li><strong>Busca Profissional Imediata:</strong> Este teste é um indicador, e você deve considerar **urgentemente** conversar com um psicólogo, psiquiatra ou terapeuta. Não enfrente esse nível de estresse/ansiedade/tristeza sozinho.</li>
+                <li><strong>Redução de Demandas:</strong> Reduza drasticamente as demandas externas (trabalho, obrigações) por um período de tempo. Sua recuperação é a única meta importante agora.</li>
+            `;
+        }
+
 
         quizResultArea.innerHTML = `
             <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
