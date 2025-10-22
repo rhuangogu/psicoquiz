@@ -689,10 +689,11 @@
     
     // Função para gerar um hash simples (simulação)
     function generateAnswersHash(answers) {
-        return btoa(JSON.stringify(answers)).substring(0, 15);
+        // Reduzi o hash para ser mais robusto contra erros de cópia
+        return btoa(JSON.stringify(answers)).substring(0, 30);
     }
     
-    // --- FUNÇÕES DE POLLING (Novo) ---
+    // --- FUNÇÕES DE POLLING ---
 
     function stopPaymentPolling() {
         if (pollingInterval) {
@@ -736,7 +737,7 @@
                         }
                     }, 1500); // 1.5s de delay para o feedback visual de validação
                 
-                } else if (response.ok && data.status === 'rejected') {
+                } else if (response.ok && data.status === 'rejected' || data.status === 'cancelled') {
                     stopPaymentPolling();
                     alert("Seu pagamento PIX foi cancelado ou expirou. Por favor, gere um novo código.");
                     purchaseModal.classList.add('hidden');
@@ -876,7 +877,7 @@
     }
 
 
-    // 1. Botão "VER RESULTADO" é clicado -> Salva e Inicia Geração PIX
+    // 1. Configura o Listener do botão "VER RESULTADO"
     submitQuizBtn.addEventListener('click', async () => {
         if (!activeQuizId || userAnswers.includes(0)) {
             alert("Por favor, responda a todas as perguntas.");
@@ -893,7 +894,8 @@
         localStorage.setItem('pendingQuiz', JSON.stringify({ id: activeQuizId, answers: userAnswers }));
         
         // 3. Configura e exibe o modal
-        modalTitle.textContent = `PIX: Relatório ${quiz.title.replace('Teste de ', '').replace('Quão ', '').replace('Sou Uma Pessoa ', '').replace('Meu Nível de ', '')}`;
+        const cleanTitle = quiz.title.replace(/Teste de |Qual o Meu Nível de |Quão |Sou Uma Pessoa |\?/g, '');
+        modalTitle.textContent = `PIX: Relatório ${cleanTitle}`;
         document.getElementById('modal-price').textContent = PRICE_DISPLAY;
         purchaseModal.classList.remove('hidden');
         
@@ -903,6 +905,10 @@
         closeModalBtn.textContent = 'Fechar'; 
         closeModalBtn.classList.remove('bg-green-600', 'text-white', 'hover:bg-green-700', 'bg-yellow-600', 'hover:bg-yellow-700');
         closeModalBtn.classList.add('bg-gray-500', 'hover:bg-gray-600');
+        closeModalBtn.onclick = () => {
+            stopPaymentPolling(); 
+            purchaseModal.classList.add('hidden');
+        };
         
         // 4. CHAMA A NETLIFY FUNCTION PARA GERAR O PIX
         try {
@@ -937,7 +943,7 @@
                 const isTesting = urlParams.get('chave') === SECRET_KEY;
                 
                 if (isTesting) {
-                     // Em modo teste, o botão chama a função manual/liberação e PÁRA O POLLING
+                     // Em modo teste, o botão chama a função manual/liberação
                      closeModalBtn.textContent = 'Já Paguei (LIBERAÇÃO TESTE)';
                      closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                      closeModalBtn.classList.add('bg-yellow-600', 'text-white', 'hover:bg-yellow-700');
@@ -950,29 +956,20 @@
                     closeModalBtn.textContent = 'Fechar e Aguardar Confirmação';
                     closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                     closeModalBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
-                    closeModalBtn.onclick = () => {
-                        stopPaymentPolling();
-                        purchaseModal.classList.add('hidden');
-                    }; 
+                    // A função onclick já foi definida no início do bloco `submitQuizBtn.addEventListener` para parar o polling.
                 }
                 
             } else {
                 // ERRO: Falha na API do MP
                 paymentButtonContainer.innerHTML = `<p class="text-red-500">Erro: ${data.error || 'Falha ao gerar PIX.'}</p>`;
                 modalPaymentInfo.textContent = 'Não foi possível gerar o PIX. Tente novamente mais tarde.';
-                closeModalBtn.onclick = () => {
-                    stopPaymentPolling(); // Garante que pare se der erro na geração
-                    purchaseModal.classList.add('hidden');
-                };
+                // O closeModalBtn já está configurado para parar o polling e fechar o modal.
             }
 
         } catch (error) {
             console.error('Erro na requisição PIX:', error);
             paymentButtonContainer.innerHTML = `<p class="text-red-500">Erro de rede. Tente novamente.</p>`;
-            closeModalBtn.onclick = () => {
-                stopPaymentPolling(); // Garante que pare se der erro de rede
-                purchaseModal.classList.add('hidden');
-            };
+            // O closeModalBtn já está configurado para parar o polling e fechar o modal.
         }
     });
     
