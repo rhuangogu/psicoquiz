@@ -460,9 +460,9 @@
                 "10. Tenho chorado com mais frequência que o normal.",
                 "11. Tenho me isolado de amigos e familiares." // 10
             ],
-            inverted_questions: [6, 9, 13, 16, 18, 20, 23, 27, 29, 30],
+            inverted_questions: [6, 9], // Inverti apenas as 2 corretas para este teste de 11 perguntas
             get_result: (score) => { 
-                const max = 150; 
+                const max = 55; // 11 perguntas * 5 pontos
                 if (score <= max * 0.3) return { title: "Humor Estável", desc: "Seu humor está estável, e você demonstra bom engajamento com a vida e energia. Você tem as ferramentas emocionais para lidar com a tristeza passageira de forma eficaz, mantendo uma perspectiva positiva e propósito claro.", color: "bg-green-600" };
                 if (score <= max * 0.5) return { title: "Tristeza Leve", desc: "Você tem tido períodos de tristeza, perda de interesse ou fadiga, mas os sintomas não são persistentes ou incapacitantes. É um momento de vulnerabilidade, onde pequenos ajustes no autocuidado (exercício, sono) farão uma grande diferença.", color: "bg-yellow-600" };
                 if (score <= max * 0.7) return { title: "Tristeza Moderada", desc: "Os sintomas de humor deprimido, perda de prazer e falta de energia são frequentes e duradouros, afetando seu funcionamento diário (concentração, sono). É fundamental reativar a vida social e buscar atividades que gerem um senso de realização.", color: "bg-orange-600" };
@@ -493,9 +493,9 @@
                 "9. Peço desculpas e reconheço erros de forma sincera. (Invertida)", // 8
                 "10. Eu me considero uma pessoa especial e única."
             ],
-            inverted_questions: [4, 7, 9, 11, 13, 15, 17, 19, 21, 23, 26, 28],
+            inverted_questions: [4, 7, 9], // Apenas as 3 corretas para o teste de 10 perguntas
             get_result: (score) => { 
-                const max = 150; 
+                const max = 50; 
                 if (score <= max * 0.3) return { title: "Nível de Modéstia", desc: "Seu nível de arrogância é baixo. Você demonstra humildade, abertura para aprender e a capacidade de valorizar os outros. Você confia em si mesmo(a) sem precisar diminuir ninguém. Sua força está na autenticidade e na cooperação.", color: "bg-blue-600" };
                 if (score <= max * 0.5) return { title: "Tendência Leve", desc: "Você tem momentos em que a auto-importância fala mais alto, principalmente em situações de estresse ou insegurança. Você é capaz de reconhecer o erro, mas a necessidade de validação ainda é uma luta interna. O foco é na escuta e na empatia.", color: "bg-yellow-600" };
                 if (score <= max * 0.7) return { title: "Arrogância Moderada", desc: "Você demonstra traços significativos de superioridade e dificuldade em aceitar críticas. A necessidade de ser o centro das atenções é alta e pode estar afetando seus relacionamentos. Você precisa cultivar a empatia e o reconhecimento alheio ativamente.", color: "bg-orange-600" };
@@ -530,18 +530,18 @@
                 "9. Penso que minhas opiniões são as mais corretas na maioria das vezes. (Invertida)", // 8
                 "10. Peço desculpas rapidamente quando sei que errei."
             ],
-            inverted_questions: [3, 5, 7, 9, 11, 13, 16, 17, 19, 22, 23, 24, 26, 29],
+            inverted_questions: [3, 5, 7, 9], // Apenas as 4 corretas para o teste de 10 perguntas
             get_result: (score) => {
-    const max = 50; 
-    if (score <= max * 0.3) return { title: "Humildade Elevada", desc: "Você demonstra humildade genuína, abertura ao aprendizado e empatia pelos outros. Sua percepção realista sobre si mesmo inspira confiança e respeito.", color: "bg-green-600" };
-    if (score <= max * 0.5) return { title: "Humildade Equilibrada", desc: "Você tem boa autopercepção, mas às vezes pode subestimar ou supervalorizar suas capacidades. O equilíbrio está em aceitar suas forças sem negar seus limites.", color: "bg-yellow-600" };
-    if (score <= max * 0.7) return { title: "Baixa Humildade", desc: "Você demonstra dificuldade em reconhecer falhas ou aceitar críticas. Trabalhar a empatia e o reconhecimento do esforço alheio pode fortalecer suas relações.", color: "bg-orange-600" };
-    return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais. Buscar autoconhecimento e vulnerabilidade é essencial.", color: "bg-red-600" };
-}, 
-get_specific_advice: (answers) => {
+                const max = 50; 
+                if (score <= max * 0.3) return { title: "Humildade Elevada", desc: "Você demonstra humildade genuína, abertura ao aprendizado e empatia pelos outros. Sua percepção realista sobre si mesmo inspira confiança e respeito.", color: "bg-green-600" };
+                if (score <= max * 0.5) return { title: "Humildade Equilibrada", desc: "Você tem boa autopercepção, mas às vezes pode subestimar ou supervalorizar suas capacidades. O equilíbrio está em aceitar suas forças sem negar seus limites.", color: "bg-yellow-600" };
+                if (score <= max * 0.7) return { title: "Baixa Humildade", desc: "Você demonstra dificuldade em reconhecer falhas ou aceitar críticas. Trabalhar a empatia e o reconhecimento do esforço alheio pode fortalecer suas relações.", color: "bg-orange-600" };
+                return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais. Buscar autoconhecimento e vulnerabilidade é essencial.", color: "bg-red-600" };
+            }, 
+            get_specific_advice: (answers) => {
                 let advice = [];
                 if (answers[1] <= 2) { advice.push("Você marcou que **não procura feedback negativo** (Pergunta 2). O feedback é um presente, não um ataque. Tente pedir um micro-feedback a alguém de confiança: 'Em uma escala de 1 a 10, como foi [minha apresentação]? O que eu faria para ser 10?'. Isso torna o feedback menos assustador."); }
-                if (answers[8] >= 4) { // Pergunta invertida
+                if (answers[8] >= 4) { // Pergunta invertida (índice 8 = pergunta 9)
                     advice.push("Vimos que você acha que **suas opiniões são as mais corretas** (Pergunta 9). Tente a 'Técnica do Advogado do Diabo': em uma discussão, pare e tente argumentar FORTE a favor do lado oposto, mesmo que mentalmente. Isso força seu cérebro a ver falhas na sua própria lógica e a valorizar a do outro."); }
                 if (answers[7] <= 2) { advice.push("A dificuldade em **elogiar publicamente** (Pergunta 8) pode ser orgulho. Tente a 'Regra do Elogio Diário': encontre UMA coisa que alguém fez bem (um colega, um familiar) e elogie essa pessoa, de preferência na frente de outros. Isso constrói pontes."); }
                 return advice;
@@ -559,7 +559,7 @@ get_specific_advice: (answers) => {
     const quizResultArea = document.getElementById('quiz-result');
     const purchaseModal = document.getElementById('purchase-modal');
     const modalTitle = document.getElementById('modal-title');
-    const checkoutLink = document.getElementById('checkout-link');
+    const checkoutLink = document.getElementById('checkout-link'); // Não usado na final, mas mantido
     const loadingScreen = document.getElementById('loading-screen');
     const paymentButtonContainer = document.getElementById('payment-button-container');
     const modalPaymentInfo = document.getElementById('modal-payment-info');
@@ -657,7 +657,7 @@ get_specific_advice: (answers) => {
         quizSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function handleOptionClick(element) {
+    window.handleOptionClick = function(element) {
         const questionIndex = parseInt(element.getAttribute('data-question-index'));
         const value = parseInt(element.getAttribute('data-value'));
 
@@ -684,7 +684,12 @@ get_specific_advice: (answers) => {
             submitQuizBtn.classList.add('hidden');
         }
     }
-
+    
+    // Função para gerar um hash simples (simulação)
+    function generateAnswersHash(answers) {
+        return btoa(JSON.stringify(answers)).substring(0, 15);
+    }
+    
     // Libera o acesso e mostra o resultado COMPLETO (Função de Resultado)
     function unlockAccess(quizId, answers) {
         const quiz = quizzes[quizId];
@@ -706,11 +711,19 @@ get_specific_advice: (answers) => {
         const resultData = quiz.get_result(totalScore);
         let specificAdvice = [];
         
-        const isLowRisk = resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia');
+        const isLowRisk = resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia') || resultData.title.includes('Humildade Elevada') || resultData.title.includes('Humor Estável');
         if (quiz.get_specific_advice && !isLowRisk) {
-            specificAdvice = quiz.get_specific_advice(answers);
+            // Mapeia as respostas invertidas para o índice 0-base antes de chamar get_specific_advice
+            const nonInvertedAnswers = answers.map((answer, index) => {
+                const questionNumber = index + 1;
+                if (quiz.inverted_questions && quiz.inverted_questions.includes(questionNumber)) {
+                    return (6 - parseInt(answer));
+                }
+                return parseInt(answer);
+            });
+            specificAdvice = quiz.get_specific_advice(nonInvertedAnswers);
         }
-
+        
         const adviceHtml = specificAdvice.length > 0 ? `
             <p class="text-base text-gray-700 mt-4">
                 <span class="font-bold text-lg text-blue-800">CONSELHOS PERSONALIZADOS (COM BASE NAS SUAS RESPOSTAS):</span>
@@ -725,7 +738,7 @@ get_specific_advice: (answers) => {
 
         quizResultArea.innerHTML = `
             <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
-            <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '')}</h4>
+            <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '').replace('Quão ', '').replace('Sou Uma Pessoa ', '').replace('Meu Nível de ', '')}</h4>
             <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">Diagnóstico Principal: ${resultData.title}</div>
             <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação: ${totalScore} de ${quiz.questions.length * 5}</h4>
             <div class="mt-4 p-5 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
@@ -747,24 +760,68 @@ get_specific_advice: (answers) => {
         
         localStorage.removeItem('pendingQuiz');
     }
+    
+    // FUNÇÃO MANUAL DE LIBERAÇÃO (Plano B / Teste)
+    function handlePixPaidManual() {
+		if(purchaseModal) purchaseModal.classList.add('hidden'); // Fecha o modal
+		if (loadingScreen) loadingScreen.style.display = 'flex'; // Mostra "Validando"
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const isTesting = urlParams.get('chave') === SECRET_KEY;
+
+		setTimeout(() => {
+			if (loadingScreen) loadingScreen.style.display = 'none'; // Esconde "Validando"
+            const storedQuizData = localStorage.getItem('pendingQuiz');
+            const data = storedQuizData ? JSON.parse(storedQuizData) : null;
+            
+            if (isTesting && data && data.id && Array.isArray(data.answers)) {
+                // Modo TESTE: Libera o resultado imediatamente
+                unlockAccess(data.id, data.answers);
+            } else if (quizResultArea && quizSection) {
+                // Modo PRODUÇÃO / Manual: Mostra a mensagem de "Aguardando"
+                quizResultArea.innerHTML = `
+                    <h3 class="text-2xl font-bold text-center mb-4 text-blue-800">Aguardando Confirmação...</h3>
+                    <p class="text-center text-gray-700 mb-4">Assim que seu pagamento PIX for confirmado, seu resultado será liberado automaticamente.</p>
+                    <p class="text-center text-gray-600 text-sm">Normalmente, isso leva apenas alguns segundos. Se demorar mais que 5 minutos, por favor, atualize a página.</p>
+                    <div class="text-center mt-6">
+                        <button onclick="location.reload();" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Atualizar Página</button>
+                    </div>`;
+
+                // Garante que a seção de resultado esteja visível e outras escondidas
+                quizSection.classList.remove('hidden');
+                quizSelection.classList.add('hidden');
+                quizQuestionsContainer.innerHTML = ''; quizQuestionsContainer.classList.add('hidden');
+                submitQuizBtn.classList.add('hidden'); activeQuizTitle.classList.add('hidden');
+                quizResultArea.classList.remove('hidden');
+                quizResultArea.scrollIntoView({ behavior: 'smooth' }); // Rola para a mensagem
+            }
+
+            // Reseta o botão do modal PIX para ser apenas 'Fechar'
+			if(closeModalBtn){
+                closeModalBtn.textContent = 'Fechar';
+                closeModalBtn.className = 'px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition';
+                closeModalBtn.onclick = () => { if (purchaseModal) purchaseModal.classList.add('hidden'); };
+            }
+
+        }, 1500); // Tempo para mostrar a tela "Validando"
+    }
+
 
     // 1. Botão "VER RESULTADO" é clicado -> Salva e Inicia Geração PIX
     submitQuizBtn.addEventListener('click', async () => {
-        if (!activeQuizId) return;
+        if (!activeQuizId || userAnswers.includes(0)) {
+            alert("Por favor, responda a todas as perguntas.");
+            return;
+        }
 
         const quiz = quizzes[activeQuizId];
-
-        // 1. Cria um hash simples para o quiz 
-        const answersHash = btoa(JSON.stringify(userAnswers)).substring(0, 30);
+        const answersHash = generateAnswersHash(userAnswers);
         
-        // 2. SALVA AS RESPOSTAS no navegador
-        localStorage.setItem('pendingQuiz', JSON.stringify({
-            id: activeQuizId,
-            answers: userAnswers
-        }));
+        // 2. Salva o resultado pendente no localStorage
+        localStorage.setItem('pendingQuiz', JSON.stringify({ id: activeQuizId, answers: userAnswers }));
         
         // 3. Configura e exibe o modal
-        modalTitle.textContent = `PIX: Relatório ${quiz.title.replace('Teste de ', '')}`;
+        modalTitle.textContent = `PIX: Relatório ${quiz.title.replace('Teste de ', '').replace('Quão ', '').replace('Sou Uma Pessoa ', '').replace('Meu Nível de ', '')}`;
         document.getElementById('modal-price').textContent = PRICE_DISPLAY;
         purchaseModal.classList.remove('hidden');
         
@@ -801,10 +858,22 @@ get_specific_advice: (answers) => {
                 modalPaymentInfo.textContent = 'Escaneie ou use a chave PIX. Seu resultado será liberado assim que o pagamento for confirmado.';
 
                 // 5. Configura o botão de Liberação Manual (Plano B)
-                closeModalBtn.textContent = 'Já Paguei, Liberar Meu Resultado!';
-                closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
-                closeModalBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
-                closeModalBtn.onclick = handlePixPaidManual; 
+                const urlParams = new URLSearchParams(window.location.search);
+                const isTesting = urlParams.get('chave') === SECRET_KEY;
+                
+                if (isTesting) {
+                     // Em modo teste, o botão chama a função manual/liberação
+                     closeModalBtn.textContent = 'Já Paguei (LIBERAÇÃO TESTE)';
+                     closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                     closeModalBtn.classList.add('bg-yellow-600', 'text-white', 'hover:bg-yellow-700');
+                     closeModalBtn.onclick = handlePixPaidManual; 
+                } else {
+                    // Em produção, o botão é só 'Fechar' e a liberação é via Webhook.
+                    closeModalBtn.textContent = 'Já Paguei, Aguardar Confirmação';
+                    closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                    closeModalBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
+                    closeModalBtn.onclick = handlePixPaidManual; // Em produção, mostra "Aguardando Confirmação"
+                }
                 
             } else {
                 // ERRO: Falha na API do MP
@@ -819,33 +888,6 @@ get_specific_advice: (answers) => {
             closeModalBtn.onclick = () => purchaseModal.classList.add('hidden');
         }
     });
-
-    // FUNÇÃO MANUAL DE LIBERAÇÃO (Plano B)
-    function handlePixPaidManual() {
-        purchaseModal.classList.add('hidden');
-        loadingScreen.style.display = 'flex';
-        
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            
-            const data = JSON.parse(localStorage.getItem('pendingQuiz'));
-            
-            if (data && activeQuizId) {
-                // Assume que o pagamento foi feito (Plano B).
-                unlockAccess(data.id, data.answers);
-            } else {
-                alert("Seu resultado não pôde ser carregado. Tente novamente.");
-                renderQuizCards();
-            }
-
-            // Resetar o botão para Fechar
-            closeModalBtn.textContent = 'Fechar';
-            closeModalBtn.classList.remove('bg-green-600', 'text-white', 'hover:bg-green-700');
-            closeModalBtn.classList.add('bg-gray-500', 'hover:bg-gray-600');
-            closeModalBtn.onclick = () => purchaseModal.classList.add('hidden');
-            
-        }, 3000); 
-    }
     
     window.closeModal = function() {
         purchaseModal.classList.add('hidden');
@@ -867,13 +909,16 @@ get_specific_advice: (answers) => {
                         loadingScreen.style.display = 'none';
 
                         if (data && data.id && Array.isArray(data.answers)) {
+                            // Acesso concedido via chave de teste na URL
                             unlockAccess(data.id, data.answers);
                         } else {
-                            alert("Erro ao carregar o resultado. Por favor, refaça o teste.");
+                            // Chave na URL, mas sem teste pendente
+                            alert("Chave de acesso validada, mas não há um teste pendente para liberar. Por favor, refaça o teste.");
                             localStorage.removeItem('pendingQuiz');
                             renderQuizCards();
                         }
-                        history.replaceState(null, '', window.location.pathname);
+                        // Limpa a URL para evitar uso indevido
+                        history.replaceState(null, '', window.location.pathname); 
                     }, 1500);
                     return true;
                 }
