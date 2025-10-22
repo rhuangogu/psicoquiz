@@ -216,7 +216,7 @@
 
     // --- CONFIGURAÇÃO PIX/API ---
     const PIX_API_ENDPOINT = '/.netlify/functions/generate-pix';
-    const CHECK_PAYMENT_ENDPOINT = '/.netlify/functions/check-payment-status'; // Novo endpoint para Polling
+    const CHECK_PAYMENT_ENDPOINT = '/.netlify/functions/check-payment-status'; // Endpoint para Polling
     const PRICE_DISPLAY = "R$ 8,99"; 
     const SECRET_KEY = 'LIBERAR_TESTE'; // Chave fictícia para teste manual
 
@@ -537,7 +537,7 @@
                 if (score <= max * 0.3) return { title: "Humildade Elevada", desc: "Você demonstra humildade genuína, abertura ao aprendizado e empatia pelos outros. Sua percepção realista sobre si mesmo inspira confiança e respeito.", color: "bg-green-600" };
                 if (score <= max * 0.5) return { title: "Humildade Equilibrada", desc: "Você tem boa autopercepção, mas às vezes pode subestimar ou supervalorizar suas capacidades. O equilíbrio está em aceitar suas forças sem negar seus limites.", color: "bg-yellow-600" };
                 if (score <= max * 0.7) return { title: "Baixa Humildade", desc: "Você demonstra dificuldade em reconhecer falhas ou aceitar críticas. Trabalhar a empatia e o reconhecimento do esforço alheio pode fortalecer suas relações.", color: "bg-orange-600" };
-                return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais. Buscar autoconhecimento e vulnerabilidade é essencial.", color: "bg-red-600" };
+                return { title: "Arrogância Alta", desc: "Sua pontuação indica tendência a se ver como superior e rejeitar feedback. Isso pode prejudicar conexões pessoais e profissionais e impedir o crescimento.", color: "bg-red-600" };
             }, 
             get_specific_advice: (answers) => {
                 let advice = [];
@@ -560,7 +560,7 @@
     const quizResultArea = document.getElementById('quiz-result');
     const purchaseModal = document.getElementById('purchase-modal');
     const modalTitle = document.getElementById('modal-title');
-    const checkoutLink = document.getElementById('checkout-link'); // Não usado na final, mas mantido
+    const checkoutLink = document.getElementById('checkout-link'); 
     const loadingScreen = document.getElementById('loading-screen');
     const paymentButtonContainer = document.getElementById('payment-button-container');
     const modalPaymentInfo = document.getElementById('modal-payment-info');
@@ -689,7 +689,6 @@
     
     // Função para gerar um hash simples (simulação)
     function generateAnswersHash(answers) {
-        // Reduzi o hash para ser mais robusto contra erros de cópia
         return btoa(JSON.stringify(answers)).substring(0, 30);
     }
     
@@ -704,59 +703,77 @@
     }
 
     function startPaymentPolling(paymentId) {
-        stopPaymentPolling(); // Garante que não há outro polling rodando
+        console.log("Iniciando verificação para payment_id:", paymentId);
+        stopPaymentPolling(); // Garante que não haja verificações anteriores rodando
 
-        console.log(`Iniciando polling para Payment ID: ${paymentId}`);
-
-        // Define o intervalo para verificar o status a cada 5 segundos
         pollingInterval = setInterval(async () => {
+            console.log("Verificando status do pagamento:", paymentId);
+            if (!paymentId) { // Segurança extra
+                console.error("Payment ID inválido para polling.");
+                stopPaymentPolling();
+                return;
+            }
             try {
-                const response = await fetch(CHECK_PAYMENT_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId: paymentId })
-                });
-
+                // Chama a função Netlify passando o ID na URL
+                const response = await fetch(`${CHECK_PAYMENT_ENDPOINT}?payment_id=${paymentId}`);
                 const data = await response.json();
 
-                if (response.ok && data.status === 'approved') {
-                    stopPaymentPolling();
-                    // Mostra a tela de validação antes de liberar
-                    loadingScreen.style.display = 'flex'; 
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                        const storedQuizData = localStorage.getItem('pendingQuiz');
-                        const quizData = storedQuizData ? JSON.parse(storedQuizData) : null;
-                        
-                        if (quizData && quizData.id && Array.isArray(quizData.answers)) {
-                            unlockAccess(quizData.id, quizData.answers);
-                        } else {
-                            // Se falhar ao ler do localStorage (improvável após o pagamento)
-                            alert("Pagamento confirmado, mas houve um erro ao recuperar o teste. Por favor, entre em contato.");
-                            renderQuizCards();
-                        }
-                    }, 1500); // 1.5s de delay para o feedback visual de validação
-                
-                } else if (response.ok && data.status === 'rejected' || data.status === 'cancelled') {
-                    stopPaymentPolling();
-                    alert("Seu pagamento PIX foi cancelado ou expirou. Por favor, gere um novo código.");
-                    purchaseModal.classList.add('hidden');
-                    renderQuizCards(); // Volta para a tela de seleção
-                } else if (data.status === 'pending') {
-                    console.log("Pagamento ainda pendente...");
-                }
+                console.log("Resposta da verificação:", data);
 
+                if (response.ok && data.status === 'approved') {
+                    console.log("Pagamento APROVADO! Liberando acesso...");
+                    stopPaymentPolling(); // Para a verificação
+
+                    if (purchaseModal) purchaseModal.classList.add('hidden'); // Fecha modal PIX
+                    if (loadingScreen) loadingScreen.style.display = 'flex'; // Mostra "Validando"
+
+                    setTimeout(() => {
+                        if (loadingScreen) loadingScreen.style.display = 'none'; // Esconde "Validando"
+                        const storedData = localStorage.getItem('pendingQuiz');
+                        const quizData = storedData ? JSON.parse(storedData) : null;
+
+                        if (quizData && quizData.id && Array.isArray(quizData.answers)) {
+                            unlockAccess(quizData.id, quizData.answers); // Libera o resultado
+                        } else {
+                            alert("Pagamento confirmado, mas houve um erro ao recuperar os dados do teste.");
+                            if (typeof renderQuizCards === 'function') renderQuizCards();
+                        }
+                    }, 1500); // 1.5s para feedback visual
+
+                } else if (response.ok && (data.status === 'pending' || data.status === 'in_process')) {
+                    // Pendente, continua...
+                    console.log("Pagamento ainda pendente...");
+                    if (modalPaymentInfo && purchaseModal && !purchaseModal.classList.contains('hidden')) {
+                         modalPaymentInfo.textContent = 'Aguardando confirmação do pagamento... Verificando automaticamente.';
+                    }
+                } else {
+                    // Pagamento falhou (cancelled, rejected) ou erro na API
+                    console.warn("Pagamento não aprovado ou erro na verificação:", data.status || data.error);
+                    stopPaymentPolling();
+                    if (paymentButtonContainer && purchaseModal && !purchaseModal.classList.contains('hidden')) {
+                        paymentButtonContainer.innerHTML = `<p class="text-red-500"><b>Pagamento ${data.status || 'falhou'}.</b></p><p class="text-sm text-gray-600 mt-2">Gere um novo PIX ou feche.</p>`;
+                        modalPaymentInfo.textContent = `Status: ${data.status || data.error || 'Erro'}. Tente novamente.`;
+                    }
+                    // localStorage.removeItem('pendingQuiz'); // Pode ser útil manter para o usuário tentar novamente
+                }
             } catch (error) {
-                console.error('Erro no Polling de Pagamento:', error);
-                // Não para o Polling em erro de rede, apenas tenta novamente
+                console.error('Erro de rede ao verificar status:', error);
+                // Não para o polling por erro de rede, pode ser temporário
             }
         }, 5000); // Verifica a cada 5 segundos
 
-        // Configura o fechamento do modal para parar o polling
-        closeModalBtn.onclick = () => {
+        // Garante que fechar o modal pare o polling
+        if(closeModalBtn){
+             closeModalBtn.onclick = () => {
+                 stopPaymentPolling();
+                 if(purchaseModal) purchaseModal.classList.add('hidden');
+             };
+        }
+        // Garante que fechar pelo 'X' (se houver) também pare
+        window.closeModal = function() {
             stopPaymentPolling();
-            purchaseModal.classList.add('hidden');
-        };
+            if (purchaseModal) purchaseModal.classList.add('hidden');
+        }
     }
     
     // Libera o acesso e mostra o resultado COMPLETO (Função de Resultado)
@@ -923,56 +940,68 @@
 
             const data = await response.json();
 
-            if (response.ok && data.paymentId) {
+            if (response.ok && data.qrCodeBase64 && data.pixKey && data.payment_id) { // VERIFICA SE VEIO payment_id
                 
-                // INICIA O POLLING AUTOMÁTICO
-                startPaymentPolling(data.paymentId); 
-                
-                // SUCESSO: Exibe o QR Code e a chave
+                // SUCESSO ao gerar PIX
                 paymentButtonContainer.innerHTML = `
                     <img src="data:image/jpeg;base64,${data.qrCodeBase64}" alt="QR Code PIX" class="mx-auto w-48 h-48 border border-gray-300 p-2 rounded-lg">
-                    <p class="text-sm mt-4 text-gray-700 font-bold">Chave Copia e Cola:</p>
+                    <p class="text-sm mt-4 font-bold">Chave Copia e Cola:</p>
                     <textarea id="pix-code" rows="3" class="w-full text-xs p-2 mt-1 border rounded-lg resize-none bg-gray-50 cursor-pointer" readonly>${data.pixKey}</textarea>
-                    <button onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); alert('Chave PIX copiada!');" class="mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">Copiar Chave PIX</button>
-                `;
+                    <button onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); alert('Chave PIX copiada!');" class="mt-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">Copiar Chave</button>`;
                 
-                modalPaymentInfo.textContent = 'Escaneie ou use a chave PIX. Seu resultado será liberado *automaticamente* assim que o pagamento for confirmado.';
+                modalPaymentInfo.textContent = 'Escaneie ou copie a chave. Aguardando confirmação do pagamento...';
 
-                // 5. Configura o botão de Liberação Manual (Plano B/Teste)
+                // --- INICIA A VERIFICAÇÃO AUTOMÁTICA ---
+                startPaymentPolling(data.payment_id);
+                
+                // Configura o botão Fechar para PARAR o polling
                 const urlParams = new URLSearchParams(window.location.search);
                 const isTesting = urlParams.get('chave') === SECRET_KEY;
-                
+
                 if (isTesting) {
                      // Em modo teste, o botão chama a função manual/liberação
                      closeModalBtn.textContent = 'Já Paguei (LIBERAÇÃO TESTE)';
                      closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                      closeModalBtn.classList.add('bg-yellow-600', 'text-white', 'hover:bg-yellow-700');
                      closeModalBtn.onclick = () => { 
-                        stopPaymentPolling();
+                        stopPaymentPolling(); // Para a verificação
                         handlePixPaidManual(); 
                     }; 
                 } else {
-                    // Em produção, o botão é só 'Fechar' e PÁRA O POLLING
-                    closeModalBtn.textContent = 'Fechar e Aguardar Confirmação';
-                    closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
-                    closeModalBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
-                    // A função onclick já foi definida no início do bloco `submitQuizBtn.addEventListener` para parar o polling.
+                    // Em produção, o botão é só "Fechar" e PARAR o Polling
+                    closeModalBtn.textContent = 'Fechar';
+                    closeModalBtn.className = 'px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition';
+                    closeModalBtn.onclick = () => { 
+                        stopPaymentPolling(); // Para a verificação
+                        if(purchaseModal) purchaseModal.classList.add('hidden');
+                    };
                 }
                 
             } else {
-                // ERRO: Falha na API do MP
-                paymentButtonContainer.innerHTML = `<p class="text-red-500">Erro: ${data.error || 'Falha ao gerar PIX.'}</p>`;
-                modalPaymentInfo.textContent = 'Não foi possível gerar o PIX. Tente novamente mais tarde.';
-                // O closeModalBtn já está configurado para parar o polling e fechar o modal.
+                // ERRO ao gerar PIX (resposta não OK ou dados faltando, incluindo payment_id)
+                let errorMsg = data.error || 'Falha ao gerar PIX.';
+                if (response.ok && !data.payment_id) {
+                     errorMsg = "Falha ao obter ID do pagamento do servidor.";
+                     console.error("API generate-pix não retornou payment_id");
+                }
+                console.error("Erro retornado pela API generate-pix:", data);
+                paymentButtonContainer.innerHTML = `<p class="text-red-500"><b>Erro: ${errorMsg}</b></p><p class="text-sm text-gray-600 mt-2">Tente novamente mais tarde.</p>`;
+                modalPaymentInfo.textContent = 'Erro no servidor ao gerar o código PIX.';
+                // Mantém o botão como 'Fechar' simples
+                closeModalBtn.onclick = () => { if(purchaseModal) purchaseModal.classList.add('hidden'); };
             }
 
         } catch (error) {
-            console.error('Erro na requisição PIX:', error);
-            paymentButtonContainer.innerHTML = `<p class="text-red-500">Erro de rede. Tente novamente.</p>`;
-            // O closeModalBtn já está configurado para parar o polling e fechar o modal.
+            // ERRO de rede ao chamar a API generate-pix
+            console.error('Erro de rede na requisição PIX:', error);
+            paymentButtonContainer.innerHTML = `<p class="text-red-500"><b>Erro de rede. Tente novamente.</b></p>`;
+            modalPaymentInfo.textContent = 'Não foi possível conectar ao servidor de pagamento.';
+            // Mantém o botão como 'Fechar' simples
+            closeModalBtn.onclick = () => { if(purchaseModal) purchaseModal.classList.add('hidden'); };
         }
     });
     
+    // Funções extras de limpeza (necessárias para o Polling)
     window.closeModal = function() {
         stopPaymentPolling(); // Garante que pare se o modal for fechado por outros meios
         purchaseModal.classList.add('hidden');
@@ -1016,10 +1045,14 @@
         }
     }
 
-    // 🚀 Inicia a página corretamente
+    // 🚀 Inicia a página corretamente e para qualquer polling antigo
+    stopPaymentPolling(); // Garante que não haja lixos de sessões anteriores
     if (!validateAccess()) {
         renderQuizCards();
     }
+    
+    // Para o Polling ao sair ou fechar a aba
+    window.addEventListener('beforeunload', stopPaymentPolling);
 </script>
 </body>
 </html>
