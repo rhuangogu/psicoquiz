@@ -464,7 +464,7 @@
                     desc: "Sua pontuação indica que a **preocupação excessiva** e os sintomas físicos (palpitações, tensão) já são uma presença significativa na sua vida. A ansiedade está afetando suas escolhas, seu foco e seu descanso. É como se você vivesse em estado de alerta. Você precisa de ferramentas ativas para acalmar seu sistema nervoso e focar no que pode controlar."
                 };
                 return { title: "Ansiedade Crítica", color: "bg-red-600",
-                    desc: "Você está em um nível **crítico** onde o medo e a apreensão dominam. É provável que ataques de pânico, evitação ou pensamentos intrusivos sejam frequentes. Lembre-se: ansiedade é um estado tratável. Sua mente está te pedindo socorro. Você precisa de apoio profissional imediato para aprender a respirar, a reestruturar pensamentos e a encontrar o caminho de volta para a segurança interna."
+                    desc: "Você está em um nível **crítico** onde o medo e a apreensão dominam. É provável que ataques de pânico, evitação ou pensamentos intrusivos sejam frequentes. Lembre-se: ansiedade é um estado tratável. Sua mente está te pedindo socorro. Você precisa de apoio profissional para aprender a respirar, a reestruturar pensamentos e a encontrar o caminho de volta para a segurança interna."
                 };
             },
             get_specific_advice: (answers) => {
@@ -506,7 +506,7 @@
                     desc: "Os sintomas de humor deprimido e falta de prazer são frequentes, afetando seu foco, sono e motivação. Você está em um estado de baixa energia que exige intervenção. Não espere a vontade de fazer as coisas voltar: force-se gentilmente à 'Ativação Comportamental' (fazer atividades mesmo sem querer) e retome suas conexões sociais. Você não precisa carregar esse peso sozinho(a)."
                 };
                 return { title: "Tristeza Severa", color: "bg-red-600",
-                    desc: "Sua pontuação indica a presença de **sintomas severos**, como sentimentos de inutilidade, desesperança e isolamento profundo. Sua vida está sendo significativamente impactada. Este é o momento de acionar sua rede de apoio e **procurar ajuda profissional imediatamente**. Sua recuperação é possível, mas a intervenção de um psicólogo e/ou psiquiatra é essencial."
+                    desc: "Sua pontuação indica a presença de **sintomas severos**, como sentimentos de inutilidade, desesperança e isolamento profundo. Sua vida está sendo significativamente impactada. Este é o momento de acionar sua rede de apoio e **procurar ajuda profissional**. Sua recuperação é possível, mas a intervenção de um psicólogo e/ou psiquiatra é essencial."
                 };
             },
             get_specific_advice: (answers) => {
@@ -853,7 +853,16 @@
         const resultData = quiz.get_result(totalScore);
         let specificAdvice = [];
         
-        const isLowRisk = resultData.title.includes('Baixo') || resultData.title.includes('Saudável') || resultData.title.includes('Serenidade') || resultData.title.includes('Modéstia') || resultData.title.includes('Humildade Elevada') || resultData.title.includes('Humor Estável');
+        // Define o que é considerado um resultado "bom" (verde/azul) para o Plano de Ação
+        const isLowRisk = resultData.title.includes('Baixo') || 
+                          resultData.title.includes('Saudável') || 
+                          resultData.title.includes('Serenidade') || 
+                          resultData.title.includes('Modéstia') || 
+                          resultData.title.includes('Elevada') ||
+                          resultData.title.includes('Excepcional') ||
+                          resultData.title.includes('Acima da Média') ||
+                          resultData.title.includes('Estável');
+
         if (quiz.get_specific_advice && !isLowRisk) {
             // Mapeia as respostas invertidas para o índice 0-base antes de chamar get_specific_advice
             const nonInvertedAnswers = answers.map((answer, index) => {
@@ -874,25 +883,28 @@
                 </ul>
             </p>` : '';
 
-        // Lógica humanizada para o Plano de Ação Geral
+        // Lógica humanizada e personalizada para o Plano de Ação Geral
         let planGeneralHtml = '';
         if (isLowRisk) {
+            // Plano para resultados bons (QI Alto, Baixo Risco, Serenidade)
             planGeneralHtml = `
-                <li><strong>Mantenha o Equilíbrio:</strong> Sua estabilidade é um superpoder. Continue priorizando suas fontes de prazer, conexões sociais e sono de qualidade.</li>
-                <li><strong>Crescimento Contínuo:</strong> Para o QI, continue se desafiando com novos aprendizados. Para a humildade, use sua segurança para incentivar os outros.</li>
-                <li><strong>Prevenção Ativa:</strong> Identifique seus 'gatilhos' de estresse ou vulnerabilidade e crie um plano de 1 minuto para quando eles aparecerem.</li>
+                <li>• Mantenha a Rotina: Continue com atividade física regular e foque em uma alimentação balanceada. Seu corpo e sua mente agradecem.</li>
+                <li>• Foco no Sucesso: Use sua estabilidade/capacidade atual como motor para novos projetos. No caso de QI, procure sempre se desafiar com novos estudos e leituras complexas.</li>
+                <li>• Prevenção Ativa: Seu resultado é excelente, mas o autocuidado deve ser constante. Programe momentos de lazer e descanso para evitar picos futuros.</li>
             `;
-        } else if (resultData.title.includes('Médio') || resultData.title.includes('Leve') || resultData.title.includes('Equilibrada')) {
+        } else if (resultData.title.includes('Moderado') || resultData.title.includes('Leve') || resultData.title.includes('Equilibrada')) {
+            // Plano para resultados médios (Risco Moderado, Tendência Leve)
             planGeneralHtml = `
-                <li><strong>Autocuidado Proativo:</strong> Este é o momento ideal para a intervenção. Implemente rotinas diárias de 15 minutos (como meditação, exercícios de respiração ou Brain Dump) para prevenir a progressão dos sintomas.</li>
-                <li><strong>Ação Deliberada:</strong> Para o QI/Raciocínio, comece a estudar ativamente uma nova habilidade ou resolva quebra-cabeças complexos diariamente. Para o Burnout/Estresse, aprenda a dizer 'NÃO' para novas demandas.</li>
-                <li><strong>Busque Orientação:</strong> Considere uma **sessão de orientação** com um coach ou terapeuta para refinar suas estratégias. Este é um investimento na sua saúde futura.</li>
+                <li>• Ação Proativa: Não espere o problema piorar. Comece hoje a incorporar 30 minutos de atividade física em sua rotina.</li>
+                <li>• Auto-Observação: Monitore sua alimentação e sono. Ambos são cruciais para o seu bem-estar mental.</li>
+                <li>• Busque Orientação: Considere iniciar conversas com um profissional de desenvolvimento pessoal (coaching) ou terapia para desenvolver estratégias de prevenção e gerenciamento de estresse.</li>
             `;
         } else {
+            // Plano para resultados ruins (Alto Risco, Crítico, Severo, Arrogância Alta)
             planGeneralHtml = `
-                <li><strong>Apoio Urgente:</strong> Sua pontuação sugere que você precisa de atenção imediata. Fale com alguém de confiança e comece a acionar sua rede de apoio social.</li>
-                <li><strong>Busca Profissional Imediata:</strong> Este teste é um indicador, e você deve considerar **urgentemente** conversar com um psicólogo, psiquiatra ou terapeuta. Não enfrente esse nível de estresse/ansiedade/tristeza sozinho.</li>
-                <li><strong>Redução de Demandas:</strong> Reduza drasticamente as demandas externas (trabalho, obrigações) por um período de tempo. Sua recuperação é a única meta importante agora.</li>
+                <li>• Ajuda Profissional: Este teste é um indicador importante. É essencial e recomendado que você busque apoio profissional (psicólogo, terapeuta, etc.) para iniciar um processo de recuperação.</li>
+                <li>• Redução de Demandas: Priorize sua saúde acima de obrigações externas. Reduza a carga de trabalho ou social por um período. Sua recuperação é a única meta importante.</li>
+                <li>• Foco na Base: Garanta o mínimo: durma o suficiente e tenha pelo menos uma refeição nutritiva por dia. Atividade física leve (como uma caminhada) pode ajudar a liberar a tensão acumulada.</li>
             `;
         }
 
