@@ -715,6 +715,7 @@
 
     // Função para voltar para a tela de seleção
     function goBackToSelection() {
+        // history.pushState({ screen: 'selection' }, '', window.location.pathname); // <-- LINHA REMOVIDA
         stopPaymentPolling(); // Para o polling se estiver ativo
         if (quizSection) quizSection.classList.add('hidden'); // Esconde a seção de perguntas/resultado
         if (quizResultArea) quizResultArea.classList.add('hidden'); // Garante que resultado esteja escondido
@@ -1349,6 +1350,26 @@
         // Se accessGranted foi true, validateAccess já cuidou de chamar unlockAccess
     }
     
+    // Listener para o botão Voltar/Avançar do navegador
+    window.addEventListener('popstate', (event) => {
+        console.log("Popstate triggered:", event.state, location.hash);
+        // Se o hash sumiu (usuário clicou em Voltar do quiz para a seleção)
+        // OU se o estado explicitamente diz que é para ir para a seleção
+        if (!location.hash || event.state?.screen === 'selection') {
+             // Verifica se NÃO estamos já na tela de seleção para evitar loop
+             if (quizSelection && quizSelection.classList.contains('hidden')) {
+                 goBackToSelection();
+             }
+        } else if (event.state?.screen === 'quiz' && event.state?.quizId) {
+             // Se o usuário clicou em Avançar (ou refresh), garantimos que o quiz não volte a tela de seleção
+             // A lógica de restore do quiz é complexa, mas para a UX básica, podemos forçar a volta para a seleção
+             // se o usuário não estiver na seleção, para garantir um estado conhecido.
+             if (quizSelection && quizSelection.classList.contains('hidden')) {
+                 goBackToSelection();
+             }
+        }
+    });
+
     // Para o Polling ao sair ou fechar a aba
     window.addEventListener('beforeunload', stopPaymentPolling);
 </script>
