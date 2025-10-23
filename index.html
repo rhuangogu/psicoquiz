@@ -647,6 +647,11 @@
         // Limpa o estado do quiz atual
         activeQuizId = null;
         userAnswers = [];
+        
+        // Limpa o estado de espera de pagamento (se o usuário desistiu)
+        localStorage.removeItem('paymentState');
+        localStorage.removeItem('paymentId');
+        localStorage.removeItem('pendingQuiz');
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -832,11 +837,16 @@
                     // Pagamento falhou (cancelled, rejected) ou erro na API
                     console.warn("Pagamento não aprovado ou erro na verificação:", data.status || data.error);
                     stopPaymentPolling();
+                    
+                    // Limpa o estado de espera ao falhar
+                    localStorage.removeItem('paymentState');
+                    localStorage.removeItem('paymentId');
+                    localStorage.removeItem('pendingQuiz');
+
                     if (paymentButtonContainer && purchaseModal && !purchaseModal.classList.contains('hidden')) {
                         paymentButtonContainer.innerHTML = `<p class="text-red-500"><b>Pagamento ${data.status || 'falhou'}.</b></p><p class="text-sm text-gray-600 mt-2">Gere um novo PIX ou feche.</p>`;
                         modalPaymentInfo.textContent = `Status: ${data.status || data.error || 'Erro'}. Tente novamente.`;
                     }
-                    // localStorage.removeItem('pendingQuiz'); // Pode ser útil manter para o usuário tentar novamente
                 }
             } catch (error) {
                 console.error('Erro de rede ao verificar status:', error);
@@ -855,6 +865,41 @@
         window.closeModal = function() {
             stopPaymentPolling();
             if (purchaseModal) purchaseModal.classList.add('hidden');
+        }
+    }
+
+    // Função para restaurar o estado de espera na tela
+    function showWaitingScreen() {
+        console.log("Mostrando tela de aguardando confirmação...");
+        if (loadingScreen) loadingScreen.style.display = 'none'; // Garante que loader esteja escondido
+
+        if(quizResultArea && quizSection && quizSelection && quizQuestionsContainer && submitQuizBtn && activeQuizTitle) {
+            quizResultArea.innerHTML = `
+                <h3 class="text-2xl font-bold text-center mb-4 text-blue-800">Aguardando Confirmação...</h3>
+                <p class="text-center text-gray-700 mb-4">Estamos verificando a confirmação do seu pagamento PIX.</p>
+                <p class="text-center text-gray-600 text-sm">Assim que confirmado, seu resultado será liberado automaticamente aqui. Normalmente, leva alguns segundos.</p>
+                <div class="loader mx-auto my-4"></div> <p class="text-center text-gray-500 text-xs">Não feche ou atualize esta página.</p>
+                `;
+
+            quizSection.classList.remove('hidden');
+            quizSelection.classList.add('hidden');
+            quizQuestionsContainer.innerHTML = ''; quizQuestionsContainer.classList.add('hidden');
+            submitQuizBtn.classList.add('hidden'); activeQuizTitle.classList.add('hidden');
+            quizResultArea.classList.remove('hidden');
+            
+            // Esconde o botão de voltar quando estiver na tela de espera
+            const backBtn = document.getElementById('back-to-selection-btn');
+            if (backBtn) backBtn.classList.add('hidden');
+            
+        } else {
+            console.error("Erro ao tentar mostrar a tela de espera: Elementos da interface não encontrados.");
+            if (typeof renderQuizCards === 'function') renderQuizCards();
+        }
+        // Limpa o botão do modal (precaução)
+        if(closeModalBtn){
+            closeModalBtn.textContent = 'Fechar';
+            closeModalBtn.className = 'px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition';
+            closeModalBtn.onclick = () => { if (purchaseModal) purchaseModal.classList.add('hidden'); stopPaymentPolling(); };
         }
     }
     
@@ -962,7 +1007,10 @@
         quizResultArea.classList.remove('hidden');
         quizResultArea.scrollIntoView({ behavior: 'smooth' });
         
+        // Limpa todos os estados após a liberação do resultado
         localStorage.removeItem('pendingQuiz');
+        localStorage.removeItem('paymentState');
+        localStorage.removeItem('paymentId');
     }
     
     // FUNÇÃO MANUAL DE LIBERAÇÃO (Plano B / Teste)
@@ -1069,6 +1117,10 @@
                 
                 modalPaymentInfo.textContent = 'Escaneie ou copie a chave. Aguardando confirmação do pagamento...';
 
+                // --- SALVA O ESTADO DE ESPERA NO LOCALSTORAGE ---
+                localStorage.setItem('paymentState', 'waiting');
+                localStorage.setItem('paymentId', data.payment_id);
+
                 // --- INICIA A VERIFICAÇÃO AUTOMÁTICA ---
                 startPaymentPolling(data.payment_id);
                 
@@ -1163,10 +1215,51 @@
         }
     }
 
-    // 🚀 Inicia a página corretamente e para qualquer polling antigo
-    stopPaymentPolling(); // Garante que não haja lixos de sessões anteriores
-    if (!validateAccess()) {
-        renderQuizCards();
+    // --- LÓGICA DE INICIALIZAÇÃO MODIFICADA ---
+    const paymentState = localStorage.getItem('paymentState');
+    const paymentId = localStorage.getItem('paymentId');
+    const pendingQuizData = localStorage.getItem('pendingQuiz'); // Pega os dados do quiz também
+
+    // Limpa polling antigo ao carregar (precaução)
+    stopPaymentPolling(); 
+
+    if (paymentState === 'waiting' && paymentId && pendingQuizData) {
+        // Se estava esperando um pagamento, mostra a tela de espera e reinicia o polling
+        console.log("Estado 'waiting' detectado. Reiniciando polling para paymentId:", paymentId);
+        try {
+            // Verifica se os dados do quiz são válidos antes de mostrar a tela
+            const quizData = JSON.parse(pendingQuizData);
+            if (quizData && quizData.id && quizData.answers) {
+                showWaitingScreen(); // Mostra a tela "Aguardando..."
+                startPaymentPolling(paymentId); // Reinicia a verificação
+            } else {
+                throw new Error("Dados do quiz inválidos no localStorage.");
+            }
+        } catch(e) {
+            console.error("Erro ao processar estado 'waiting':", e);
+            // Limpa o estado inválido e carrega a tela inicial
+            localStorage.removeItem('paymentState');
+            localStorage.removeItem('paymentId');
+            localStorage.removeItem('pendingQuiz');
+            if (typeof renderQuizCards === 'function') renderQuizCards();
+        }
+    } else {
+        // Se não estava esperando pagamento, verifica se tem chave de teste na URL
+        const accessGranted = validateAccess(); // validateAccess só libera com a chave na URL agora
+
+        // Se o acesso NÃO foi garantido pela chave na URL, renderiza os cards
+        if (!accessGranted) {
+            // Limpa qualquer estado inconsistente (precaução)
+            localStorage.removeItem('paymentState');
+            localStorage.removeItem('paymentId');
+            // Não remove pendingQuiz aqui, pode ser necessário para validateAccess
+            if (typeof renderQuizCards === 'function') {
+                renderQuizCards();
+            } else {
+                console.error("Função renderQuizCards não definida.");
+            }
+        }
+        // Se accessGranted foi true, validateAccess já cuidou de chamar unlockAccess
     }
     
     // Para o Polling ao sair ou fechar a aba
