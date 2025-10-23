@@ -209,9 +209,6 @@
         </section>
 
         <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
-            <button id="back-to-selection-btn" onclick="goBackToSelection()" class="mb-4 ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition hidden absolute top-4 left-4 md:static md:mb-4">
-                &larr; Voltar para Seleção
-            </button>
             <div class="bg-slate-50 p-6 sm:p-10 rounded-xl shadow-2xl">
                 <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-8 text-gray-900"></h2>
                 
@@ -789,6 +786,7 @@
 
     function handleQuizSelection(event) {
         activeQuizId = event.currentTarget.getAttribute('data-quiz-id');
+        history.pushState({ screen: 'quiz', quizId: activeQuizId }, `Quiz ${activeQuizId}`, `#quiz-${activeQuizId}`); // Adiciona #quiz-{id} à URL
         loadQuiz();
     }
 
@@ -825,9 +823,9 @@
         quizQuestionsContainer.classList.remove('hidden');
         quizSection.scrollIntoView({ behavior: 'smooth' });
 
-        // Mostra o botão de voltar
+        // Remove o botão de voltar manual, pois a navegação agora é pelo History API
         const backBtn = document.getElementById('back-to-selection-btn');
-        if (backBtn) backBtn.classList.remove('hidden');
+        if (backBtn) backBtn.classList.add('hidden');
     }
 
     window.handleOptionClick = function(element) {
