@@ -148,6 +148,9 @@
         </section>
 
         <section id="quiz-section" class="quiz-container mx-auto px-4 sm:px-6 lg:px-8 py-16 hidden">
+            <button id="back-to-selection-btn" onclick="goBackToSelection()" class="mb-4 ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition hidden absolute top-4 left-4 md:static md:mb-4">
+                &larr; Voltar para Seleção
+            </button>
             <div class="bg-slate-50 p-6 sm:p-10 rounded-xl shadow-2xl">
                 <h2 id="active-quiz-title" class="text-3xl font-bold text-center mb-8 text-gray-900"></h2>
                 
@@ -343,7 +346,7 @@
                     desc: "Seus resultados demonstram uma **inteligência fluida notável**! Você tem grande facilidade para identificar padrões, sintetizar informações e aprender rapidamente. Sua lógica é um motor potente, e você consegue fazer conexões abstratas que a maioria não vê. Seu potencial está em aplicar essa capacidade para resolver problemas complexos e liderar projetos que exijam inovação."
                 };
                 return { title: "Raciocínio Excepcional", color: "bg-blue-600",
-                    desc: "Parabéns, você alcançou uma pontuação **excepcional**! Sua mente é um recurso de alta velocidade, capaz de processar dados e abstrair conceitos em um nível muito superior. Você não apenas resolve problemas, mas enxerga a arquitetura lógica por trás deles. Seu papel é buscar constantemente novos desafios e usar essa habilidade para impactar positivamente seu campo de atuação."
+                    desc: "Parabéns, você alcançou uma pontuação **excepcional**! Sua mente é um recurso de alta velocidade, capaz de processar dados e abstrair conceitos em um nível muito superior. Seu papel é buscar constantemente novos desafios e usar essa habilidade para impactar positivamente seu campo de atuação."
                 };
             },
             get_specific_advice: (answers) => {
@@ -629,6 +632,25 @@
 
     // --- FUNÇÕES DE LÓGICA DO QUIZ ---
 
+    // Função para voltar para a tela de seleção
+    function goBackToSelection() {
+        stopPaymentPolling(); // Para o polling se estiver ativo
+        if (quizSection) quizSection.classList.add('hidden'); // Esconde a seção de perguntas/resultado
+        if (quizResultArea) quizResultArea.classList.add('hidden'); // Garante que resultado esteja escondido
+        if (quizQuestionsContainer) quizQuestionsContainer.innerHTML = ''; // Limpa as perguntas
+        if (quizSelection) quizSelection.classList.remove('hidden'); // Mostra a seleção de cards
+        
+        // Esconde o botão de voltar se for necessário, embora o CSS já o esconda na seleção
+        const backBtn = document.getElementById('back-to-selection-btn');
+        if (backBtn) backBtn.classList.add('hidden'); 
+
+        // Limpa o estado do quiz atual
+        activeQuizId = null;
+        userAnswers = [];
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function renderQuizCards() {
         try {
             const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
@@ -713,6 +735,10 @@
         quizSelection.classList.add('hidden');
         quizQuestionsContainer.classList.remove('hidden');
         quizSection.scrollIntoView({ behavior: 'smooth' });
+
+        // Mostra o botão de voltar
+        const backBtn = document.getElementById('back-to-selection-btn');
+        if (backBtn) backBtn.classList.remove('hidden');
     }
 
     window.handleOptionClick = function(element) {
@@ -918,6 +944,11 @@
                 <p class="text-base text-gray-700"><span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span><span class="block mt-1">${resultData.desc}</span></p>
                 ${adviceHtml}
                 <p class="text-base text-gray-700 mt-4"><span class="font-bold text-lg text-blue-800">PLANO DE AÇÃO GERAL:</span><ul class="list-disc list-inside ml-4 text-sm space-y-2 mt-2">${planGeneralHtml}</ul></p>
+            </div>
+            <div class="text-center mt-6">
+                <button onclick="goBackToSelection()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                    &larr; Voltar para a Seleção de Testes
+                </button>
             </div>
         `;
 
