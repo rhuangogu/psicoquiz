@@ -142,6 +142,10 @@
         }
 
         /* --- Loader / Loading Screen --- */
+        .old-price {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
         #payment-button-container {
             min-height: 50px;
             display: flex;
@@ -686,6 +690,30 @@
 
     // --- FUNÇÕES DE LÓGICA DO QUIZ ---
 
+    // --- FUNÇÃO PARA CANCELAR A ESPERA DO PAGAMENTO ---
+    function cancelPaymentWait() {
+        console.log("Cancelando espera de pagamento.");
+        stopPaymentPolling(); // Para a verificação
+        // Limpa os dados salvos que indicam a espera
+        localStorage.removeItem('paymentState');
+        localStorage.removeItem('paymentId');
+        localStorage.removeItem('pendingQuiz');
+
+        // Volta para a tela inicial de seleção de quizzes
+        if (typeof renderQuizCards === 'function') {
+            renderQuizCards(); // Chama a função que mostra os cards
+            // Garante que outras seções estejam escondidas
+            if (quizSection) quizSection.classList.add('hidden');
+            if (quizResultArea) quizResultArea.classList.add('hidden');
+            // Rola para o topo (opcional)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Fallback: Se a função não existir, apenas recarrega a página
+            location.reload();
+        }
+    }
+
+
     // Função para voltar para a tela de seleção
     function goBackToSelection() {
         stopPaymentPolling(); // Para o polling se estiver ativo
@@ -932,7 +960,12 @@
                 <h3 class="text-2xl font-bold text-center mb-4 text-blue-800">Aguardando Confirmação...</h3>
                 <p class="text-center text-gray-700 mb-4">Estamos verificando a confirmação do seu pagamento PIX.</p>
                 <p class="text-center text-gray-600 text-sm">Assim que confirmado, seu resultado será liberado automaticamente aqui. Normalmente, leva alguns segundos.</p>
-                <div class="loader mx-auto my-4"></div> <p class="text-center text-gray-500 text-xs">Não feche ou atualize esta página.</p>
+                <div class="loader mx-auto my-4"></div> 
+                <p class="text-center text-gray-500 text-xs mb-6">Não feche ou atualize esta página.</p>
+                
+                <button onclick="cancelPaymentWait()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    Cancelar Pagamento / Voltar
+                </button>
                 `;
 
             quizSection.classList.remove('hidden');
@@ -1038,7 +1071,7 @@
             <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
             <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '').replace('Quão ', '').replace('Sou Uma Pessoa ', '').replace('Meu Nível de ', '')}</h4>
             <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">Diagnóstico Principal: ${resultData.title}</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação: ${totalScore} de ${quiz.questions.length * 5}</h4>
+            <h4 class="text-xl font-bold text-gray-900 mb-3">Suas Pontuações Detalhadas: ${totalScore} de ${quiz.questions.length * 5}</h4>
             <div class="mt-4 p-5 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
                 <p class="text-base text-gray-700"><span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span><span class="block mt-1">${resultData.desc}</span></p>
                 ${adviceHtml}
