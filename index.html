@@ -6,6 +6,9 @@
     <title>PsicoReverso | Portal de Testes Psicológicos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="lucas"> 
+
     <style>
         /* Regras de CSS Antigas e Novas (Melhorias Visuais) */
         body {
@@ -374,7 +377,7 @@
                 "12. Eu sou muito bom(a) em identificar a causa raiz de um problema.",
                 "13. Eu costumo ver o quadro geral em vez de me perder nos detalhes. (Invertida)", // 12
                 "14. Eu tenho dificuldade em reter informações de diagramas ou gráficos. (Invertida)", // 13
-                "15. Minhas decisões são sempre baseadas em lógica e não em emoção.",
+                "15. Minhas decisões são sempre baseadas em lógica e non em emoção.",
                 "16. Eu consigo manter o foco por longos períodos em tarefas intelectuais.",
                 "17. Eu sou rápido(a) em fazer cálculos mentais e estimativas.",
                 "18. Tenho facilidade em aprender novas línguas ou linguagens de programação.",
@@ -531,7 +534,7 @@
             get_specific_advice: (answers) => {
                 let advice = [];
                 if (answers[0] >= 4 || answers[9] >= 4) { advice.push("Os **sintomas físicos** (palpitações, inquietação - Perguntas 1 e 10) são sua ansiedade 'vazando' para o corpo. Tente a 'Respiração 4-7-8': puxe o ar por 4s, segure por 7s, e solte pela boca fazendo som por 8s. Repita 3x. Isso 'hackeia' seu sistema nervoso e força o relaxamento."); }
-                if (answers[2] >= 4 || answers[5] >= 4) { advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6). Tente a 'Técnica 5-4-3-2-1': pare e nomeie 5 coisas que você vê, 4 que você ouve, 3 que você sente (tato), 2 que você cheira e 1 que você prova. Isso força sua mente a voltar para o PRESENTE."); }
+                if (answers[2] >= 4 || answers[5] >= 4) { advice.push("Vimos que sua mente vive no futuro, pensando 'algo ruim vai acontecer' ou 'e se...' (Perguntas 3 e 6). Tente a 'Técnica 5-4-3-2-1': pare e nomeie 5 coisas que você vê, 4 que you ouve, 3 que você sente (tato), 2 que você cheira e 1 que você prova. Isso força sua mente a voltar para o PRESENTE."); }
                 if (answers[1] >= 4) { advice.push("Você está **evitando situações** (Pergunta 2) por medo. A ansiedade cresce no escuro. O conselho é a 'Exposição Gradual': se você tem medo de ir a festas, comece por algo pequeno. Ex: 'Vou ficar só 15 minutos'. Você não precisa pular na piscina, só molhar o pé. Isso ensina ao seu cérebro que você sobrevive."); }
                 return advice;
             }
