@@ -184,11 +184,11 @@
 </head>
 <body class="text-gray-800">
 
-    <header class="bg-white shadow-md sticky top-0 z-10">
+    <header class="bg-slate-900 shadow-md sticky top-0 z-10">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <span class="text-3xl sm:text-4xl font-extrabold logo-gradient-part1">Psico</span>
-                <span class="text-3xl sm:text-4xl font-extrabold logo-gradient-part2">Reverso</span>
+                <span class="text-3xl sm:text-4xl font-extrabold text-white logo-gradient-part2">Reverso</span>
             </div>
         </nav>
     </header>
@@ -1071,7 +1071,7 @@
             <h3 class="text-3xl font-extrabold text-center mb-4 text-pink-600">✅ ACESSO LIBERADO!</h3>
             <h4 class="text-xl font-bold text-center mb-4 text-gray-800">Seu Relatório Completo de ${quiz.title.replace('Teste de ', '').replace('Quão ', '').replace('Sou Uma Pessoa ', '').replace('Meu Nível de ', '')}</h4>
             <div class="p-4 rounded-lg ${resultData.color} text-white text-xl font-bold text-center mb-6">Diagnóstico Principal: ${resultData.title}</div>
-            <h4 class="text-xl font-bold text-gray-900 mb-3">Suas Pontuações Detalhadas: ${totalScore} de ${quiz.questions.length * 5}</h4>
+            <h4 class="text-xl font-bold text-gray-900 mb-3">Sua Pontuação: ${totalScore} de ${quiz.questions.length * 5}</h4>
             <div class="mt-4 p-5 border border-blue-300 rounded-lg bg-blue-50 space-y-4">
                 <p class="text-base text-gray-700"><span class="font-bold text-lg text-blue-800">ANÁLISE PROFUNDA:</span><span class="block mt-1">${resultData.desc}</span></p>
                 ${adviceHtml}
