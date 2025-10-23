@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Regras de CSS Antigas e Novas (Melhorias Visuais) */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f7f9fc;
@@ -81,13 +82,66 @@
         .modal {
             background-color: rgba(0, 0, 0, 0.7);
         }
-        .text-shadow {
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        
+        /* NOVAS CLASSES DE ESTILO E ANIMAÇÃO */
+
+        /* Para o degradê do rodapé */
+        .shadow-inner-top {
+            box-shadow: inset 0 8px 10px -6px rgba(0, 0, 0, 0.3);
         }
-        .old-price {
-            text-decoration: line-through;
-            opacity: 0.7;
+        
+        /* Para o espaçamento das letras do título principal */
+        .letter-spacing-wide {
+            letter-spacing: 0.1em;
         }
+
+        /* Para a sombra do texto do título principal */
+        .text-shadow-lg {
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Para a sombra do subtítulo */
+        .text-shadow-md {
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* Degradê animado para o título "DESVENDE SUA MENTE" */
+        .animated-gradient-text {
+            background: linear-gradient(90deg, #FF6B8B, #EC4899, #8B5CF6, #6D28D9, #FF6B8B);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: text-gradient-animation 5s ease infinite;
+        }
+
+        @keyframes text-gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Degradê para o logo "Psico" */
+        .logo-gradient-part1 {
+            background: linear-gradient(45deg, #EC4899, #FF6B8B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Degradê para o logo "Reverso" */
+        .logo-gradient-part2 {
+            background: linear-gradient(45deg, #4F46E5, #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sombra para os títulos dos cards */
+        .card-title-shadow {
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        /* --- Loader / Loading Screen --- */
         #payment-button-container {
             min-height: 50px;
             display: flex;
@@ -129,18 +183,18 @@
     <header class="bg-white shadow-md sticky top-0 z-10">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <span class="text-3xl font-extrabold text-pink-600">Psico</span>
-                <span class="text-3xl font-extrabold text-gray-800">Reverso</span>
+                <span class="text-3xl sm:text-4xl font-extrabold logo-gradient-part1">Psico</span>
+                <span class="text-3xl sm:text-4xl font-extrabold logo-gradient-part2">Reverso</span>
             </div>
         </nav>
     </header>
 
     <main>
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center" id="quiz-selection">
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-4 text-shadow" style="color: #EC4899;">
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 text-shadow-lg text-center letter-spacing-wide animated-gradient-text">
                 DESVENDE SUA MENTE
             </h1>
-            <p class="text-xl text-white mb-12 text-shadow font-semibold">
+            <p class="text-xl sm:text-2xl text-white mb-12 text-shadow-md font-semibold opacity-90">
                 Escolha o teste psicológico que mais se encaixa com o momento atual da sua vida.
             </p>
             <div id="quiz-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -180,10 +234,10 @@
         </section>
     </main>
 
-    <footer class="bg-blue-800 text-white py-8">
+    <footer class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-8 shadow-inner-top">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <p class="text-sm">&copy; 2025 PsicoReverso. Todos os direitos reservados.</p>
-            <p class="text-xs mt-2 text-gray-300">
+            <p class="text-xs mt-2 text-gray-400">
                 Atenção: Nossos testes são ferramentas de autoavaliação e não substituem um diagnóstico clínico profissional.
             </p>
         </div>
@@ -550,7 +604,7 @@
                     desc: "Você apresenta traços significativos de superioridade e dificuldade em lidar com críticas. Essa postura pode estar prejudicando seus relacionamentos e limitando seu crescimento, pois a arrogância fecha a porta para o aprendizado. Lembre-se: o sucesso duradouro é construído com colaboração, não com isolamento. Cultive a vulnerabilidade."
                 };
                 return { title: "Arrogância Elevada", color: "bg-red-600",
-                    desc: "Sua pontuação é alta e sugere um padrão de comportamento focado na exaltação própria e na desvalorização alheia. A arrogância é frequentemente uma máscara para a insegurança profunda. O isolamento social e profissional é um risco real. É crucial iniciar um processo de autoconhecimento para descobrir a origem dessa necessidade de se provar e construir uma autoconfiança autêntica."
+                    desc: "Sua pontuação indica que a necessidade de estar certo e ser superior é dominante. Isso o coloca em um caminho de isolamento e impede o aprendizado. A humildade é o reconhecimento de que todos estão em uma jornada. Você precisa começar a ouvir ativamente e a se expor à autocrítica construtiva. A ajuda profissional pode ser essencial para desconstruir essa barreira."
                 };
             }, 
             get_specific_advice: (answers) => {
@@ -677,7 +731,7 @@
                     <div id="${quiz.card_id}" class="quiz-card-select bg-cover-center p-6 rounded-xl shadow-lg flex flex-col justify-end text-white" 
                         data-quiz-id="${key}" ${backgroundStyle}>
                         <div class="quiz-content">
-                            <h3 class="text-2xl font-bold mb-1 text-red-500 text-shadow">${quiz.title}</h3>
+                            <h3 class="text-2xl font-bold mb-1 text-pink-400 card-title-shadow">${quiz.title}</h3>
                             <p class="text-sm opacity-90 text-white text-shadow">${quiz.subtitle || 'Avaliação Psicológica'}</p>
                             <span class="inline-block mt-3 px-3 py-1 bg-pink-600 text-white text-xs font-semibold rounded-full hover:bg-pink-700 transition">
                                 CLIQUE PARA INICIAR O TESTE
