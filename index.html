@@ -1387,7 +1387,8 @@
     // Inicia a atualização dos contadores falsos
     if (typeof updateLiveCounts === 'function') {
          updateLiveCounts(); // Roda uma vez imediatamente
-         liveCountInterval = setInterval(updateLiveCounts, 3500); // Roda a cada 3.5 segundos
+         // LINHA ALTERADA: 3500 para 15000
+         liveCountInterval = setInterval(updateLiveCounts, 15000); // Roda a cada 15 segundos
     }
     // -------------------------------------------------------------------
 
