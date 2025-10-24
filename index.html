@@ -686,8 +686,24 @@
     let userAnswers = [];
     let activeQuizId = null;
     let pollingInterval = null; // Variável para controlar o Polling
-
+    
+    // VARIÁVEL ADICIONADA: Guarda a referência do intervalo do live count
+    let liveCountInterval = null; 
     // --- FUNÇÕES DE LÓGICA DO QUIZ ---
+
+    // --- FUNÇÃO ADICIONADA: Lógica de Atualização (item b) ---
+    function updateLiveCounts() {
+        const quizKeys = Object.keys(quizzes); // Pega os IDs de todos os quizzes (burnout, qi, etc.)
+        quizKeys.forEach(key => {
+            const countElement = document.getElementById(`live-count-${key}`);
+            if (countElement) {
+                // Gera um número aleatório entre 0 e 50
+                const randomNumber = Math.floor(Math.random() * 51); // * 51 para incluir o 50
+                countElement.textContent = randomNumber;
+            }
+        });
+    }
+    // ----------------------------------------------------------------
 
     // --- FUNÇÃO PARA CANCELAR A ESPERA DO PAGAMENTO ---
     function cancelPaymentWait() {
@@ -717,6 +733,12 @@
     function goBackToSelection() {
         // history.pushState({ screen: 'selection' }, '', window.location.pathname); // <-- LINHA REMOVIDA
         stopPaymentPolling(); // Para o polling se estiver ativo
+        // Adicionada limpeza do liveCountInterval
+        if (liveCountInterval) {
+            clearInterval(liveCountInterval);
+            liveCountInterval = null;
+        }
+        // Fim da adição
         if (quizSection) quizSection.classList.add('hidden'); // Esconde a seção de perguntas/resultado
         if (quizResultArea) quizResultArea.classList.add('hidden'); // Garante que resultado esteja escondido
         if (quizQuestionsContainer) quizQuestionsContainer.innerHTML = ''; // Limpa as perguntas
@@ -743,10 +765,10 @@
             const orderedKeys = ['burnout', 'qi', 'stress', 'anxiety', 'sadness', 'arrogance', 'humility'];
             
             if (!quizCardsGrid) {
-                 console.error("Elemento #quiz-cards-grid não encontrado. A renderização falhou.");
-                 return;
+                   console.error("Elemento #quiz-cards-grid não encontrado. A renderização falhou.");
+                   return;
             }
-             quizCardsGrid.innerHTML = ''; 
+               quizCardsGrid.innerHTML = ''; 
 
             const cardsHtml = orderedKeys.map(key => {
                 const quiz = quizzes[key];
@@ -765,7 +787,12 @@
                                 CLIQUE PARA INICIAR O TESTE
                             </span>
                         </div>
-                    </div>
+                        
+                        <div class="absolute top-2 right-2 z-10 flex items-center bg-black bg-opacity-60 px-2 py-0.5 rounded-full text-xs shadow">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+                            <span id="live-count-${key}" class="text-white font-bold" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">...</span>
+                        </div>
+                        </div>
                 `;
             }).join('');
 
@@ -786,6 +813,12 @@
     }
 
     function handleQuizSelection(event) {
+        // Para o intervalo de contagem ao sair da seleção
+        if (liveCountInterval) {
+            clearInterval(liveCountInterval);
+            liveCountInterval = null;
+        }
+        // Fim da adição
         activeQuizId = event.currentTarget.getAttribute('data-quiz-id');
         history.pushState({ screen: 'quiz', quizId: activeQuizId }, `Quiz ${activeQuizId}`, `#quiz-${activeQuizId}`); // Adiciona #quiz-{id} à URL
         loadQuiz();
@@ -914,7 +947,7 @@
                     // Pendente, continua...
                     console.log("Pagamento ainda pendente...");
                     if (modalPaymentInfo && purchaseModal && !purchaseModal.classList.contains('hidden')) {
-                         modalPaymentInfo.textContent = 'Aguardando confirmação do pagamento... Verificando automaticamente.';
+                           modalPaymentInfo.textContent = 'Aguardando confirmação do pagamento... Verificando automaticamente.';
                     }
                 } else {
                     // Pagamento falhou (cancelled, rejected) ou erro na API
@@ -1014,13 +1047,13 @@
         
         // Define o que é considerado um resultado "bom" (verde/azul) para o Plano de Ação
         const isLowRisk = resultData.title.includes('Baixo') || 
-                          resultData.title.includes('Saudável') || 
-                          resultData.title.includes('Serenidade') || 
-                          resultData.title.includes('Modéstia') || 
-                          resultData.title.includes('Elevada') ||
-                          resultData.title.includes('Excepcional') ||
-                          resultData.title.includes('Acima da Média') ||
-                          resultData.title.includes('Estável');
+                              resultData.title.includes('Saudável') || 
+                              resultData.title.includes('Serenidade') || 
+                              resultData.title.includes('Modéstia') || 
+                              resultData.title.includes('Elevada') ||
+                              resultData.title.includes('Excepcional') ||
+                              resultData.title.includes('Acima da Média') ||
+                              resultData.title.includes('Estável');
 
         if (quiz.get_specific_advice && !isLowRisk) {
             // Mapeia as respostas invertidas para o índice 0-base antes de chamar get_specific_advice
@@ -1144,7 +1177,7 @@
                 closeModalBtn.onclick = () => { if (purchaseModal) purchaseModal.classList.add('hidden'); };
             }
 
-        }, 1500); // Tempo para mostrar a tela "Validando"
+		}, 1500); // Tempo para mostrar a tela "Validando"
     }
 
 
@@ -1222,9 +1255,9 @@
                      closeModalBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                      closeModalBtn.classList.add('bg-yellow-600', 'text-white', 'hover:bg-yellow-700');
                      closeModalBtn.onclick = () => { 
-                        stopPaymentPolling(); // Para a verificação
-                        handlePixPaidManual(); 
-                    }; 
+                         stopPaymentPolling(); // Para a verificação
+                         handlePixPaidManual(); 
+                     }; 
                 } else {
                     // Em produção, o botão é só "Fechar" e PARAR o Polling
                     closeModalBtn.textContent = 'Fechar';
@@ -1350,6 +1383,14 @@
         // Se accessGranted foi true, validateAccess já cuidou de chamar unlockAccess
     }
     
+    // --- LÓGICA DE INICIALIZAÇÃO DOS CONTADORES (item b) ---
+    // Inicia a atualização dos contadores falsos
+    if (typeof updateLiveCounts === 'function') {
+         updateLiveCounts(); // Roda uma vez imediatamente
+         liveCountInterval = setInterval(updateLiveCounts, 3500); // Roda a cada 3.5 segundos
+    }
+    // -------------------------------------------------------------------
+
     // Listener para o botão Voltar/Avançar do navegador
     window.addEventListener('popstate', (event) => {
         console.log("Popstate triggered:", event.state, location.hash);
@@ -1372,6 +1413,12 @@
 
     // Para o Polling ao sair ou fechar a aba
     window.addEventListener('beforeunload', stopPaymentPolling);
+    // Adicionado para limpar o liveCountInterval também ao sair
+    window.addEventListener('beforeunload', () => {
+        if (liveCountInterval) {
+            clearInterval(liveCountInterval);
+        }
+    });
 </script>
 </body>
 </html>
